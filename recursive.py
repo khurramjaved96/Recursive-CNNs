@@ -3,19 +3,20 @@ import cv2
 import tensorflow as tf
 import utils
 import os
+import math
 
-BATCH_SIZE = 100
+BATCH_SIZE = 1000
 NO_OF_STEPS = 50000
 CHECKPOINT_DIR = "../checkpoints"
-DATA_DIR = "/home/khurramjaved/Dicta/data_set"
+DATA_DIR = "../../DataSet Generator/data_set"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
-GT_DIR = "/home/khurramjaved/Dicta/Untitled Folder/gt1.csv"
+GT_DIR = "../../DataSet Generator/Untitled Folder/gt1.csv"
 VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE = .10
 Debug = True
 
-image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=1000, size=(32, 32))
+image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=50000, size=(32, 32))
 
 if (Debug):
     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
@@ -142,22 +143,16 @@ for i in range(NO_OF_STEPS):
     batch = train_image[rand_list]
     gt = train_gt[rand_list]
     if i % 100 == 0:
-        y_results = y_conv.eval(feed_dict={
-            x: batch[0:BATCH_SIZE / 10], y_: gt[0:BATCH_SIZE / 10], keep_prob: 1.0})
-        print("Train set", y_results - gt[0:BATCH_SIZE / 10])
         loss_mine = cross_entropy.eval(feed_dict={
             x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
-        print("Loss on Train : ", loss_mine/len(BATCH_SIZE))
+        print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
 
         rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
         batch = validate_image[rand_list]
         gt = validate_gt[rand_list]
-        y_results = y_conv.eval(feed_dict={
-            x: batch[0:BATCH_SIZE / 10], y_: gt[0:BATCH_SIZE / 10], keep_prob: 1.0})
-        print("Val set", y_results - gt[0:BATCH_SIZE / 10])
         loss_mine = cross_entropy.eval(feed_dict={
             x: validate_image, y_: validate_gt, keep_prob: 1.0})
-        print("Loss on Val : ", loss_mine/len(validate_image))
+        print("Loss on Val : ", math.sqrt(loss_mine*2/len(validate_image)))
     if i % 1000 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
