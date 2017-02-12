@@ -5,18 +5,18 @@ import utils
 import os
 import math
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 100
 NO_OF_STEPS = 50000
 CHECKPOINT_DIR = "../checkpoints"
-DATA_DIR = "../../DataSet Generator/data_set"
+DATA_DIR = "/home/khurramjaved/Dicta/data_set"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
-GT_DIR = "../../DataSet Generator/Untitled Folder/gt1.csv"
+GT_DIR = "/home/khurramjaved/Dicta/Untitled Folder/gt1.csv"
 VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE = .10
 Debug = True
 
-image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=50000, size=(32, 32))
+image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=500, size=(32, 32))
 
 if (Debug):
     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
@@ -29,7 +29,7 @@ if (Debug):
     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
 
-rand_list = np.random.randint(0, len(image_list) - 1, 10)
+rand_list = np.random.randint(0, len(validate_image) - 1, 10)
 batch = validate_image[rand_list]
 gt = validate_gt[rand_list]
 for g, b in zip(gt, batch):
@@ -153,6 +153,16 @@ for i in range(NO_OF_STEPS):
         loss_mine = cross_entropy.eval(feed_dict={
             x: batch, y_: gt, keep_prob: 1.0})
         print("Loss on Val : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
+        temp_temp = np.random.randint(0,len(validate_image)-1,1)
+        batch = validate_image[temp_temp]
+        gt = validate_gt[temp_temp]
+        response = y_conv.eval(feed_dict={
+            x: batch, y_: gt, keep_prob: 1.0})
+        cv2.circle(batch[0], (response[0][0], response[0][1]), 2, (255,0,0),2)
+        cv2.circle(batch[0], (gt[0][0], gt[0][1]), 2, (0,255,0),2)
+        img = batch[0]
+        img = cv2.resize(img, (320,320))
+        cv2.imwrite("../temp"+str(temp_temp)+".jpg", img)
     if i % 1000 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
