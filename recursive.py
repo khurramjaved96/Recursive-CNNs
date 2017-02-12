@@ -147,12 +147,9 @@ for i in range(NO_OF_STEPS):
             x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
         print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
 
-        rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
-        batch = validate_image[rand_list]
-        gt = validate_gt[rand_list]
         loss_mine = cross_entropy.eval(feed_dict={
             x: validate_image, y_: validate_gt, keep_prob: 1.0})
-        print("Loss on Val : ", math.sqrt(loss_mine*2/len(validate_image)))
+        print("Loss on Val : ", math.sqrt((loss_mine/len(validate_image))*2))
     if i % 1000 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
