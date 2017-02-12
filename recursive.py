@@ -146,8 +146,8 @@ for i in range(NO_OF_STEPS):
             x: batch[0:BATCH_SIZE / 10], y_: gt[0:BATCH_SIZE / 10], keep_prob: 1.0})
         print("Train set", y_results - gt[0:BATCH_SIZE / 10])
         loss_mine = cross_entropy.eval(feed_dict={
-            x: train_image, y_: train_gt, keep_prob: 1.0})
-        print("Loss on Train : ", loss_mine/len(train_image))
+            x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
+        print("Loss on Train : ", loss_mine/len(BATCH_SIZE))
 
         rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
         batch = validate_image[rand_list]
