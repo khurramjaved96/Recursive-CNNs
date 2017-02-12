@@ -22,10 +22,12 @@ def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
         print ("GT Loaded : ",len(gt_list), " Files")
     for a in file_names:
         img = cv2.imread(DATA_DIR + "/" + a)
+
         img = cv2.resize(img, size)
         image_list.append(img)
     print len(image_list)
 
     gt_list = np.array(gt_list)
     image_list = np.array(image_list)
+    gt_list = gt_list*size/(300,300)
     return image_list, gt_list

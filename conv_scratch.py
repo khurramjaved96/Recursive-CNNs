@@ -14,7 +14,7 @@ VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE=.10
 Debug = True
 
-image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=50)
+image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=50, size=(32,32))
 
 if(Debug):
     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
@@ -69,7 +69,7 @@ b_conv1 = bias_variable([32], name="b_conv1")
 
 # In[ ]:
 
-x = tf.placeholder(tf.float32, shape=[None, 300,300,3])
+x = tf.placeholder(tf.float32, shape=[None, 32,32,3])
 y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
 
@@ -94,14 +94,15 @@ b_conv4 = bias_variable([256], name="b_conv2")
 h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
 h_pool4 = max_pool_2x2(h_conv4)
 
-
+temp_size=  h_pool4.get_shape()
+temp_size = temp_size[1]*temp_size[2]*temp_size[3]
 
 # In[ ]:
 
-W_fc1 = weight_variable([19 * 19 * 256, 1024], name = "W_fc1")
+W_fc1 = weight_variable([2*2*256, 1024], name = "W_fc1")
 b_fc1 = bias_variable([1024], name="b_fc1")
 
-h_pool4_flat = tf.reshape(h_pool4, [-1, 19*19*256])
+h_pool4_flat = tf.reshape(h_pool4, [-1, 2*2*256])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
 
 
