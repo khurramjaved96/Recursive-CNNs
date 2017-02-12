@@ -1,64 +1,32 @@
 import numpy as np
-import csv
 import cv2
-import cv2
-from matplotlib import pyplot as plt
 import tensorflow as tf
-
-# In[ ]:
-
-BATCH_SIZE = 100
+import utils
+import os
+BATCH_SIZE = 10
 NO_OF_STEPS = 50000
 CHECKPOINT_DIR = "../checkpoints"
-DATA_DIR = "../../DataSet Generator/data_set"
-GT_DIR="../../DataSet Generator/Untitled Folder/gt1.csv"
+DATA_DIR = "/home/khurramjaved/Dicta/data_set"
+if(not os.path.isdir(CHECKPOINT_DIR)):
+    os.mkdir(CHECKPOINT_DIR)
+GT_DIR="/home/khurramjaved/Dicta/Untitled Folder/gt1.csv"
 VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE=.10
+Debug = True
 
+image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=50)
 
-#Loading data
-gt_list=[]
-file_names=[]
-image_list=[]
-
-with open(GT_DIR, 'r') as csvfile:
-      spamreader = csv.reader(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      import ast
-      a = 0
-      temp = 0
-      for row in spamreader:
-            temp+=1
-            if(temp ==50):
-                break
-            file_names.append(row[0])
-            gt_list.append((ast.literal_eval(row[1])[0],ast.literal_eval(row[1])[1]))
-
-print len(gt_list)
-for a in file_names:
-    img = cv2.imread(DATA_DIR+"/"+a)
-    img = cv2.resize(img, (300,300))
-    image_list.append(img)
-print len(image_list)
-
-
-# In[ ]:
-
-
-gt_list = np.array(gt_list)
-image_list = np.array(image_list)
-
+if(Debug):
+    print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
 train_image = image_list[0:max(1, int(len(image_list)*(1-VALIDATION_PERCENTAGE)))]
 validate_image = image_list[int(len(image_list)*(1-VALIDATION_PERCENTAGE)):len(image_list)-1]
 
 train_gt = gt_list[0:max(1, int(len(image_list)*(1-VALIDATION_PERCENTAGE)))]
 validate_gt = gt_list[int(len(image_list)*(1-VALIDATION_PERCENTAGE)):len(image_list)-1]
+if(Debug):
+    print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
+    print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
 
-
-# In[ ]:
-
-#Sanity checks 
-
-print gt_list[2]
 rand_list = np.random.randint(0,len(image_list)-1,10)
 batch = image_list[rand_list]
 gt = gt_list[rand_list]
