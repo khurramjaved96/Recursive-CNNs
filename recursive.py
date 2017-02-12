@@ -30,8 +30,8 @@ if (Debug):
     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
 
 rand_list = np.random.randint(0, len(image_list) - 1, 10)
-batch = image_list[rand_list]
-gt = gt_list[rand_list]
+batch = validate_image[rand_list]
+gt = validate_gt[rand_list]
 for g, b in zip(gt, batch):
     img = b
     cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
