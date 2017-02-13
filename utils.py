@@ -31,3 +31,8 @@ def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
     image_list = np.array(image_list)
     gt_list = gt_list*size/(300,300)
     return image_list, gt_list
+
+def validate_gt(gt_list, size):
+    for a in gt_list:
+        assert(a[0] <= 32 and a[0]>=0)
+        assert(a[1] <= 32 and a[1]>=0)

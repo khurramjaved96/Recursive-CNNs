@@ -5,19 +5,21 @@ import utils
 import os
 import math
 
-BATCH_SIZE = 100
+BATCH_SIZE = 1000
 NO_OF_STEPS = 50000
 CHECKPOINT_DIR = "../checkpoints"
-DATA_DIR = "/home/khurramjaved/Dicta/data_set"
+DATA_DIR = "../../DataSet Generator/data_set"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
-GT_DIR = "/home/khurramjaved/Dicta/Untitled Folder/gt1.csv"
+GT_DIR = "../../DataSet Generator/Untitled Folder/gt1.csv"
 VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE = .10
 Debug = True
 
-image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=500, size=(32, 32))
+image_list, gt_list = utils.load_data(DATA_DIR, GT_DIR, limit=5000, size=(32, 32))
 
+
+utils.validate_gt(gt_list, (32,32))
 if (Debug):
     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
 train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
@@ -80,7 +82,6 @@ h_pool1 = max_pool_2x2(h_conv1)
 
 W_conv2 = weight_variable([5, 5, 20, 40], name="W_conv2")
 b_conv2 = bias_variable([40], name="b_conv2")
-
 h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 h_pool2 = max_pool_2x2(h_conv2)
 
@@ -116,7 +117,7 @@ y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
 mySum = tf.summary.scalar('loss', cross_entropy)
-train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+train_step = tf.train.AdamOptimizer(1e-6).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -146,6 +147,7 @@ for i in range(NO_OF_STEPS):
         loss_mine = cross_entropy.eval(feed_dict={
             x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
         print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
+	
 
         rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
         batch = validate_image[rand_list]
