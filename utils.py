@@ -30,7 +30,7 @@ def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
     gt_list = np.array(gt_list)
     image_list = np.array(image_list)
     gt_list = gt_list*size/(300,300)
-    return image_list, gt_list
+    return image_list, gt_list, file_names
 
 def validate_gt(gt_list, size):
     for a in gt_list:
