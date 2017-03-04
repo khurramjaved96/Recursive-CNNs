@@ -23,15 +23,17 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
     return (x_start, int(x_start+size))
 
 if __name__ == '__main__':
-    dir = "."
+    dir = "../../Dicta_data/data"
     import csv
 
     with open('gt1.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
-            if(os.path.isdir(folder)):
-                for file in os.listdir(folder):
+            a=0
+            print str(folder)
+            if(os.path.isdir(dir+"/"+folder)):
+                for file in os.listdir(dir+"/"+folder):
                     images_dir= dir+"/"+folder+"/"+file
                     if(os.path.isdir(images_dir)):
                         list_gt = []

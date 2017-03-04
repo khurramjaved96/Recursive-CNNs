@@ -7,7 +7,7 @@ import math
 
 BATCH_SIZE = 2000
 NO_OF_STEPS = 50000
-CHECKPOINT_DIR = "../checkpoints"
+CHECKPOINT_DIR = "../checkpoints_multi_fc"
 DATA_DIR = "../data_set"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -92,8 +92,8 @@ temp_size = temp_size[1] * temp_size[2] * temp_size[3]
 
 # In[ ]:
 
-W_fc1 = weight_variable([8*8*40, 1280], name="W_fc1")
-b_fc1 = bias_variable([1280], name="b_fc1")
+W_fc1 = weight_variable([8*8*40, 500], name="W_fc1")
+b_fc1 = bias_variable([500], name="b_fc1")
 
 h_pool4_flat = tf.reshape(h_pool2, [-1, 8*8*40])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
@@ -106,10 +106,22 @@ h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
 # In[ ]:
 
-W_fc2 = weight_variable([1280, 2], name="W_fc2")
-b_fc2 = bias_variable([2], name="b_fc2")
+W_fc2 = weight_variable([500, 500], name="W_fc2")
+b_fc2 = bias_variable([500], name="b_fc2")
 
 y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+
+W_fc3 = weight_variable([500, 500], name="W_fc3")
+b_fc3 = bias_variable([500], name="b_fc3")
+
+y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
+
+W_fc4 = weight_variable([500, 2], name="W_fc4")
+b_fc4 = bias_variable([2], name="b_fc4")
+
+y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
+
+
 
 # In[ ]:
 
@@ -117,7 +129,7 @@ y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
 mySum = tf.summary.scalar('loss', cross_entropy)
-train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+train_step = tf.train.AdamOptimizer(1e-6).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
