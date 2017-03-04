@@ -14,8 +14,8 @@ VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE = .10
 Debug = True
 
-img = cv2.imread("../temp/background01letter005.avi199.jpgtl.jpg")
-img = cv2.resize(img, (600,600))
+img = cv2.imread("../temp/background01letter005.avi201.jpgtl.jpg")
+#img = cv2.resize(img, (600,600))
 o_img = np.copy(img)
 
 # In[ ]:
@@ -138,8 +138,9 @@ crop_size = [img.shape[0]*.8, img.shape[1]*.8]
 start = timeit.timeit()
 myImage = np.copy(o_img) 
 
-CROP_FRAC = .8
-for counter in range(0,20):
+CROP_FRAC = .9
+print myImage.shape
+for counter in range(0,30):
  
     img_temp = cv2.resize(myImage, (32,32))
     img_temp = np.expand_dims(img_temp, axis=0)
@@ -164,11 +165,20 @@ for counter in range(0,20):
 
     if x_loc > myImage.shape[0]/2:
         start_x = min(x_loc+int(myImage.shape[0]*CROP_FRAC/2),myImage.shape[0]) - int(myImage.shape[0]*CROP_FRAC)
+    else:
+        start_x = max(x_loc-int(myImage.shape[0]*CROP_FRAC/2),0) 
     if y_loc > myImage.shape[1]/2:
         start_y = min(y_loc+int(myImage.shape[1]*CROP_FRAC/2),myImage.shape[1]) - int(myImage.shape[1]*CROP_FRAC)
-
+    else:
+        start_y = max(y_loc-int(myImage.shape[1]*CROP_FRAC/2),0) 
+    print "Start X : ", start_x
+    print "Start Y : ", start_y
+    print "Crop size X: ", myImage.shape[0]*CROP_FRAC/2
+    print "Crop size Y: ", myImage.shape[1]*CROP_FRAC/2
     myImage = myImage[start_y:start_y+int(myImage.shape[1]*CROP_FRAC), start_x:start_x+int(myImage.shape[0]*CROP_FRAC)]
     img = img[start_y:start_y+int(img.shape[1]*CROP_FRAC), start_x:start_x+int(img.shape[0]*CROP_FRAC)]
+
+    print "Cropped shape : ", myImage.shape
 
 
 end = timeit.timeit()
