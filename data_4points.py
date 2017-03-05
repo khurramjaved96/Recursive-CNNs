@@ -9,7 +9,7 @@ if (not os.path.isdir(output_dir)):
 
 
 if __name__ == '__main__':
-    dir = "/home/khurramjaved/Dicta/Data"
+    dir = "/home/khurram/Dicta_data/data"
     import csv
 
     with open(output_dir+"/gt.csv", 'a') as csvfile:
