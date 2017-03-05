@@ -7,14 +7,14 @@ import math
 
 BATCH_SIZE = 1
 NO_OF_STEPS = 50000
-CHECKPOINT_DIR = "../checkpoints_multi_fc"
+CHECKPOINT_DIR = "../checkpoints"
 DATA_DIR = "../../DataSet Generator/data_set"
 GT_DIR = "../../DataSet Generator/Untitled Folder/gt1.csv"
 VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE = .10
 Debug = True
 
-img = cv2.imread("../temp/background01letter005.avi201.jpgtl.jpg")
+img = cv2.imread("../temp/c.png")
 #img = cv2.resize(img, (600,600))
 o_img = np.copy(img)
 
@@ -138,9 +138,9 @@ crop_size = [img.shape[0]*.8, img.shape[1]*.8]
 start = timeit.timeit()
 myImage = np.copy(o_img) 
 
-CROP_FRAC = .9
+CROP_FRAC = .95
 print myImage.shape
-for counter in range(0,30):
+for counter in range(0,40):
  
     img_temp = cv2.resize(myImage, (32,32))
     img_temp = np.expand_dims(img_temp, axis=0)
@@ -154,11 +154,13 @@ for counter in range(0,30):
     print "Resonse Upscaled : " , response_up
     y = response_up + (x_start, y_start)
 
-    cv2.circle(img, ( int(response_up[0]+x_start), int(response_up[1]+y_start)), 2, (255,0,0), 2)
-    cv2.imwrite("sample_"+str(counter)+".jpg", img)
-
+    img1 = np.copy(img)
+    cv2.circle(img1, ( int(response_up[0]+x_start), int(response_up[1]+y_start)), 2, (255,0,0), 2)
+    cv2.imwrite("sample_"+str(counter)+".jpg", img1)
+    #cv2.waitKey(0)
     cv2.circle(img_temp[0], (int(response[0][0]), int(response[0][1])), 2,(255,0,0), 2)
     cv2.imwrite("down_result"+str(counter)+".jpg", img_temp[0])
+    #cv2.waitKey(0)
 
     x_loc = int(y[0])
     y_loc = int(y[1])
@@ -177,7 +179,7 @@ for counter in range(0,30):
     print "Crop size Y: ", myImage.shape[1]*CROP_FRAC/2
     myImage = myImage[start_y:start_y+int(myImage.shape[1]*CROP_FRAC), start_x:start_x+int(myImage.shape[0]*CROP_FRAC)]
     img = img[start_y:start_y+int(img.shape[1]*CROP_FRAC), start_x:start_x+int(img.shape[0]*CROP_FRAC)]
-
+    up_scale_factor = (img.shape[0], img.shape[1])
     print "Cropped shape : ", myImage.shape
 
 
