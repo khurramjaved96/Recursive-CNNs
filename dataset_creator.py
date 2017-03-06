@@ -1,6 +1,7 @@
 import os
 import cv2
 import xml.etree.ElementTree as ET
+import numpy as np
 import random
 w = 150
 h = 150
@@ -23,10 +24,10 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
     return (x_start, int(x_start+size))
 
 if __name__ == '__main__':
-    dir = "../../Dicta_data/data"
+    dir = "../../Dicta/Data/"
     import csv
 
-    with open('gt1.csv', 'a') as csvfile:
+    with open('../../corner_data/gt.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -36,6 +37,7 @@ if __name__ == '__main__':
                 for file in os.listdir(dir+"/"+folder):
                     images_dir= dir+"/"+folder+"/"+file
                     if(os.path.isdir(images_dir)):
+                                   
                         list_gt = []
                         tree = ET.parse(images_dir+"/"+file+".gt")
                         root = tree.getroot()
@@ -62,6 +64,34 @@ if __name__ == '__main__':
                                 #  print doc_height
                                 #  print doc_width
                                     import random
+
+                                    myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
+                                                       list_of_points["bl"]))
+
+                                    sum_array = myGt.sum(axis=1)
+                                    tl_index = np.argmin(sum_array)
+                                    tl = myGt[tl_index]
+                                    br = myGt[(tl_index + 2) % 4]
+                                    ptr1 = myGt[(tl_index + 1) % 4]
+                                    # print "TL : ", tl
+                                    # print "BR : ", br
+                                    # print myGt
+                                    # print myGt.shape
+                                    slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
+                                    # print "SLOPE = ", slope
+                                    y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
+                                    if y_pred < ptr1[1]:
+                                        bl = ptr1
+                                        tr = myGt[(tl_index + 3) % 4]
+                                    else:
+                                        tr = ptr1
+                                        bl = myGt[(tl_index + 3) % 4]
+                                        # print tl, tr, br, bl
+                                    list_of_points["tr"] = tr
+                                    list_of_points["tl"] = tl
+                                    list_of_points["br"] = br
+                                    list_of_points["bl"] = bl
+
                                     for k,v in list_of_points.iteritems():
 
                                         if(k=="tl"):
@@ -104,14 +134,14 @@ if __name__ == '__main__':
 
                                             cut_image = img[cords_y[0]:cords_y[1], cords_x[0]:cords_x[1]]
 
-                                        #cv2.circle(cut_image, gt, 2, (255, 0, 0), 6)
+                                        cv2.circle(cut_image, gt, 2, (255, 0, 0), 6)
                                         mah_size = cut_image.shape
                                         cut_image = cv2.resize(cut_image, (300,300))
                                         a = int(gt[0]*300/mah_size[1])
                                         b = int(gt[1]*300/mah_size[0])
                                     
                                   
-                                        cv2.imwrite("../data_set/"+folder+file+image+k+".jpg", cut_image)
+                                        cv2.imwrite("../../corner_data/"+folder+file+image+k+".jpg", cut_image)
                                         spamwriter.writerow((folder+file+image+k+".jpg",(a,b)))
                                 except KeyboardInterrupt:
                                     raise

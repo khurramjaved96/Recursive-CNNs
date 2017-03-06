@@ -59,7 +59,19 @@ x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
 y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
 h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
-h_pool1 = max_pool_2x2(h_conv1)
+h_pool1 = max_pool_2x2(h_conv1) sum_array = myGt.sum(axis=1)
+                                    tl_index = np.argmin(sum_array)
+                                    tl = myGt[tl_index]
+                                    br = myGt[(tl_index + 2) % 4]
+                                    ptr1 = myGt[(tl_index + 1) % 4]
+                                    # print "TL : ", tl
+                                    # print "BR : ", br
+                                    # print myGt
+                                    # print myGt.shape
+                                    slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
+                                    # print "SLOPE = ", slope
+                                    y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
+                                    if y_pred < ptr1[1
 
 W_conv2 = weight_variable([5, 5, 20, 40], name="W_conv2")
 b_conv2 = bias_variable([40], name="b_conv2")
@@ -99,7 +111,19 @@ cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
 mySum = tf.summary.scalar('loss', cross_entropy)
 train_step = tf.train.AdamOptimizer(1e-6).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argm sum_array = myGt.sum(axis=1)
+                                    tl_index = np.argmin(sum_array)
+                                    tl = myGt[tl_index]
+                                    br = myGt[(tl_index + 2) % 4]
+                                    ptr1 = myGt[(tl_index + 1) % 4]
+                                    # print "TL : ", tl
+                                    # print "BR : ", br
+                                    # print myGt
+                                    # print myGt.shape
+                                    slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
+                                    # print "SLOPE = ", slope
+                                    y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
+                                    if y_pred < ptr1[1ax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 merged = tf.summary.merge_all()
