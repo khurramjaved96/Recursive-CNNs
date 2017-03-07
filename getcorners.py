@@ -16,7 +16,7 @@ def get_corners(img):
     Debug = True
 
     #img = cv2.imread("../temp/044.jpg")
-    img = cv2.resize(img, (800,800))
+    #img = cv2.resize(img, (800,800))
     o_img = np.copy(img)
 
     sess = tf.InteractiveSession()
@@ -174,6 +174,12 @@ def get_corners(img):
     br = myImage[int((y[1]+y[2])/2):min(myImage.shape[0]-1,int(y[2]+(y[2]-y[1])/2)),int((x[2]+x[3])/2):min(myImage.shape[1]-1, int(x[2]+(x[2]-x[3])/2))]
 
     bl = myImage[int((y[0]+y[3])/2):min(myImage.shape[0]-1,int(y[3]+(y[3]-y[0])/2)),max(0,int(2*x[3] -(x[2]+x[3])/2)):int((x[3]+x[2])/2)]
+
+    tl =  (tl,max(0,int(2*x[0] -(x[1]+x[0])/2)),max(0,int(2*y[0] -(y[3]+y[0])/2)))
+    tr = (tr, int((x[1]+x[0])/2), max(0,int(2*y[1] -(y[1]+y[2])/2)))
+    br = (br,int((x[2]+x[3])/2) ,int((y[1]+y[2])/2))
+    bl = (bl, max(0,int(2*x[3] -(x[2]+x[3])/2)),int((y[0]+y[3])/2))
+
     return tl, tr, br, bl
     cv2.imshow("asd", tl)
     cv2.waitKey(0)
