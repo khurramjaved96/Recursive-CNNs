@@ -88,8 +88,10 @@ def load_data_4(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
 
 def validate_gt(gt_list, size):
     for a in gt_list:
-        assert(a[0][0] <= size[0] and a[0][0]>=0)
-        assert(a[0][1] <= size[1] and a[0][1]>=0)
+        if(not ((a[0] <= size[0] and a[0]>=0) or (a[1] <= size[1] and a[1]>=0))):
+            print a
+        assert(a[0] <= size[0] and a[0]>=0)
+        assert(a[1] <= size[1] and a[1]>=0)
 
 
 def unison_shuffled_copies(a, b):

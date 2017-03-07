@@ -24,7 +24,7 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
     return (x_start, int(x_start+size))
 
 if __name__ == '__main__':
-    dir = "../../Dicta/Data/"
+    dir = "../../Dicta_data/data"
     import csv
 
     with open('../../corner_data/gt.csv', 'a') as csvfile:
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
                                             cut_image = img[cords_y[0]:cords_y[1], cords_x[0]:cords_x[1]]
 
-                                        cv2.circle(cut_image, gt, 2, (255, 0, 0), 6)
+                                        #cv2.circle(cut_image, gt, 2, (255, 0, 0), 6)
                                         mah_size = cut_image.shape
                                         cut_image = cv2.resize(cut_image, (300,300))
                                         a = int(gt[0]*300/mah_size[1])

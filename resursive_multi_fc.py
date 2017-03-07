@@ -6,42 +6,80 @@ import os
 import math
 
 BATCH_SIZE = 2000
-NO_OF_STEPS = 50000
-CHECKPOINT_DIR = "../checkpoints_multi_fc"
-DATA_DIR = "../data_set"
+NO_OF_STEPS = 500000
+CHECKPOINT_DIR = "../corner_full_data"
+DATA_DIR = "../../corner_data"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
-GT_DIR = "gt1.csv"
+GT_DIR = "../../corner_data/gt.csv"
 VALIDATION_PERCENTAGE = .20
 TEST_PERCENTAGE = .10
 Debug = True
+size= (32,32)
 
-image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=20000, size=(32, 32))
-print len(image_list)
+# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=size)
+# image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
 
-utils.validate_gt(gt_list, (32,32))
-if (Debug):
-    print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
-train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
 
-train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-if (Debug):
-    print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
-    print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
+# print len(image_list)
 
-rand_list = np.random.randint(0, len(validate_image) - 1, 10)
-batch = validate_image[rand_list]
-gt = validate_gt[rand_list]
-for g, b in zip(gt, batch):
-    img = b
-    cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
-    cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
+
+# if (Debug):
+#     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
+# train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
+# validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
+
+# train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
+# validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
+# if (Debug):
+#     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
+#     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
+
+# np.save("train_gt_corner", train_gt)
+# np.save("train_image_corner", train_image)
+# np.save("validate_gt_corner", validate_gt)
+# np.save("validate_image_corner", validate_image)
+# 0/0
+train_gt = np.load("train_gt_corner.npy")
+train_image = np.load("train_image_corner.npy")
+validate_gt = np.load("validate_gt_corner.npy")
+validate_image = np.load("validate_image_corner.npy")
+
+utils.validate_gt(validate_gt, size)
+utils.validate_gt(train_gt, size)
+# rand_list = np.random.randint(0, len(validate_image) - 1, 10)
+# batch = validate_image[rand_list]
+# gt = validate_gt[rand_list]
+
+
+# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=(32, 32))
+# print len(image_list)
+
+# utils.validate_gt(gt_list, (32,32))
+# if (Debug):
+#     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
+# train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
+# validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
+
+# train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
+# validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
+# if (Debug):
+#     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
+#     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
+
+# rand_list = np.random.randint(0, len(validate_image) - 1, 10)
+# batch = validate_image[rand_list]
+# gt = validate_gt[rand_list]
+# for g, b in zip(gt, batch):
+#     img = b
+#     cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
+#     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
 
 # In[ ]:
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.4
 
-sess = tf.InteractiveSession()
+sess = tf.InteractiveSession(config = config)
 
 
 # In[ ]:
@@ -85,17 +123,27 @@ b_conv2 = bias_variable([40], name="b_conv2")
 h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 h_pool2 = max_pool_2x2(h_conv2)
 
-print h_pool2.get_shape()
+W_conv3 = weight_variable([5, 5, 40, 80], name="W_conv3")
+b_conv3 = bias_variable([80], name="b_conv3")
+h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
+h_pool3 = max_pool_2x2(h_conv3)
 
-temp_size = h_pool2.get_shape()
+W_conv4 = weight_variable([5, 5, 80, 160], name="W_conv4")
+b_conv4 = bias_variable([160], name="b_conv4")
+h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
+h_pool4 = max_pool_2x2(h_conv4)
+
+print h_pool4.get_shape()
+
+temp_size = h_pool4.get_shape()
 temp_size = temp_size[1] * temp_size[2] * temp_size[3]
 
 # In[ ]:
 
-W_fc1 = weight_variable([8*8*40, 500], name="W_fc1")
+W_fc1 = weight_variable([int(temp_size), 500], name="W_fc1")
 b_fc1 = bias_variable([500], name="b_fc1")
 
-h_pool4_flat = tf.reshape(h_pool2, [-1, 8*8*40])
+h_pool4_flat = tf.reshape(h_pool4, [-1, int(temp_size)])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
 
 # In[ ]:
@@ -106,20 +154,20 @@ h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
 # In[ ]:
 
-W_fc2 = weight_variable([500, 500], name="W_fc2")
-b_fc2 = bias_variable([500], name="b_fc2")
+W_fc2 = weight_variable([500, 2], name="W_fc2")
+b_fc2 = bias_variable([2], name="b_fc2")
 
 y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
-W_fc3 = weight_variable([500, 500], name="W_fc3")
-b_fc3 = bias_variable([500], name="b_fc3")
+# W_fc3 = weight_variable([500, 500], name="W_fc3")
+# b_fc3 = bias_variable([500], name="b_fc3")
 
-y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
+# y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
 
-W_fc4 = weight_variable([500, 2], name="W_fc4")
-b_fc4 = bias_variable([2], name="b_fc4")
+# W_fc4 = weight_variable([500, 2], name="W_fc4")
+# b_fc4 = bias_variable([2], name="b_fc4")
 
-y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
+# y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
 
 
 
@@ -129,7 +177,7 @@ y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
 cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
 mySum = tf.summary.scalar('loss', cross_entropy)
-train_step = tf.train.AdamOptimizer(1e-6).minimize(cross_entropy)
+train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
