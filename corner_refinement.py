@@ -58,7 +58,7 @@ class corner_finder():
          h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
          h_pool4 = max_pool_2x2(h_conv4)
 
-         print h_pool4.get_shape()
+         #print h_pool4.get_shape()
 
          temp_size = h_pool4.get_shape()
          temp_size = temp_size[1] * temp_size[2] * temp_size[3]
@@ -101,11 +101,11 @@ class corner_finder():
          saver = tf.train.Saver()
          ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
          if ckpt and ckpt.model_checkpoint_path:
-             print ("PRINTING CHECKPOINT PATH")
-             print(ckpt.model_checkpoint_path)
+             #print ("PRINTING CHECKPOINT PATH")
+             #print(ckpt.model_checkpoint_path)
              init = saver.restore(self.sess, ckpt.model_checkpoint_path)
          else:
-             print("Starting from scratch")
+             #print("Starting from scratch")
              init = tf.global_variables_initializer()
              self.sess.run(init)
 
@@ -115,7 +115,8 @@ class corner_finder():
         ans_y=0.0
 
         this_is_temp = img.shape
-        img = cv2.resize(img, (800, 800))
+        RESIZE = 1200
+        img = cv2.resize(img, (RESIZE, RESIZE))
         o_img = np.copy(img)
 
         import time
@@ -128,9 +129,9 @@ class corner_finder():
 
         myImage = np.copy(o_img)
 
-        CROP_FRAC = .92
+        CROP_FRAC = .95
         start = time.clock()
-        for counter in range(0, 25):
+        for counter in range(0, 60):
 
             img_temp = cv2.resize(myImage, (32, 32))
             img_temp = np.expand_dims(img_temp, axis=0)
@@ -178,11 +179,11 @@ class corner_finder():
 
         ans_x += y[0]
         ans_y += y[1]
-        ans_x/=800
+        ans_x/=RESIZE
         ans_x*= this_is_temp[1]
-        ans_y /=800
+        ans_y /=RESIZE
         ans_y*= this_is_temp[0]
-        print "TIME : ", end - start
+        # print "TIME : ", end - start
         return (int(round(ans_x)), int(round(ans_y)))
 
 # In[ ]:

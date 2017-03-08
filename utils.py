@@ -98,3 +98,26 @@ def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
     p = np.random.permutation(len(a))
     return a[p], b[p]
+
+def intersection(a,b, img):
+    img1 = np.zeros_like(img)
+
+    cv2.fillConvexPoly(img1,a,(255,0,0))
+    img1 =np.sum(img1,axis=2)
+
+    img1=img1/255
+
+    img2 = np.zeros_like(img)
+    cv2.fillConvexPoly(img2, b, (255, 0, 0))
+    img2 =np.sum(img2, axis=2)
+    img2 = img2 / 255
+
+    inte = img1*img2
+    union = np.logical_or(img1, img2)
+    iou = np.sum(inte)/np.sum(union)
+    print iou
+    return iou
+    print np.sum(inte)
+    print np.sum(union)
+
+
