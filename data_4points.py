@@ -3,7 +3,7 @@ import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
 
-output_dir = "../../4pointdata"
+output_dir = "../../4pointdataw4"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 

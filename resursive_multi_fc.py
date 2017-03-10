@@ -5,9 +5,9 @@ import utils
 import os
 import math
 
-BATCH_SIZE = 2000
+BATCH_SIZE = 10000
 NO_OF_STEPS = 500000
-CHECKPOINT_DIR = "../corner_full_data"
+CHECKPOINT_DIR = "../corner_full_data_shallow"
 DATA_DIR = "../../corner_data"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -77,7 +77,7 @@ utils.validate_gt(train_gt, size)
 
 # In[ ]:
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.4
+config.gpu_options.per_process_gpu_memory_fraction = 0.8
 
 sess = tf.InteractiveSession(config = config)
 
@@ -106,80 +106,81 @@ def max_pool_2x2(x):
 
 
 # In[ ]:
+with tf.variable_scope('Corner'):
 
-W_conv1 = weight_variable([5, 5, 3, 20], name="W_conv1")
-b_conv1 = bias_variable([20], name="b_conv1")
+    W_conv1 = weight_variable([5, 5, 3, 10], name="W_conv1")
+    b_conv1 = bias_variable([10], name="b_conv1")
 
-# In[ ]:
+    # In[ ]:
 
-x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-y_ = tf.placeholder(tf.float32, shape=[None, 2])
+    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
-h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
-h_pool1 = max_pool_2x2(h_conv1)
+    h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
+    h_pool1 = max_pool_2x2(h_conv1)
 
-W_conv2 = weight_variable([5, 5, 20, 40], name="W_conv2")
-b_conv2 = bias_variable([40], name="b_conv2")
-h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-h_pool2 = max_pool_2x2(h_conv2)
+    W_conv2 = weight_variable([5, 5, 10, 20], name="W_conv2")
+    b_conv2 = bias_variable([20], name="b_conv2")
+    h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+    h_pool2 = max_pool_2x2(h_conv2)
 
-W_conv3 = weight_variable([5, 5, 40, 80], name="W_conv3")
-b_conv3 = bias_variable([80], name="b_conv3")
-h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
-h_pool3 = max_pool_2x2(h_conv3)
+    W_conv3 = weight_variable([5, 5, 20, 30], name="W_conv3")
+    b_conv3 = bias_variable([30], name="b_conv3")
+    h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
+    h_pool3 = max_pool_2x2(h_conv3)
 
-W_conv4 = weight_variable([5, 5, 80, 160], name="W_conv4")
-b_conv4 = bias_variable([160], name="b_conv4")
-h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
-h_pool4 = max_pool_2x2(h_conv4)
+    W_conv4 = weight_variable([5, 5, 30, 40], name="W_conv4")
+    b_conv4 = bias_variable([40], name="b_conv4")
+    h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
+    h_pool4 = max_pool_2x2(h_conv4)
 
-print h_pool4.get_shape()
+    print h_pool4.get_shape()
 
-temp_size = h_pool4.get_shape()
-temp_size = temp_size[1] * temp_size[2] * temp_size[3]
+    temp_size = h_pool4.get_shape()
+    temp_size = temp_size[1] * temp_size[2] * temp_size[3]
 
-# In[ ]:
+    # In[ ]:
 
-W_fc1 = weight_variable([int(temp_size), 500], name="W_fc1")
-b_fc1 = bias_variable([500], name="b_fc1")
+    W_fc1 = weight_variable([int(temp_size), 300], name="W_fc1")
+    b_fc1 = bias_variable([300], name="b_fc1")
 
-h_pool4_flat = tf.reshape(h_pool4, [-1, int(temp_size)])
-h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
+    h_pool4_flat = tf.reshape(h_pool4, [-1, int(temp_size)])
+    h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
 
-# In[ ]:
+    # In[ ]:
 
-# Adding dropout
-keep_prob = tf.placeholder(tf.float32)
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+    # Adding dropout
+    keep_prob = tf.placeholder(tf.float32)
+    h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-# In[ ]:
+    # In[ ]:
 
-W_fc2 = weight_variable([500, 2], name="W_fc2")
-b_fc2 = bias_variable([2], name="b_fc2")
+    W_fc2 = weight_variable([300, 2], name="W_fc2")
+    b_fc2 = bias_variable([2], name="b_fc2")
 
-y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+    y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
-# W_fc3 = weight_variable([500, 500], name="W_fc3")
-# b_fc3 = bias_variable([500], name="b_fc3")
+    # W_fc3 = weight_variable([500, 500], name="W_fc3")
+    # b_fc3 = bias_variable([500], name="b_fc3")
 
-# y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
+    # y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
 
-# W_fc4 = weight_variable([500, 2], name="W_fc4")
-# b_fc4 = bias_variable([2], name="b_fc4")
+    # W_fc4 = weight_variable([500, 2], name="W_fc4")
+    # b_fc4 = bias_variable([2], name="b_fc4")
 
-# y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
-
-
-
-# In[ ]:
+    # y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
 
 
-cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
-mySum = tf.summary.scalar('loss', cross_entropy)
-train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    # In[ ]:
+
+
+    cross_entropy = tf.nn.l2_loss(y_conv - y_)
+
+    mySum = tf.summary.scalar('loss', cross_entropy)
+    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+    correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 merged = tf.summary.merge_all()
 

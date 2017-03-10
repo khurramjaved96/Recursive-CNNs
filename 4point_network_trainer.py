@@ -5,10 +5,10 @@ import utils
 import os
 import math
 
-BATCH_SIZE = 1
-NO_OF_STEPS = 50000
-CHECKPOINT_DIR = "../checkpoints_4_point_multi_multilayer"
-DATA_DIR = "../../4pointdata"
+BATCH_SIZE = 6000
+NO_OF_STEPS = 10000
+CHECKPOINT_DIR = "../checkpoints_4_point_multi_multilayer_v6"
+DATA_DIR = "../../4pointdataw4"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
 GT_DIR = DATA_DIR + "/gt.csv"
@@ -35,10 +35,10 @@ size = (32,32)
 #     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
 #     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
 
-# np.save("train_gt", train_gt)
-# np.save("train_image", train_image)
-# np.save("validate_gt", validate_gt)
-# np.save("validate_image", validate_image)
+# np.save("../train_gt_alex", train_gt)
+# np.save("../train_image_alex", train_image)
+# np.save("../validate_gt_alex", validate_gt)
+# np.save("../validate_image_alex", validate_image)
 # 0/0
 train_gt = np.load("train_gt.npy")
 train_image = np.load("train_image.npy")
@@ -46,6 +46,18 @@ validate_gt = np.load("validate_gt.npy")
 validate_image = np.load("validate_image.npy")
 rand_list = np.random.randint(0, len(validate_image) - 1, 10)
 batch = validate_image[rand_list]
+
+print train_image.shape
+mean_train = np.mean(train_image, axis=(0,1,2))
+
+mean_train = np.expand_dims(mean_train, axis=0)
+mean_train = np.expand_dims(mean_train, axis=0)
+mean_train = np.expand_dims(mean_train, axis=0)
+print mean_train.shape
+train_image = train_image - mean_train
+validate_image = validate_image - mean_train
+print np.mean(train_image, axis=(0,1,2))
+
 gt = validate_gt[rand_list]
 # for g, b in zip(gt, batch):
 #     img = b
@@ -53,26 +65,148 @@ gt = validate_gt[rand_list]
 #     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
 
 
- sum_array = myGt.sum(axis=1)
-                                    tl_index = np.argmin(sum_array)
-                                    tl = myGt[tl_index]
-                                    br = myGt[(tl_index + 2) % 4]
-                                    ptr1 = myGt[(tl_index + 1) % 4]
-                                    # print "TL : ", tl
-                                    # print "BR : ", br
-                                    # print myGt
-                                    # print myGt.shape
-                                    slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
-                                    # print "SLOPE = ", slope
-                                    y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
-                                    if y_pred < ptr1[1
+sess = tf.InteractiveSession()
+
+
+# In[ ]:
+
+def weight_variable(shape, name="temp"):
+    initial = tf.truncated_normal(shape, stddev=0.1, name=name)
+    return tf.Variable(initial)
+
+
+def bias_variable(shape, name="temp"):
+    initial = tf.constant(0.1, shape=shape, name=name)
+    return tf.Variable(initial)
+
+
+# In[ ]:
+
+def conv2d(x, W):
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+
+
+def max_pool_2x2(x):
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
+                          strides=[1, 2, 2, 1], padding='SAME')
+
+
+# In[ ]:
+
+W_conv1 = weight_variable([5, 5, 3, 20], name="W_conv1")
+b_conv1 = bias_variable([20], name="b_conv1")
+
+# In[ ]:
+
+x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+y_ = tf.placeholder(tf.float32, shape=[None, 8])
+
+h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
+h_pool1 = max_pool_2x2(h_conv1)
+
+W_conv2 = weight_variable([5, 5, 20, 40], name="W_conv2")
+b_conv2 = bias_variable([40], name="b_conv2")
+h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+
+W_conv2_1 = weight_variable([5, 5, 40, 40], name="W_conv2_1")
+b_conv2_1= bias_variable([40], name="b_conv2_1")
+h_conv2_1 = tf.nn.relu(conv2d(h_conv2, W_conv2_1) + b_conv2_1)
+
+h_pool2 = max_pool_2x2(h_conv2_1)
+
+W_conv3 = weight_variable([5, 5, 40, 60], name="W_conv3")
+b_conv3 = bias_variable([60], name="b_conv3")
+h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
+
+W_conv3_1 = weight_variable([5, 5, 60, 60], name="W_conv3_1")
+b_conv3_1 = bias_variable([60], name="b_conv3_1")
+h_conv3_1 = tf.nn.relu(conv2d(h_conv3, W_conv3_1) + b_conv3_1)
+
+h_pool3 = max_pool_2x2(h_conv3_1)
+
+W_conv4 = weight_variable([5, 5, 60, 80], name="W_conv4")
+b_conv4 = bias_variable([80], name="b_conv4")
+h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
+h_pool4 = max_pool_2x2(h_conv4)
+
+W_conv5 = weight_variable([5, 5, 80, 100], name="W_conv5")
+b_conv5 = bias_variable([100], name="b_conv5")
+h_conv5 = tf.nn.relu(conv2d(h_pool4, W_conv5) + b_conv5)
+h_pool5 = max_pool_2x2(h_conv5)
+
+
+
+print h_pool5.get_shape()
+
+temp_size = h_pool5.get_shape()
+temp_size = temp_size[1] * temp_size[2] * temp_size[3]
+temp_size = int(temp_size)
+# In[ ]:
+
+print temp_size
+W_fc1 = weight_variable([int(temp_size), 500], name="W_fc1")
+b_fc1 = bias_variable([500], name="b_fc1")
+
+h_pool4_flat = tf.reshape(h_pool5, [-1, temp_size])
+h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
+
+
+# In[ ]:
+
+# Adding dropout
+keep_prob = tf.placeholder(tf.float32)
+h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+
+# In[ ]:
+
+
+W_fc2 = weight_variable([500, 500], name="W_fc2")
+b_fc2 = bias_variable([500], name="b_fc2")
+
+y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+
+
+W_fc3 = weight_variable([500, 8], name="W_fc3")
+b_fc3 = bias_variable([8], name="b_fc3")
+
+y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
+
+
+
+# In[ ]:
+
+
+cross_entropy = tf.nn.l2_loss(y_conv - y_)
+
+mySum = tf.summary.scalar('loss', cross_entropy)
+train_step = tf.train.AdamOptimizer(4e-5).minimize(cross_entropy)
+correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+merged = tf.summary.merge_all()
+
+train_writer = tf.summary.FileWriter('../train', sess.graph)
+
+# In[ ]:
+
+saver = tf.train.Saver()
+ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
+if ckpt and ckpt.model_checkpoint_path:
+    print ("PRINTING CHECKPOINT PATH")
+    print(ckpt.model_checkpoint_path)
+    init = saver.restore(sess, ckpt.model_checkpoint_path)
+
+else:
+    print("Starting from scratch")
+    init = tf.global_variables_initializer()
+    sess.run(init)
 
 for i in range(NO_OF_STEPS):
     rand_list = np.random.randint(0, len(train_image) - 1, BATCH_SIZE)
     batch = train_image[rand_list]
     gt = train_gt[rand_list]
     
-    if i % 100 == 0:
+    if i % 100== 0:
         loss_mine = cross_entropy.eval(feed_dict={
             x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
         print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
@@ -104,10 +238,10 @@ for i in range(NO_OF_STEPS):
         img = batch[0]
         img = cv2.resize(img, (320,320))
         cv2.imwrite("../temp"+str(temp_temp)+".jpg", img)
-    if i % 1000 == 0 and i != 0:
+    if i % 1000== 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
-        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 0.5})
+        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 0.8})
         train_writer.add_summary(summary, i)
 
 

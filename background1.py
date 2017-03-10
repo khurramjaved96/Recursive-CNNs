@@ -11,10 +11,17 @@ import tensorflow as tf
 import random
 
 if __name__ == '__main__':
-    dir = "/home/khurramjaved/Dicta/bg1"
+    tf.reset_default_graph()
+
+    
+    corner_e = getcorners.get_corners_alex()
+    model = corner_refinement.corner_finder()
+    dir = "/home/khurram/Dicta_data/temp"
     import csv
     ans = []
-    with open('../gt.csv', 'a') as csvfile:
+   
+
+    with open('../gt1.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -40,7 +47,7 @@ if __name__ == '__main__':
                                     # Now we have opened the file and GT. Write code to create multiple files and scale gt
                                     list_of_points = {}
                                     img = cv2.imread(images_dir + "/" + image)
-                                    print "IMAGE NAME = ", image 
+                                    print "IMAGE NAME = ", images_dir + "/" + image
                                     for point in list_gt[int(float(image[0:-4])) - 1].iter("point"):
                                         myDict = point.attrib
 
@@ -60,23 +67,48 @@ if __name__ == '__main__':
                                     myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
                                                        list_of_points["bl"]))
 
+
+
+                                    sum_array = myGt.sum(axis=1)
+                                    tl_index = np.argmin(sum_array)
+                                    tl = myGt[tl_index]
+                                    br = myGt[(tl_index + 2) % 4]
+                                    ptr1 = myGt[(tl_index + 1) % 4]
+                                    # print "TL : ", tl
+                                    # print "BR : ", br
+                                    # print myGt
+                                    # print myGt.shape
+                                    slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
+                                    # print "SLOPE = ", slope
+                                    y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
+                                    if y_pred < ptr1[1]:
+                                        bl = ptr1
+                                        tr = myGt[(tl_index + 3) % 4]
+                                    else:
+                                        tr = ptr1
+                                        bl = myGt[(tl_index + 3) % 4]
+                                        # print tl, tr, br, bl
+                                    list_of_points["tr"] = tr
+                                    list_of_points["tl"] = tl
+                                    list_of_points["br"] = br
+                                    list_of_points["bl"] = bl
+
+                                    myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
+                                                       list_of_points["bl"]))
+
                                     import time
 
                                     result = np.copy(img)
-                                    tf.reset_default_graph()
-                                    corner_e = getcorners.get_corners()
+                                    
                                     start = time.clock()
                                     data = corner_e.get(img)
                                     #print time.clock() - start
 
-                                    tf.reset_default_graph()
-
-                                    model = corner_refinement.corner_finder()
+                                    
                                     corner_address = []
                                     import timeit
 
-                                    start = timeit.timeit()
-                                    start = time.clock()
+                                    
                                     for b in data:
                                         a = b[0]
 
@@ -87,12 +119,13 @@ if __name__ == '__main__':
                                        # print temp
 
                                     end = time.clock()
-                                    #print "TOTAL TIME : ", end - start
+                                    print "TOTAL TIME : ", end - start
                                     for a in range(0, len(data)):
                                         cv2.line(img, tuple(corner_address[a % 4]), tuple(corner_address[(a + 1) % 4]),
                                                  (255, 0, 0), 2)
                                     cv2.fillConvexPoly(img,np.array(corner_address),(255,0,0))
                                     cv2.imwrite("../result1.jpg", img)
+                                    spamwriter.writerow((folder + file + image, np.array((tl, tr,br,bl)), np.array(myGt)))
                                     #spamwriter.writerow((folder + file + image + ".jpg", np.array(corner_address))
                                     #spamwriter.writerow((folder + file + image + ".jpg", myGt))
 
@@ -100,7 +133,10 @@ if __name__ == '__main__':
                                    # print np.array(corner_address)
                                     import utils
                                     r = utils.intersection(myGt, np.array(corner_address),img)
+                                    if r <0.8:
+                                        cv2.imwrite("../"+image, img)
                                     ans.append(r)
+                                 
                                     print "MEAN : ", np.mean(np.array(ans))
     print np.mean(np.array(ans))
 
