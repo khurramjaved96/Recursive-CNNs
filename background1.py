@@ -14,14 +14,15 @@ if __name__ == '__main__':
     tf.reset_default_graph()
 
     
-    corner_e = getcorners.get_corners_alex()
+    corner_e = getcorners.get_corners_aug()
+
     model = corner_refinement.corner_finder()
     dir = "/home/khurram/Dicta_data/temp"
     import csv
     ans = []
    
 
-    with open('../gt1.csv', 'a') as csvfile:
+    with open('../bg2.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -107,12 +108,16 @@ if __name__ == '__main__':
                                     
                                     corner_address = []
                                     import timeit
-
+                                    print "Gets here"
                                     
+                                    #temp = np.array(model1.get_location((data[0][0], data[1][0], data[2][0], data[3][0])))
+                                   # print temp.shape
+                                    #print temp
+
                                     for b in data:
                                         a = b[0]
 
-                                        temp = np.array(model.get_location(a))
+                                        temp = np.array(model.get_location1(a))
                                         temp[0] += b[1]
                                         temp[1] += b[2]
                                         corner_address.append(temp)
@@ -120,12 +125,13 @@ if __name__ == '__main__':
 
                                     end = time.clock()
                                     print "TOTAL TIME : ", end - start
-                                    for a in range(0, len(data)):
-                                        cv2.line(img, tuple(corner_address[a % 4]), tuple(corner_address[(a + 1) % 4]),
-                                                 (255, 0, 0), 2)
-                                    cv2.fillConvexPoly(img,np.array(corner_address),(255,0,0))
-                                    cv2.imwrite("../result1.jpg", img)
-                                    spamwriter.writerow((folder + file + image, np.array((tl, tr,br,bl)), np.array(myGt)))
+                                    # for a in range(0, len(data)):
+                                    #     cv2.line(img, tuple(corner_address[a % 4]), tuple(corner_address[(a + 1) % 4]),
+                                    #              (255, 0, 0), 2)
+                                    #cv2.fillConvexPoly(img,np.array(corner_address),(255,0,0))
+                                    #cv2.imwrite("../result1.jpg", img)
+
+
                                     #spamwriter.writerow((folder + file + image + ".jpg", np.array(corner_address))
                                     #spamwriter.writerow((folder + file + image + ".jpg", myGt))
 
@@ -133,9 +139,11 @@ if __name__ == '__main__':
                                    # print np.array(corner_address)
                                     import utils
                                     r = utils.intersection(myGt, np.array(corner_address),img)
-                                    if r <0.8:
+                                    spamwriter.writerow((images_dir + "/" + image, np.array((tl, tr, br, bl)),np.array(corner_address),r))
+                                    if r <0.7:
                                         cv2.imwrite("../"+image, img)
-                                    ans.append(r)
+                                    if r<1 and r>0:
+                                        ans.append(r)
                                  
                                     print "MEAN : ", np.mean(np.array(ans))
     print np.mean(np.array(ans))

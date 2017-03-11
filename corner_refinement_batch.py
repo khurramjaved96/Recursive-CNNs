@@ -135,35 +135,46 @@ class corner_finder():
         ans_x =np.array([0.0,0.0,0.0,0.0])
         ans_y=np.array([0.0,0.0,0.0,0.0])
 
-        this_is_temp = img.shape
+        this_is_temp=[]
+        for a in img:
+            this_is_temp.append(a.shape)
         RESIZE = 1200
-        img = cv2.resize(img, (RESIZE, RESIZE))
+        img_1 = np.zeros(shape=(4,RESIZE, RESIZE, 3))
+        for a in range(0,4):
+            img_1[a] = cv2.resize(img[a], (RESIZE, RESIZE))
+        img = img_1
         o_img = np.copy(img)
 
+        # print img.shape
         import time
 
         y = None
         x_start = np.array([0,0,0,0])
         y_start = np.array([0,0,0,0])
 
-        up_scale_factor = (img.shape[0][1], img.shape[0][0])
+        up_scale_factor = [img.shape[1], img.shape[0]]
      
 
         myImage = np.copy(o_img)
+        myImage =[]
+        for a in range(0,4):
+            myImage.append(o_img[a])
 
         CROP_FRAC = .95
         start = time.clock()
         for counter in range(0, 60):
-            img_temp =np.zeros(shape=(4,32,32,3))
+            img_temp =np.zeros(shape=(4,32,32,3),dtype=int)
             for a in range(0,4):
-                img_temp[a] = cv2.resize(myImage, (32, 32))
+                # print "Resize image size : ", myImage[a].shape
+                img_temp[a] = cv2.resize(myImage[a], (32, 32))
             response = self.y_conv.eval(feed_dict={
                 self.x: img_temp, self.keep_prob: 1.0}, session=self.sess)
             y_2 = []
             for a in range(0,4):
                 response_up = response[a] / 32
-
-                response_up = response_up * up_scale_factor[a]
+                # print response_up
+                # print up_scale_factor
+                response_up = np.array(response_up) * np.array(up_scale_factor)
 
                 y = response_up + (x_start[a], y_start[a])
                 y_2.append(y)
@@ -178,27 +189,28 @@ class corner_finder():
                 x_loc = int(y[0])
                 y_loc = int(y[1])
 
-                if x_loc > myImage.shape[0] / 2:
-                    start_x = min(x_loc + int(round(myImage.shape[0] * CROP_FRAC / 2)), myImage.shape[0]) - int(round(
-                        myImage.shape[0] * CROP_FRAC))
+                if x_loc > myImage[a].shape[0] / 2:
+                    start_x = min(x_loc + int(round(myImage[a].shape[0] * CROP_FRAC / 2)), myImage[a].shape[0]) - int(round(
+                        myImage[a].shape[0] * CROP_FRAC))
                 else:
-                    start_x = max(x_loc - int(myImage.shape[0] * CROP_FRAC / 2), 0)
-                if y_loc > myImage.shape[1] / 2:
-                    start_y = min(y_loc + int(myImage.shape[1] * CROP_FRAC / 2), myImage.shape[1]) - int(
-                        myImage.shape[1] * CROP_FRAC)
+                    start_x = max(x_loc - int(myImage[a].shape[0] * CROP_FRAC / 2), 0)
+                if y_loc > myImage[a].shape[1] / 2:
+                    start_y = min(y_loc + int(myImage[a].shape[1] * CROP_FRAC / 2), myImage[a].shape[1]) - int(
+                        myImage[a].shape[1] * CROP_FRAC)
                 else:
-                    start_y = max(y_loc - int(myImage.shape[1] * CROP_FRAC / 2), 0)
+                    start_y = max(y_loc - int(myImage[a].shape[1] * CROP_FRAC / 2), 0)
 
-                ans_x[a]+= start_x[a]
-                ans_y[a]+= start_y[a]
+                ans_x[a]+= start_x
+                ans_y[a]+= start_y
 
-                myImage[a] = myImage[a,start_y:start_y + int(myImage.shape[0] * CROP_FRAC),
-                          start_x:start_x + int(myImage.shape[1] * CROP_FRAC)]
-                img[a] = img[a,start_y:start_y + int(img.shape[0] * CROP_FRAC), start_x:start_x + int(img.shape[1] * CROP_FRAC)]
-                up_scale_factor[a] = (img.shape[1], img.shape[0])
+                myImage[a] = myImage[a][start_y:start_y + int(myImage[a].shape[0] * CROP_FRAC),
+                          start_x:start_x + int(myImage[a].shape[1] * CROP_FRAC)]
+                #img[a] = img[a,start_y:start_y + int(img.shape[0] * CROP_FRAC), start_x:start_x + int(img.shape[1] * CROP_FRAC)]
+                up_scale_factor = [myImage[a].shape[1], myImage[a].shape[0]]
 
 
         end = time.clock()
+        print "Ans y ", ans_y
         for a in range(0,4):
             ans_x[a] += y_2[a][0]
             ans_y[a] += y_2[a][1]
@@ -207,6 +219,8 @@ class corner_finder():
             ans_y[a] /=RESIZE
             ans_y[a]*= this_is_temp[a][0]
             # print "TIME : ", end - start
+        print "Ans x ", ans_x
+        print "Ans y ", ans_y
         return (np.rint(ans_x).astype(int), np.rint(ans_y).astype(int))
 
 # In[ ]:

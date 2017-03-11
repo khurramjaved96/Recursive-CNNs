@@ -5,9 +5,9 @@ import utils
 import os
 import math
 
-BATCH_SIZE = 6000
-NO_OF_STEPS = 10000
-CHECKPOINT_DIR = "../checkpoints_4_point_multi_multilayer_v6"
+BATCH_SIZE = 10
+NO_OF_STEPS = 1000000000
+CHECKPOINT_DIR = "../c8"
 DATA_DIR = "../../4pointdataw4"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -15,7 +15,8 @@ GT_DIR = DATA_DIR + "/gt.csv"
 VALIDATION_PERCENTAGE = .1
 TEST_PERCENTAGE = .01
 Debug = True
-
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.2
 size = (32,32)
 # image_list, gt_list, file_name = utils.load_data_4(DATA_DIR, GT_DIR, limit=-1, size=size)
 # image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
@@ -65,7 +66,7 @@ gt = validate_gt[rand_list]
 #     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
 
 
-sess = tf.InteractiveSession()
+sess = tf.InteractiveSession(config=config)
 
 
 # In[ ]:
@@ -93,46 +94,59 @@ def max_pool_2x2(x):
 
 # In[ ]:
 
-W_conv1 = weight_variable([5, 5, 3, 20], name="W_conv1")
-b_conv1 = bias_variable([20], name="b_conv1")
+
 
 # In[ ]:
 
-x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-y_ = tf.placeholder(tf.float32, shape=[None, 8])
 
-h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
-h_pool1 = max_pool_2x2(h_conv1)
+with tf.name_scope("Input"):
+    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    
 
-W_conv2 = weight_variable([5, 5, 20, 40], name="W_conv2")
-b_conv2 = bias_variable([40], name="b_conv2")
-h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
-W_conv2_1 = weight_variable([5, 5, 40, 40], name="W_conv2_1")
-b_conv2_1= bias_variable([40], name="b_conv2_1")
-h_conv2_1 = tf.nn.relu(conv2d(h_conv2, W_conv2_1) + b_conv2_1)
 
-h_pool2 = max_pool_2x2(h_conv2_1)
+    x_ = tf.image.random_brightness(x, 5)
+    x_ = tf.image.random_contrast(x_, lower=0.2, upper=1.8)
+with tf.name_scope("gt"):
+    y_ = tf.placeholder(tf.float32, shape=[None, 8])
 
-W_conv3 = weight_variable([5, 5, 40, 60], name="W_conv3")
-b_conv3 = bias_variable([60], name="b_conv3")
-h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
+with tf.name_scope("Conv1"):
+    W_conv1 = weight_variable([5, 5, 3, 20], name="W_conv1")
+    b_conv1 = bias_variable([20], name="b_conv1")
+    h_conv1 = tf.nn.relu(conv2d(x_, W_conv1) + b_conv1)
+with tf.name_scope("MaxPool1"):
+    h_pool1 = max_pool_2x2(h_conv1)
+with tf.name_scope("Conv2"):
+    W_conv2 = weight_variable([5, 5, 20, 40], name="W_conv2")
+    b_conv2 = bias_variable([40], name="b_conv2")
+    h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+with tf.name_scope("Conv2_1"):
+    W_conv2_1 = weight_variable([5, 5, 40, 40], name="W_conv2_1")
+    b_conv2_1= bias_variable([40], name="b_conv2_1")
+    h_conv2_1 = tf.nn.relu(conv2d(h_conv2, W_conv2_1) + b_conv2_1)
+with tf.name_scope("MaxPool2"):
+    h_pool2 = max_pool_2x2(h_conv2_1)
+with tf.name_scope("Conv3"):
+    W_conv3 = weight_variable([5, 5, 40, 60], name="W_conv3")
+    b_conv3 = bias_variable([60], name="b_conv3")
+    h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
 
-W_conv3_1 = weight_variable([5, 5, 60, 60], name="W_conv3_1")
-b_conv3_1 = bias_variable([60], name="b_conv3_1")
-h_conv3_1 = tf.nn.relu(conv2d(h_conv3, W_conv3_1) + b_conv3_1)
-
-h_pool3 = max_pool_2x2(h_conv3_1)
-
-W_conv4 = weight_variable([5, 5, 60, 80], name="W_conv4")
-b_conv4 = bias_variable([80], name="b_conv4")
-h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
-h_pool4 = max_pool_2x2(h_conv4)
-
-W_conv5 = weight_variable([5, 5, 80, 100], name="W_conv5")
-b_conv5 = bias_variable([100], name="b_conv5")
-h_conv5 = tf.nn.relu(conv2d(h_pool4, W_conv5) + b_conv5)
-h_pool5 = max_pool_2x2(h_conv5)
+    W_conv3_1 = weight_variable([5, 5, 60, 60], name="W_conv3_1")
+    b_conv3_1 = bias_variable([60], name="b_conv3_1")
+    h_conv3_1 = tf.nn.relu(conv2d(h_conv3, W_conv3_1) + b_conv3_1)
+with tf.name_scope("MaxPool3"):
+    h_pool3 = max_pool_2x2(h_conv3_1)
+with tf.name_scope("Conv4"):
+    W_conv4 = weight_variable([5, 5, 60, 80], name="W_conv4")
+    b_conv4 = bias_variable([80], name="b_conv4")
+    h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
+with tf.name_scope("Maxpool4"):
+    h_pool4 = max_pool_2x2(h_conv4)
+with tf.name_scope("Conv5"):
+    W_conv5 = weight_variable([5, 5, 80, 100], name="W_conv5")
+    b_conv5 = bias_variable([100], name="b_conv5")
+    h_conv5 = tf.nn.relu(conv2d(h_pool4, W_conv5) + b_conv5)
+    h_pool5 = max_pool_2x2(h_conv5)
 
 
 
@@ -144,44 +158,46 @@ temp_size = int(temp_size)
 # In[ ]:
 
 print temp_size
-W_fc1 = weight_variable([int(temp_size), 500], name="W_fc1")
-b_fc1 = bias_variable([500], name="b_fc1")
+with tf.name_scope("FCLayers"):
+    W_fc1 = weight_variable([int(temp_size), 500], name="W_fc1")
+    b_fc1 = bias_variable([500], name="b_fc1")
 
-h_pool4_flat = tf.reshape(h_pool5, [-1, temp_size])
-h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
+    h_pool4_flat = tf.reshape(h_pool5, [-1, temp_size])
+    h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
+
+
+    # In[ ]:
+
+    # Adding dropout
+    keep_prob = tf.placeholder(tf.float32)
+    h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+
+    # In[ ]:
+
+
+    W_fc2 = weight_variable([500, 500], name="W_fc2")
+    b_fc2 = bias_variable([500], name="b_fc2")
+
+    y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+
+
+    W_fc3 = weight_variable([500, 8], name="W_fc3")
+    b_fc3 = bias_variable([8], name="b_fc3")
+
+    y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
+
 
 
 # In[ ]:
 
-# Adding dropout
-keep_prob = tf.placeholder(tf.float32)
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+with tf.name_scope("loss"):
+    cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
-# In[ ]:
+    mySum = tf.summary.scalar('Train_loss', cross_entropy)
+    validate_loss = tf.summary.scalar('Validate_loss', cross_entropy)
+with tf.name_scope("Train"):
+    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
 
-
-W_fc2 = weight_variable([500, 500], name="W_fc2")
-b_fc2 = bias_variable([500], name="b_fc2")
-
-y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-
-
-W_fc3 = weight_variable([500, 8], name="W_fc3")
-b_fc3 = bias_variable([8], name="b_fc3")
-
-y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
-
-
-
-# In[ ]:
-
-
-cross_entropy = tf.nn.l2_loss(y_conv - y_)
-
-mySum = tf.summary.scalar('loss', cross_entropy)
-train_step = tf.train.AdamOptimizer(4e-5).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 merged = tf.summary.merge_all()
 
@@ -210,7 +226,9 @@ for i in range(NO_OF_STEPS):
         loss_mine = cross_entropy.eval(feed_dict={
             x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
         print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
-    
+        summary = mySum.eval(feed_dict={
+            x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
+        train_writer.add_summary(summary, i)
 
         rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
         batch = validate_image[rand_list]
@@ -218,6 +236,9 @@ for i in range(NO_OF_STEPS):
         loss_mine = cross_entropy.eval(feed_dict={
             x: batch, y_: gt, keep_prob: 1.0})
         print("Loss on Val : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
+        val_sum = validate_loss.eval(feed_dict={
+            x: batch, y_: gt, keep_prob: 1.0})
+        train_writer.add_summary(val_sum, i)
         temp_temp = np.random.randint(0,len(validate_image)-1,1)
         batch = validate_image[temp_temp]
         gt = validate_gt[temp_temp]
@@ -238,11 +259,11 @@ for i in range(NO_OF_STEPS):
         img = batch[0]
         img = cv2.resize(img, (320,320))
         cv2.imwrite("../temp"+str(temp_temp)+".jpg", img)
-    if i % 1000== 0 and i != 0:
+    if i % 100000== 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
-        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 0.8})
-        train_writer.add_summary(summary, i)
+        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 1.0})
+        
 
 
 

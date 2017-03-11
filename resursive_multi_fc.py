@@ -7,7 +7,7 @@ import math
 
 BATCH_SIZE = 10000
 NO_OF_STEPS = 500000
-CHECKPOINT_DIR = "../corner_full_data_shallow"
+CHECKPOINT_DIR = "../corner_new"
 DATA_DIR = "../../corner_data"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -47,6 +47,16 @@ validate_image = np.load("validate_image_corner.npy")
 
 utils.validate_gt(validate_gt, size)
 utils.validate_gt(train_gt, size)
+
+mean_train = np.mean(train_image, axis=(0,1,2))
+
+mean_train = np.expand_dims(mean_train, axis=0)
+mean_train = np.expand_dims(mean_train, axis=0)
+mean_train = np.expand_dims(mean_train, axis=0)
+print mean_train.shape
+train_image = train_image - mean_train
+validate_image = validate_image - mean_train
+
 # rand_list = np.random.randint(0, len(validate_image) - 1, 10)
 # batch = validate_image[rand_list]
 # gt = validate_gt[rand_list]
@@ -77,7 +87,7 @@ utils.validate_gt(train_gt, size)
 
 # In[ ]:
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.8
+config.gpu_options.per_process_gpu_memory_fraction = 0.4
 
 sess = tf.InteractiveSession(config = config)
 
@@ -114,9 +124,11 @@ with tf.variable_scope('Corner'):
     # In[ ]:
 
     x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
+    x_ = tf.image.random_contrast(x, lower=0.2, upper=1.8)
+
     y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
-    h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
+    h_conv1 = tf.nn.relu(conv2d(x_, W_conv1) + b_conv1)
     h_pool1 = max_pool_2x2(h_conv1)
 
     W_conv2 = weight_variable([5, 5, 10, 20], name="W_conv2")
@@ -178,7 +190,7 @@ with tf.variable_scope('Corner'):
     cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
     mySum = tf.summary.scalar('loss', cross_entropy)
-    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+    train_step = tf.train.AdamOptimizer(1e-6).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -229,7 +241,7 @@ for i in range(NO_OF_STEPS):
     if i % 1000 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
-        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 0.5})
+        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 0.8})
         train_writer.add_summary(summary, i)
 
 

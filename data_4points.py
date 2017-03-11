@@ -3,7 +3,7 @@ import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
 
-output_dir = "../../4pointdataw4"
+output_dir = "../../4pointdatacli"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
@@ -90,6 +90,12 @@ if __name__ == '__main__':
 
                                     cv2.imwrite(output_dir+"/"+folder+file+image,img)
                                     spamwriter.writerow((folder + file + image, (tl, tr,br,bl)))
+
+                                    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+                                    cl1 = clahe.apply(img)
+
+                                    cv2.imwrite(output_dir+"/"+folder+file+"cli"+image,img)
+                                    spamwriter.writerow((folder + file + "cli"+image, (tl, tr,br,bl)))
 
                                     # cv2.circle(img,tuple(tl),2, (255,0,0),2)
                                     # cv2.circle(img, tuple(tr), 2, (0, 255, 0), 2)
