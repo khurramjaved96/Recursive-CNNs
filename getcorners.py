@@ -607,7 +607,7 @@ class get_corners_aug:
         # img = cv2.resize(img, (800,800))
 
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.4
+        config.gpu_options.per_process_gpu_memory_fraction = 0.1
         self.sess = tf.Session(config=config)
         sess = self.sess
         train_image = np.load("train_image.npy")

@@ -16,13 +16,13 @@ if __name__ == '__main__':
     
     corner_e = getcorners.get_corners_aug()
 
-    model = corner_refinement.corner_finder()
+    model = corner_refinement.corner_finder_aug()
     dir = "/home/khurram/Dicta_data/temp"
     import csv
     ans = []
    
 
-    with open('../bg2.csv', 'a') as csvfile:
+    with open('../bg1_2.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):

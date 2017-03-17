@@ -3,13 +3,13 @@ import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
 
-output_dir = "../../4pointdatacli"
+output_dir = "../../4pointdata_bg1"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
 
 if __name__ == '__main__':
-    dir = "/home/khurram/Dicta_data/data"
+    dir = "/home/khurram/Dicta_data/data_bg1"
     import csv
 
     with open(output_dir+"/gt.csv", 'a') as csvfile:

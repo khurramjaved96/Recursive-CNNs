@@ -7,12 +7,12 @@ import math
 
 BATCH_SIZE = 10
 NO_OF_STEPS = 1000000000
-CHECKPOINT_DIR = "../c8"
-DATA_DIR = "../../4pointdataw4"
+CHECKPOINT_DIR = "../c8_bg1"
+DATA_DIR = "../../4pointdatabg1"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
 GT_DIR = DATA_DIR + "/gt.csv"
-VALIDATION_PERCENTAGE = .1
+VALIDATION_PERCENTAGE = .2
 TEST_PERCENTAGE = .01
 Debug = True
 config = tf.ConfigProto()
@@ -36,15 +36,15 @@ size = (32,32)
 #     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
 #     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
 
-# np.save("../train_gt_alex", train_gt)
-# np.save("../train_image_alex", train_image)
-# np.save("../validate_gt_alex", validate_gt)
-# np.save("../validate_image_alex", validate_image)
+# np.save("../train_gt_bg1", train_gt)
+# np.save("../train_image_bg1", train_image)
+# np.save("../validate_gt_bg1", validate_gt)
+# np.save("../validate_image_bg1", validate_image)
 # 0/0
-train_gt = np.load("train_gt.npy")
-train_image = np.load("train_image.npy")
-validate_gt = np.load("validate_gt.npy")
-validate_image = np.load("validate_image.npy")
+train_gt = np.load("../train_gt_bg1.npy")
+train_image = np.load("../train_image_bg1.npy")
+validate_gt = np.load("../validate_gt_bg1.npy")
+validate_image = np.load("../validate_image_bg1.npy")
 rand_list = np.random.randint(0, len(validate_image) - 1, 10)
 batch = validate_image[rand_list]
 

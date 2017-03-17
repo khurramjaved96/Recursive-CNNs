@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import csv
 
-def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
+def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1, remove_background=0):
     gt_list = []
     file_names = []
     image_list = []
@@ -13,6 +13,9 @@ def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
         a = 0
         temp = 0
         for row in spamreader:
+            if row[0][0:12] == "background0"+str(remove_background):
+                print row[0]
+                continue 
             temp += 1
             if (temp == limit):
                 break
@@ -32,7 +35,7 @@ def load_data(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
     gt_list = gt_list*size/(300,300)
     return image_list, gt_list, file_names
 
-def load_data_4(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
+def load_data_4(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1, remove_background = 0):
     gt_list = []
     file_names = []
     image_list = []
@@ -43,10 +46,13 @@ def load_data_4(DATA_DIR, GT_DIR, size=(300,300), debug=False, limit=-1):
         a = 0
         temp = 0
         for row in spamreader:
-           
+            if row[0][0:12] == "background0"+str(remove_background):
+                print row[0]
+                continue 
             temp += 1
             if (temp == limit):
                 break
+            
             file_names.append(row[0])
             test = row[1].replace("array","")
             

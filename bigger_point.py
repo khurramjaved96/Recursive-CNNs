@@ -6,8 +6,8 @@ import os
 import math
 
 BATCH_SIZE = 100
-NO_OF_STEPS = 500000
-CHECKPOINT_DIR = "../corner_withoutbg1"
+NO_OF_STEPS = 50000000
+CHECKPOINT_DIR = "../bigger_point"
 DATA_DIR = "../../corner_data"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -17,7 +17,7 @@ TEST_PERCENTAGE = .10
 Debug = True
 size= (32,32)
 
-# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=size, remove_background =1)
+# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=size)
 # image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
 
 
@@ -35,15 +35,15 @@ size= (32,32)
 #     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
 #     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
 
-# np.save("train_gt_corner_bg1", train_gt)
-# np.save("train_image_bg1", train_image)
-# np.save("validate_gt_bg1", validate_gt)
-# np.save("validate_image_bg1", validate_image)
+# np.save("train_gt_corner", train_gt)
+# np.save("train_image_corner", train_image)
+# np.save("validate_gt_corner", validate_gt)
+# np.save("validate_image_corner", validate_image)
 # 0/0
-train_gt = np.load("train_gt_corner_bg1.npy")
-train_image = np.load("train_image_bg1.npy")
-validate_gt = np.load("validate_gt_bg1.npy")
-validate_image = np.load("validate_image_bg1.npy")
+train_gt = np.load("train_gt_corner.npy")
+train_image = np.load("train_image_corner.npy")
+validate_gt = np.load("validate_gt_corner.npy")
+validate_image = np.load("validate_image_corner.npy")
 
 utils.validate_gt(validate_gt, size)
 utils.validate_gt(train_gt, size)
@@ -87,7 +87,7 @@ validate_image = validate_image - mean_train
 
 # In[ ]:
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.1
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
 
 sess = tf.InteractiveSession(config = config)
 
@@ -118,35 +118,40 @@ def max_pool_2x2(x):
 # In[ ]:
 with tf.variable_scope('Corner'):
 
-    W_conv1 = weight_variable([5, 5, 3, 10], name="W_conv1")
-    b_conv1 = bias_variable([10], name="b_conv1")
-
-    # In[ ]:
-
     x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
     x_ = tf.image.random_contrast(x, lower=0.2, upper=1.8)
-    print x_.get_shape()
-    x_ = tf.image.random_brightness(x_, max_delta=50)
-    print x_.get_shape()
-
 
     y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
-    h_conv1 = tf.nn.relu(conv2d(x_, W_conv1) + b_conv1)
-    h_pool1 = max_pool_2x2(h_conv1)
+    with tf.variable_scope("Conv1"):
+        W_conv1 = weight_variable([5, 5, 3, 30], name="W_conv1")
+        b_conv1 = bias_variable([30], name="b_conv1")
+        h_conv1 = tf.nn.relu(conv2d(x_, W_conv1) + b_conv1)
 
-    W_conv2 = weight_variable([5, 5, 10, 20], name="W_conv2")
-    b_conv2 = bias_variable([20], name="b_conv2")
-    h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-    h_pool2 = max_pool_2x2(h_conv2)
+        W_conv1_1 = weight_variable([5, 5, 30, 30], name="W_conv1_1")
+        b_conv1_1 = bias_variable([30], name="b_conv1_1")
+        h_conv1_1 = tf.nn.relu(conv2d(h_conv1, W_conv1_1) + b_conv1_1)
 
-    W_conv3 = weight_variable([5, 5, 20, 30], name="W_conv3")
-    b_conv3 = bias_variable([30], name="b_conv3")
+
+        h_pool1 = max_pool_2x2(h_conv1_1)
+    with tf.variable_scope("Conv2"):
+        W_conv2 = weight_variable([5, 5, 30, 40], name="W_conv2")
+        b_conv2 = bias_variable([40], name="b_conv2")
+        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+
+        W_conv2_1 = weight_variable([5, 5, 40, 40], name="W_conv2_1")
+        b_conv2_1 = bias_variable([40], name="b_conv2_1")
+        h_conv2_1 = tf.nn.relu(conv2d(h_conv2, W_conv2_1) + b_conv2_1)
+        
+        h_pool2 = max_pool_2x2(h_conv2_1)
+
+    W_conv3 = weight_variable([5, 5, 40, 50], name="W_conv3")
+    b_conv3 = bias_variable([50], name="b_conv3")
     h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
     h_pool3 = max_pool_2x2(h_conv3)
 
-    W_conv4 = weight_variable([5, 5, 30, 40], name="W_conv4")
-    b_conv4 = bias_variable([40], name="b_conv4")
+    W_conv4 = weight_variable([5, 5, 50, 60], name="W_conv4")
+    b_conv4 = bias_variable([60], name="b_conv4")
     h_conv4 = tf.nn.relu(conv2d(h_pool3, W_conv4) + b_conv4)
     h_pool4 = max_pool_2x2(h_conv4)
 
@@ -171,21 +176,16 @@ with tf.variable_scope('Corner'):
 
     # In[ ]:
 
-    W_fc2 = weight_variable([300, 2], name="W_fc2")
-    b_fc2 = bias_variable([2], name="b_fc2")
+    W_fc2 = weight_variable([300, 300], name="W_fc2")
+    b_fc2 = bias_variable([300], name="b_fc2")
 
     y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
-    # W_fc3 = weight_variable([500, 500], name="W_fc3")
-    # b_fc3 = bias_variable([500], name="b_fc3")
 
-    # y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
+    W_fc3 = weight_variable([300, 2], name="W_fc3")
+    b_fc3 = bias_variable([2], name="b_fc3")
 
-    # W_fc4 = weight_variable([500, 2], name="W_fc4")
-    # b_fc4 = bias_variable([2], name="b_fc4")
-
-    # y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
-
+    y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
 
 
     # In[ ]:
@@ -194,7 +194,7 @@ with tf.variable_scope('Corner'):
     cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
     mySum = tf.summary.scalar('loss', cross_entropy)
-    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+    train_step = tf.train.AdamOptimizer(4e-5).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
