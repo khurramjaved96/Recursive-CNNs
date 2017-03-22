@@ -142,8 +142,8 @@ def intersection_with_corection(a,b,img):
     mat = cv2.getPerspectiveTransform(a.astype(np.float32), dst.astype(np.float32))
     img1 = cv2.warpPerspective(img1, mat,tuple((img.shape[0],img.shape[1])))
     img2 = cv2.warpPerspective(img2, mat,tuple((img.shape[0],img.shape[1])))
-    cv2.imwrite("../temp.jpg", img1);
-    cv2.imwrite("../temp1.jpg", img2);
+    #cv2.imwrite("../temp.jpg", img1);
+    #cv2.imwrite("../temp1.jpg", img2);
 
     img1 =np.sum(img1,axis=2)
     img1=img1/255

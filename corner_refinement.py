@@ -464,14 +464,14 @@ class corner_finder_aug():
 
         myImage = np.copy(o_img)
 
-        CROP_FRAC = .95
+        CROP_FRAC = .85
         start = time.clock()
         end_x=img.shape[1]
         end_y = img.shape[0]
         start_x=0
         start_y = 0
         no_of_calls = 40
-        while(myImage.shape[0]>5 and myImage.shape[1]>5):
+        while(myImage.shape[0]>10 and myImage.shape[1]>10):
 
             img_temp = cv2.resize(myImage, (32, 32))
             img_temp = np.expand_dims(img_temp, axis=0)

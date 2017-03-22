@@ -20,7 +20,7 @@ if __name__ == '__main__':
     dir = "/home/khurram/Dicta_data/temp"
     import csv
     ans = []
-   
+    ans2 = []
 
     with open('../bg1_2.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
@@ -138,14 +138,21 @@ if __name__ == '__main__':
                                     #print myGt
                                    # print np.array(corner_address)
                                     import utils
-                                    r = utils.intersection(myGt, np.array(corner_address),img)
-                                    spamwriter.writerow((images_dir + "/" + image, np.array((tl, tr, br, bl)),np.array(corner_address),r))
-                                    if r <0.7:
-                                        cv2.imwrite("../"+image, img)
-                                    if r<1 and r>0:
-                                        ans.append(r)
-                                 
-                                    print "MEAN : ", np.mean(np.array(ans))
-    print np.mean(np.array(ans))
+                                  #  r = utils.intersection(myGt, np.array(corner_address),img)
+				    r2 = utils.intersection_with_corection(myGt, np.array(corner_address),img)
+			         #   if r2>r:
+				#	print "Good scene"
+				 #   else:
+				#	print "Bad scene"
+                                    spamwriter.writerow((images_dir + "/" + image, np.array((tl, tr, br, bl)),np.array(corner_address),r2))
+                                    #if r <0.7:
+                                     #   cv2.imwrite("../"+image, img)
+                                    #if r<1 and r>0:
+                                    #    ans.append(r)
+                                    if r2<1 and r2>0:
+					ans2.append(r2)
+				    print "MEAN CORRECTED: ", np.mean(np.array(ans2))
+                                    #print "MEAN OLD : ", np.mean(np.array(ans))
+    print np.mean(np.array(ans2))
 
 
