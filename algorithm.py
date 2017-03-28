@@ -4,7 +4,7 @@ import corner_refinement
 import getcorners
 import tensorflow as tf
 
-img = cv2.imread("b.jpg",1)
+img = cv2.imread("abc.jpg",1)
 
 import time
 result =np.copy(img)
