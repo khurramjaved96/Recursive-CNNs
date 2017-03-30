@@ -14,8 +14,9 @@ if __name__ == '__main__':
     tf.reset_default_graph()
 
     
-    corner_e = getcorners.get_corners_aug()
-
+    
+    corner_e=getcorners.get_corners_moreBG()
+    # corner_e = getcorners.get_corners_aug()   
     model = corner_refinement.corner_finder_aug()
     dir = "/home/khurram/Dicta_data/temp"
     import csv
