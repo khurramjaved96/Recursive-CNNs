@@ -49,7 +49,8 @@ def random_crop(img, gt):
     slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
     # print "SLOPE = ", slope
     y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
-    if y_pred < ptr1[1]:
+    y_zero = int(slope*(0-br[0])+br[1])
+    if y_pred < ptr1[1] and y_zero<ptr1[1]:
         bl = ptr1
         tr = myGt[(tl_index + 3) % 4]
     else:
@@ -76,7 +77,8 @@ def getCorners(img,gt):
     slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
     # print "SLOPE = ", slope
     y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
-    if y_pred < ptr1[1]:
+    y_zero = int(slope*(0-br[0])+br[1])
+    if y_pred < ptr1[1] and y_zero<ptr1[1]:
         bl = ptr1
         tr = myGt[(tl_index + 3) % 4]
     else:

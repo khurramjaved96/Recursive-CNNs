@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import csv
 
-dir = "data1/"
+dir = "../data1/"
 for image in os.listdir(dir):
     if image.endswith("jpg") or image.endswith("JPG"):
         if os.path.isfile(dir+image+".csv"):

@@ -18,7 +18,7 @@ def onclick(event):
 
 
 
-dir = "fofo/"
+dir = "../data1/"
 for image in os.listdir(dir):
     if image.endswith("jpg") or image.endswith("JPG"):
         if os.path.isfile(dir+image+".csv"):
