@@ -7,7 +7,7 @@ output_dir = "./multipleBackgroundsCorners"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
-dir = "data1"
+dir = "../data1"
 import csv
 
 with open(output_dir+"/gt.csv", 'a') as csvfile:
@@ -29,11 +29,11 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
 
 
                     # print gt
-                    gt = gt / (img.shape[0], img.shape[1])
+                    gt = gt / (img.shape[1], img.shape[0])
 
-                    gt = gt * (1080, int((1080.0 / img.shape[0] * img.shape[1])))
+                    gt = gt * (1080, 1080)
 
-                    img = cv2.resize(img, ( int((1080.0/img.shape[0]*img.shape[1])),1080))
+                    img = cv2.resize(img, ( 1080,1080))
                     # for a in range(0,4):
                     #     img = cv2.circle(img, tuple((gt[a].astype(int))), 2, (255, 0, 0), 9)
                     # cv2.imwrite("asda.jpg", img)
