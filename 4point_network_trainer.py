@@ -22,10 +22,10 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.3
 size = (32,32)
 
 
-train_gt = np.load("../train_gt_bg1.npy")
-train_image = np.load("../train_image_bg1.npy")
-validate_gt = np.load("../validate_gt_bg1.npy")
-validate_image = np.load("../validate_image_bg1.npy")
+train_gt = np.load("../train_gt_all_bg.npy")
+train_image = np.load("../train_image_all_bg.npy")
+validate_gt = np.load("../validate_gt_all_bg.npy")
+validate_image = np.load("../validate_image_all_bg.npy")
 rand_list = np.random.randint(0, len(validate_image) - 1, 10)
 batch = validate_image[rand_list]
 
