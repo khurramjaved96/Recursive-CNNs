@@ -5,3 +5,5 @@ Training code is mostly for reference only. It's not well documented or commente
 
 Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
 
+Email : 14besekjaved@seecs.edu.pk in-case of any queries. 
+
