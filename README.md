@@ -1,4 +1,4 @@
-# ICDAR2017Src
+# Real-time Document Localization in Natural Images by Recursive Application of a CNN
 To test the system, run the "Script.py" file in the demo folder. 
 
 Training code is mostly for reference only. It's not well documented or commented and it would be easier to re-implement the model than using this code. 
