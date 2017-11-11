@@ -3,16 +3,25 @@ import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
 
-output_dir = "../../4pointdata_bg1"
-if (not os.path.isdir(output_dir)):
-    os.mkdir(output_dir)
+
+def argsProcessor():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dataPath", help="DataPath")
+    parser.add_argument("-o", "--outputFiles", help="outputFiles", default="bar")
+    return  parser.parse_args()
+
 
 
 if __name__ == '__main__':
-    dir = "/home/khurram/Dicta_data/data_bg1"
+    args = argsProcessor()
+    dir = args.dataPath
+    output_dir = args.outputFiles
+    if (not os.path.isdir(output_dir)):
+        os.mkdir(output_dir)
     import csv
 
-    with open(output_dir+"/gt.csv", 'a') as csvfile:
+    with open(args.outputFiles+"/gt.csv", 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -92,7 +101,7 @@ if __name__ == '__main__':
                                     spamwriter.writerow((folder + file + image, (tl, tr,br,bl)))
 
                                     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-                                    cl1 = clahe.apply(img)
+
 
                                     cv2.imwrite(output_dir+"/"+folder+file+"cli"+image,img)
                                     spamwriter.writerow((folder + file + "cli"+image, (tl, tr,br,bl)))

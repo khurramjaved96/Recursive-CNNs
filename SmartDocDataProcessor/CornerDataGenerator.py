@@ -6,8 +6,18 @@ import random
 w = 150
 h = 150
 
+def argsProcessor():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dataPath", help="DataPath")
+    parser.add_argument("-o", "--outputFiles", help="outputFiles", default="bar")
+    return  parser.parse_args()
+
+
+
 def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True):
     #size = max(abs(cord-min_start), abs(cord-max_end))
+
     iter=0
     if(random_scale):
         size/= random.randint(1,4) 
@@ -24,10 +34,11 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
     return (x_start, int(x_start+size))
 
 if __name__ == '__main__':
-    dir = "../../Dicta_data/data"
+    args = argsProcessor()
+    dir = args.dataPath
     import csv
 
-    with open('../../corner_data/gt.csv', 'a') as csvfile:
+    with open(args.outputFiles + 'gt.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -141,31 +152,11 @@ if __name__ == '__main__':
                                         b = int(gt[1]*300/mah_size[0])
                                     
                                   
-                                        cv2.imwrite("../../corner_data/"+folder+file+image+k+".jpg", cut_image)
+                                        cv2.imwrite(args.outputFiles +folder+file+image+k+".jpg", cut_image)
                                         spamwriter.writerow((folder+file+image+k+".jpg",(a,b)))
                                 except KeyboardInterrupt:
                                     raise
                                 except:
                                     print("Exception occured; skipping this image")
-                                            # if (k == "tl"):
-                                    #     cords_x = get_cords(v[0], 0, list_of_points["tr"][0], 10)
-                                    #     cords_y = get_cords(v[1], 0, list_of_points["bl"][1], 10)
-                                    #
-                                    #     gt = (v[0] - cords_x[0], v[1] - cords_y[0])tf.sq
-                                    #
-                                    #     cut_image = img[cords_y[0]:cords_y[1], cords_x[0]:cords_x[1]]
-                                    #
-                                    # if (k == "tl"):
-                                    #     cords_x = get_cords(v[0], 0, list_of_points["tr"][0], 10)
-                                    #     cords_y = get_cords(v[1], 0, list_of_points["bl"][1], 10)tf.sq
-                                    #
-                                    #     gt = (v[0] - cords_x[0], v[1] - cords_y[0])
-                                    #
-                                    #     cut_image = img[cords_y[0]:cords_y[1], cords_x[0]:cords_x[1]]
-
-                                #     start_x = max(0, v[0] - random.randint(1, v[0]))
-                                #     end_x = min(img.shape[1], v[0]+random.randint(1,img.shape[1]-v[0]))
-                                #     0/0
-                                # cv2.imshow("asd", img[max(list_of_points['tl'][1] - doc_height / 2, 0):list_of_points['tl'][1] + doc_height / 2, max(list_of_points['tl'][0] - doc_width / 2, 0):list_of_points['tl'][0] + doc_width / 2, ...])
-                                # cv2.waitKey(1)
+                        
 
