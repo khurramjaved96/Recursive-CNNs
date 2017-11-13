@@ -158,5 +158,5 @@ if __name__ == '__main__':
                                     raise
                                 except:
                                     print("Exception occured; skipping this image")
-                        
+                        3
 
