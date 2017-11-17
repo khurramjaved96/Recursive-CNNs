@@ -3,23 +3,33 @@ import numpy as np
 import cv2
 import csv
 import utils
-output_dir = "./multipleBackgroundsCorners"
-if (not os.path.isdir(output_dir)):
-    os.mkdir(output_dir)
 
-dir = "data1"
+def argsProcessor():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--outputDir", help="output Directory of Data")
+    parser.add_argument("-i", "--inputDir", help="input Directory of data")
+    return  parser.parse_args()
+
+
+args = argsProcessor()
+outputDir = args.outputDir
+inputDir = args.inputDir
+if (not os.path.isdir(outputDir)):
+    os.mkdir(outputDir)
+
 import csv
 
-with open(output_dir+"/gt.csv", 'a') as csvfile:
+with open(outputDir+ "/gt.csv", 'a') as csvfile:
     spamwriter_1 = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    for image in os.listdir(dir):
+    for image in os.listdir(inputDir):
         if image.endswith("jpg"):
-            if os.path.isfile(dir+"/"+image+".csv"):
-                with open(dir+"/"+image+ ".csv", 'r') as csvfile:
+            if os.path.isfile(inputDir+ "/"+image+ ".csv"):
+                with open(inputDir+ "/"+image+ ".csv", 'r') as csvfile:
                     spamwriter = csv.reader(csvfile, delimiter=' ',
                                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    img = cv2.imread(dir +"/"+ image)
+                    img = cv2.imread(inputDir + "/" + image)
                     print image
                     gt= []
                     for row in spamwriter:
@@ -44,5 +54,5 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                             img_list, gt_list = utils.getCorners(img_rotate, gt_rotate)
                             for a in range(0,4):
                                 cv2.circle(img_list[a], tuple(gt_list[a]), 2,(255,0,0),2)
-                                cv2.imwrite( output_dir+"/"+image + str(angle) +str(random_crop) + str(a) +".jpg", img_list[a])
+                                cv2.imwrite(outputDir + "/" + image + str(angle) + str(random_crop) + str(a) + ".jpg", img_list[a])
                                 spamwriter_1.writerow(( image + str(angle) +str(random_crop) + str(a) +".jpg", tuple(gt_list[a])))

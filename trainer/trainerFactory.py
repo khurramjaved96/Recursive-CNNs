@@ -1,8 +1,8 @@
-import trainer.trainer as trainer
+import trainer
 class trainerFactory:
     @staticmethod
-    def getTrainer(type="corner"):
-        if type=="corner":
-            return trainer.documentDetector
+    def getTrainer(type,trainDir, validateDir, checkpointDir):
+        if type=="documentDetector":
+            return trainer.documentDetector(trainDir, validateDir, checkpointDir)
         else:
             return trainer.cornerDetector
