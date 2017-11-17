@@ -6,3 +6,9 @@ Training code is mostly for reference only. It's not well documented or commente
 Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
 
 Email : 14besekjaved@seecs.edu.pk in-case of any queries. 
+
+## Dataset format for training
+For training, the dataset should be in following format:
+1. .npy dumps of images. An example shape can be 10000x32x32. There should be two files; 1 for training and one for validation.
+2. .npy dumps for ground truth. For document detector, shape should be 10000x8. For corner detector, it should be 100000x2.
+

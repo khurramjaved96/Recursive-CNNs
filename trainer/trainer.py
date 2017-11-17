@@ -6,9 +6,10 @@ import math
 
 
 class detector:
-    def __init__(self, trainDir, validateDir, checkpointDir, trainMode, noOfSteps, batchSize, size, verbose):
+    def __init__(self, trainDir, validateDir, checkpointDir, trainMode=True, noOfSteps=10000, batchSize=10, size=(32,32), verbose=True, concatinateFeatures=False):
         self.batchSize = batchSize
         self.noOfSteps = noOfSteps
+        self.concatinateFeatures=concatinateFeatures
         self.checkpointDir = checkpointDir
         self.verbose = verbose
         self.trainDir = trainDir
@@ -24,8 +25,8 @@ class detector:
         self.validate_gt = np.load(self.validateDir+"Gt.npy")
 
 class documentDetector(detector):
-    def __init__(self, trainDir, validateDir, checkpointDir,trainMode=True,  size = (32,32), noOfSteps=10000, batchSize=10, verbose=2):
-        detector.__init__(self, trainDir, validateDir, checkpointDir, trainMode, noOfSteps, batchSize,size,  verbose)
+    def __init__(self, trainDir, validateDir, checkpointDir,trainMode=True,  size = (32,32), noOfSteps=1000, batchSize=3, verbose=2,concatinateFeatures=True):
+        detector.__init__(self, trainDir, validateDir, checkpointDir, trainMode, noOfSteps, batchSize,size,  verbose,concatinateFeatures)
 
 
     def setupModel(self):
@@ -116,31 +117,38 @@ class documentDetector(detector):
             b_conv5 = bias_variable([100], name="b_conv5")
             h_conv5 = tf.nn.relu(conv2dBatchNorm(h_pool4, W_conv5, self.trainMode) + b_conv5)
             h_pool5 = max_pool_2x2(h_conv5)
+        featureSet = h_pool5
+        if self.concatinateFeatures:
+            set1 = tf.image.resize_images(h_pool5, [self.size[0],self.size[1]])
+            set2 = tf.image.resize_images(h_pool4, [self.size[0], self.size[1]])
+            set3 = tf.image.resize_images(h_pool3, [self.size[0], self.size[1]])
+            featureSet = tf.concat([set1,set2,set3],3)
 
-        featureSetSize = h_pool5.get_shape()
+
+        featureSetSize = featureSet.get_shape()
         featureSetSize = featureSetSize[1] * featureSetSize[2] * featureSetSize[3]
         featureSetSize = int(featureSetSize)
 
 
         with tf.name_scope("FCLayers"):
-            W_fc1 = weight_variable([int(featureSetSize), 500], name="W_fc1")
-            b_fc1 = bias_variable([500], name="b_fc1")
+            W_fc1 = weight_variable([int(featureSetSize), 300], name="W_fc1")
+            b_fc1 = bias_variable([300], name="b_fc1")
 
-            h_pool4_flat = tf.reshape(h_pool5, [-1, featureSetSize])
-            h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
+            fullyConnected1 = tf.reshape(featureSet, [-1, featureSetSize])
+            h_fc1 = tf.nn.relu(tf.matmul(fullyConnected1, W_fc1) + b_fc1)
 
             self.keepProb = tf.placeholder(tf.float32)
-            h_fc1_drop = tf.nn.dropout(h_fc1, self.keepProb)
+            fcDropout = tf.nn.dropout(h_fc1, self.keepProb)
+            #
+            # W_fc2 = weight_variable([500, 500], name="W_fc2")
+            # b_fc2 = bias_variable([500], name="b_fc2")
+            #
+            # y_conv = tf.matmul(fcDropout, W_fc2) + b_fc2
 
-            W_fc2 = weight_variable([500, 500], name="W_fc2")
-            b_fc2 = bias_variable([500], name="b_fc2")
-
-            y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-
-            W_fc3 = weight_variable([500, 8], name="W_fc3")
+            W_fc3 = weight_variable([300, 8], name="W_fc3")
             b_fc3 = bias_variable([8], name="b_fc3")
 
-            self.y_conv =y_conv =  tf.matmul(y_conv, W_fc3) + b_fc3
+            self.y_conv =y_conv =  tf.matmul(fcDropout, W_fc3) + b_fc3
 
 
         with tf.name_scope("loss"):
@@ -215,7 +223,7 @@ class documentDetector(detector):
                 img = batch[0]
                 img = cv2.resize(img, (320, 320))
                 cv2.imwrite("../../temp" + str(temp_temp) + ".jpg", img)
-            if i % 5 == 0 and i != 0:
+            if i % 50 == 0 and i != 0:
                 self.saver.save(self.sess, self.checkpointDir + '/model.ckpt', global_step=i + 1)
             else:
                 self.sess.run([self.train_step, self.mySum], feed_dict={self.x: batch, self.y_: gt, keepProb: 1.0})
