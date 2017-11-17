@@ -17,29 +17,6 @@ TEST_PERCENTAGE = .10
 Debug = True
 size= (32,32)
 
-# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=size, remove_background =1)
-# image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
-
-
-# print len(image_list)
-
-
-# if (Debug):
-#     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
-# train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-
-# train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-# if (Debug):
-#     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
-#     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
-
-# np.save("train_gt_corner_bg1", train_gt)
-# np.save("train_image_bg1", train_image)
-# np.save("validate_gt_bg1", validate_gt)
-# np.save("validate_image_bg1", validate_image)
-# 0/0
 train_gt = np.load("../train_gt_corners_all.npy")
 train_image = np.load("../train_image_corners_all.npy")
 validate_gt = np.load("../validate_gt_corners_all.npy")
@@ -58,35 +35,7 @@ print mean_train.shape
 train_image = train_image - mean_train
 validate_image = validate_image - mean_train
 
-# rand_list = np.random.randint(0, len(validate_image) - 1, 10)
-# batch = validate_image[rand_list]
-# gt = validate_gt[rand_list]
 
-
-# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=(32, 32))
-# print len(image_list)
-
-# utils.validate_gt(gt_list, (32,32))
-# if (Debug):
-#     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
-# train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-
-# train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-# if (Debug):
-#     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
-#     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
-
-# rand_list = np.random.randint(0, len(validate_image) - 1, 10)
-# batch = validate_image[rand_list]
-# gt = validate_gt[rand_list]
-# for g, b in zip(gt, batch):
-#     img = b
-#     cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
-#     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
-
-# In[ ]:
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.1
 
@@ -177,19 +126,7 @@ with tf.variable_scope('Corner'):
 
     y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
-    # W_fc3 = weight_variable([500, 500], name="W_fc3")
-    # b_fc3 = bias_variable([500], name="b_fc3")
 
-    # y_conv = tf.matmul(y_conv, W_fc3) + b_fc3
-
-    # W_fc4 = weight_variable([500, 2], name="W_fc4")
-    # b_fc4 = bias_variable([2], name="b_fc4")
-
-    # y_conv = tf.matmul(h_fc1_drop, W_fc4) + b_fc4
-
-
-
-    # In[ ]:
 
 
     cross_entropy = tf.nn.l2_loss(y_conv - y_)
