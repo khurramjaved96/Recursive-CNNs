@@ -38,14 +38,7 @@ class documentDetector(detector):
 
         if self.verbose:
             print self.train_image.shape
-        # mean_train = np.mean(self.train_image, axis=(0, 1, 2))
-        #
-        # mean_train = np.expand_dims(mean_train, axis=0)
-        # mean_train = np.expand_dims(mean_train, axis=0)
-        # mean_train = np.expand_dims(mean_train, axis=0)
-        #
-        # self.train_image = self.train_image - mean_train
-        # self.validate_image = self.validate_image - mean_train
+
 
         self.sess = sess = tf.InteractiveSession(config=config)
 
@@ -140,12 +133,6 @@ class documentDetector(detector):
 
             self.keepProb = tf.placeholder(tf.float32)
             fcDropout = tf.nn.dropout(h_fc1, self.keepProb)
-            #
-            # W_fc2 = weight_variable([500, 500], name="W_fc2")
-            # b_fc2 = bias_variable([500], name="b_fc2")
-            #
-            # y_conv = tf.matmul(fcDropout, W_fc2) + b_fc2
-
             W_fc3 = weight_variable([300, 8], name="W_fc3")
             b_fc3 = bias_variable([8], name="b_fc3")
 

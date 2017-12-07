@@ -4,5 +4,5 @@ class trainerFactory:
     def getTrainer(type,trainDir, validateDir, checkpointDir, concatinateFeatures):
         if type=="documentDetector":
             return trainer.documentDetector(trainDir, validateDir, checkpointDir, concatinateFeatures = concatinateFeatures)
-        else:
+        elif type=="cornerDetector":
             return trainer.cornerDetector

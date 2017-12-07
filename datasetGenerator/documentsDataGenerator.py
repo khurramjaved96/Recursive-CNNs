@@ -147,25 +147,3 @@ if __name__ == '__main__':
                                     raise
                                 except:
                                     print("Exception occured; skipping this image")
-                                            # if (k == "tl"):
-                                    #     cords_x = get_cords(v[0], 0, list_of_points["tr"][0], 10)
-                                    #     cords_y = get_cords(v[1], 0, list_of_points["bl"][1], 10)
-                                    #
-                                    #     gt = (v[0] - cords_x[0], v[1] - cords_y[0])tf.sq
-                                    #
-                                    #     cut_image = img[cords_y[0]:cords_y[1], cords_x[0]:cords_x[1]]
-                                    #
-                                    # if (k == "tl"):
-                                    #     cords_x = get_cords(v[0], 0, list_of_points["tr"][0], 10)
-                                    #     cords_y = get_cords(v[1], 0, list_of_points["bl"][1], 10)tf.sq
-                                    #
-                                    #     gt = (v[0] - cords_x[0], v[1] - cords_y[0])
-                                    #
-                                    #     cut_image = img[cords_y[0]:cords_y[1], cords_x[0]:cords_x[1]]
-
-                                #     start_x = max(0, v[0] - random.randint(1, v[0]))
-                                #     end_x = min(img.shape[1], v[0]+random.randint(1,img.shape[1]-v[0]))
-                                #     0/0
-                                # cv2.imshow("asd", img[max(list_of_points['tl'][1] - doc_height / 2, 0):list_of_points['tl'][1] + doc_height / 2, max(list_of_points['tl'][0] - doc_width / 2, 0):list_of_points['tl'][0] + doc_width / 2, ...])
-                                # cv2.waitKey(1)
-

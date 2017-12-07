@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 import tensorflow as tf
-import utils
 import os
 import math
 
@@ -41,16 +40,11 @@ validate_image = validate_image - mean_train
 print np.mean(train_image, axis=(0,1,2))
 
 gt = validate_gt[rand_list]
-# for g, b in zip(gt, batch):
-#     img = b
-#     cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
-#     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
 
 
 sess = tf.InteractiveSession(config=config)
 
 
-# In[ ]:
 
 def weight_variable(shape, name="temp"):
     initial = tf.truncated_normal(shape, stddev=0.1, name=name)
@@ -62,8 +56,6 @@ def bias_variable(shape, name="temp"):
     return tf.Variable(initial)
 
 
-# In[ ]:
-
 def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
@@ -73,18 +65,8 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 
-# In[ ]:
-
-
-
-# In[ ]:
-
-
 with tf.name_scope("Input"):
     x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-    
-
-
 
     x_ = tf.image.random_brightness(x, 5)
     x_ = tf.image.random_contrast(x_, lower=0.2, upper=1.8)
