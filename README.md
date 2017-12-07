@@ -1,4 +1,6 @@
-## Khurram Javed, Faisal Shaifait "Real-time Document Localization in Natural Images by Recursive Application of a CNN" ~ Accepted at ICDAR 2017
+## Khurram Javed, Faisal Shaifait "Real-time Document Localization in Natural Images by Recursive Application of a CNN" 
+
+Paper available at : https://khurramjaved96.github.io
 
 ## Demo
 To test the system, you can use the pretrained models by:
