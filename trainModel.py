@@ -10,7 +10,7 @@ def argsProcessor():
 
 if __name__=="__main__":
     args = argsProcessor()
-    model = tF.trainerFactory.getTrainer("documentDetector", args.trainData, args.validateData, args.checkpointDir)
+    model = tF.trainerFactory.getTrainer("documentDetector", args.trainData, args.validateData, args.checkpointDir, False)
     model.loadData()
     model.setupModel()
-    model.train(1000)
+    model.train(20000)

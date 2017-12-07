@@ -25,7 +25,7 @@ class detector:
         self.validate_gt = np.load(self.validateDir+"Gt.npy")
 
 class documentDetector(detector):
-    def __init__(self, trainDir, validateDir, checkpointDir,trainMode=True,  size = (32,32), noOfSteps=1000, batchSize=3, verbose=2,concatinateFeatures=True):
+    def __init__(self, trainDir, validateDir, checkpointDir,trainMode=True,  size = (224,224), noOfSteps=10000, batchSize=20, verbose=2,concatinateFeatures=True):
         detector.__init__(self, trainDir, validateDir, checkpointDir, trainMode, noOfSteps, batchSize,size,  verbose,concatinateFeatures)
 
 
@@ -34,17 +34,18 @@ class documentDetector(detector):
         if (not os.path.isdir(checkpointDir)):
             os.mkdir(checkpointDir)
         config = tf.ConfigProto()
+        config.gpu_options.per_process_gpu_memory_fraction = 0.6
 
         if self.verbose:
             print self.train_image.shape
-        mean_train = np.mean(self.train_image, axis=(0, 1, 2))
-
-        mean_train = np.expand_dims(mean_train, axis=0)
-        mean_train = np.expand_dims(mean_train, axis=0)
-        mean_train = np.expand_dims(mean_train, axis=0)
-
-        train_image = self.train_image - mean_train
-        self.validate_image = self.validate_image - mean_train
+        # mean_train = np.mean(self.train_image, axis=(0, 1, 2))
+        #
+        # mean_train = np.expand_dims(mean_train, axis=0)
+        # mean_train = np.expand_dims(mean_train, axis=0)
+        # mean_train = np.expand_dims(mean_train, axis=0)
+        #
+        # self.train_image = self.train_image - mean_train
+        # self.validate_image = self.validate_image - mean_train
 
         self.sess = sess = tf.InteractiveSession(config=config)
 
@@ -57,8 +58,8 @@ class documentDetector(detector):
             return tf.Variable(initial)
 
 
-        def conv2d(x, W,t):
-            return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+        # def conv2dBatchNorm(x, W,t):
+        #     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
         def conv2dBatchNorm(x,W, phase):
             h1 = tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
@@ -75,7 +76,7 @@ class documentDetector(detector):
             inputImage = tf.placeholder(tf.float32, shape=[None, None, None, 3])
             self.x = x = tf.image.resize_images(inputImage, [self.size[0], self.size[1]])
 
-            x_ = tf.image.random_brightness(x, 5)
+            x_ = tf.image.random_brightness(x, 40)
             x_ = tf.image.random_contrast(x_, lower=0.2, upper=1.8)
         with tf.name_scope("gt"):
             self.y_ = y_ = tf.placeholder(tf.float32, shape=[None, 8])
@@ -120,9 +121,9 @@ class documentDetector(detector):
         featureSet = h_pool5
         if self.concatinateFeatures:
             set1 = tf.image.resize_images(h_pool5, [self.size[0],self.size[1]])
-            set2 = tf.image.resize_images(h_pool4, [self.size[0], self.size[1]])
+            # set2 = tf.image.resize_images(h_pool4, [self.size[0], self.size[1]])
             set3 = tf.image.resize_images(h_pool3, [self.size[0], self.size[1]])
-            featureSet = tf.concat([set1,set2,set3],3)
+            featureSet = tf.concat([set1,set3],3)
 
 
         featureSetSize = featureSet.get_shape()
@@ -152,14 +153,15 @@ class documentDetector(detector):
 
 
         with tf.name_scope("loss"):
-            self.cross_entropy = tf.nn.l2_loss(y_conv - y_)
+            # self.cross_entropy = tf.nn.l2_loss(y_conv - y_)
+            self.cross_entropy = tf.losses.absolute_difference(y_conv, y_)
 
             self.mySum = tf.summary.scalar('Train_loss', self.cross_entropy)
             self.validate_loss = tf.summary.scalar('Validate_loss', self.cross_entropy)
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
             with tf.name_scope("Train"):
-                self.train_step = tf.train.AdamOptimizer(1e-5).minimize(self.cross_entropy)
+                self.train_step = tf.train.AdamOptimizer(1e-4).minimize(self.cross_entropy)
 
         tf.summary.merge_all()
 
@@ -186,10 +188,10 @@ class documentDetector(detector):
             batch = self.train_image[rand_list]
             gt = self.train_gt[rand_list]
 
-            if i % 10 == 0:
+            if i % 100 == 0:
                 loss_mine = self.cross_entropy.eval(feed_dict={
                     self.x: self.train_image[0:batchSizez], self.y_: self.train_gt[0:batchSizez], keepProb: 1.0})
-                print("Loss on Train : ", math.sqrt((loss_mine / self.batchSize) * 2))
+                print("RMSE on Train : ", ((loss_mine)))
                 summary = self.mySum.eval(feed_dict={
                     self.x: self.train_image[0:batchSizez], self.y_: self.train_gt[0:batchSizez], keepProb: 1.0})
                 self.train_writer.add_summary(summary, i)
@@ -199,7 +201,7 @@ class documentDetector(detector):
                 gt = self.validate_gt[rand_list]
                 loss_mine = self.cross_entropy.eval(feed_dict={
                     self.x: batch, self.y_: gt, keepProb: 1.0})
-                print("Loss on Val : ", math.sqrt((loss_mine / self.batchSize) * 2))
+                print("RMSE on Validation : ", ((loss_mine)))
                 val_sum = self.validate_loss.eval(feed_dict={
                     self.x: batch, self.y_: gt, keepProb: 1.0})
                 self.train_writer.add_summary(val_sum, i)
@@ -221,9 +223,8 @@ class documentDetector(detector):
                 cv2.circle(batch[0], (gt[0][6], gt[0][7]), 2, (0, 255, 255), 2)
 
                 img = batch[0]
-                img = cv2.resize(img, (320, 320))
-                cv2.imwrite("../../temp" + str(temp_temp) + ".jpg", img)
-            if i % 50 == 0 and i != 0:
+                cv2.imwrite("/output/temp" + str(temp_temp) + ".jpg", img)
+            if i % 5000 == 0 and i != 0:
                 self.saver.save(self.sess, self.checkpointDir + '/model.ckpt', global_step=i + 1)
             else:
                 self.sess.run([self.train_step, self.mySum], feed_dict={self.x: batch, self.y_: gt, keepProb: 1.0})

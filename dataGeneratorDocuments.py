@@ -25,7 +25,7 @@ TEST_PERCENTAGE = .01
 Debug = True
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
-size = (32,32)
+size = (224,224)
 
 
 image_list, gt_list, file_name = utils.load_data_4(inputDataDir, GT_DIR, limit=-1, size=size)
@@ -51,14 +51,10 @@ for a in range(0, 10):
         cv2.circle(temp_image, (gt_list[a][b*2], gt_list[a][b*2+1]), 2, (255, 0, 0), 4)
     cv2.imwrite("../temp"+str(a)+".jpg", temp_image)
 
-np.save("../train_gt_all_bg", train_gt)
-np.save("../train_image_all_bg", train_image)
-np.save("../validate_gt_all_bg", validate_gt)
-np.save("../validate_image_all_bg", validate_image)
 
-np.save(outputDataDir + args.saveName + "trainGt", train_gt)
-np.save(outputDataDir + args.saveName + "trainImages", train_image)
-np.save(outputDataDir + args.saveName + "validateGT", validate_gt)
-np.save(outputDataDir + args.saveName + "validateImages", validate_image)
+np.save(outputDataDir + "/"+ args.saveName + "trainGt", train_gt)
+np.save(outputDataDir + "/"+args.saveName + "trainImages", train_image)
+np.save(outputDataDir + "/"+args.saveName + "validateGt", validate_gt)
+np.save(outputDataDir + "/"+args.saveName + "validateImages", validate_image)
 
 # 0/0

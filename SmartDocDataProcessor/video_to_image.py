@@ -4,6 +4,7 @@ def argsProcessor():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--dataPath", help="path to main data folder")
+    parser.add_argument("-o", "--outputPath", help="output data")
     return  parser.parse_args()
 
 
@@ -12,9 +13,12 @@ def argsProcessor():
 if __name__ == '__main__':
     args = argsProcessor()
     dir = args.dataPath
+    output=args.outputPath
+    if (not os.path.isdir(output)):
+        os.mkdir(output)
     import csv
 
-    with open('gt.csv', 'a') as csvfile:
+    with open(output+'/gt.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -24,17 +28,17 @@ if __name__ == '__main__':
                     print file
                     from subprocess import call
                     if(file.endswith(".avi")):
-                        call("mkdir "+folder, shell=True)
-                        if(os.path.isdir(folder+"/"+file)):
+                        call("mkdir "+output + folder, shell=True)
+                        if(os.path.isdir(output+folder+"/"+file)):
                             print "Folder already exist"
                         else:
-                            call("cd "+folder+" && mkdir "+file, shell=True)
+                            call("cd "+output+folder+" && mkdir "+file, shell=True)
                             call("ls", shell=True)
 
                             location=  dir+folder+"/"+file
-                            gt_address =  "cp " + location[0:-4]+".gt.xml "+folder+"/"+file+"/"+file+".gt"
+                            gt_address =  "cp " + location[0:-4]+".gt.xml "+output+ folder+"/"+file+"/"+file+".gt"
                             call(gt_address ,shell = True)
-                            command = "ffmpeg -i "+location+ " "+folder+"/"+file+"/%3d.jpg"
+                            command = "ffmpeg -i "+location+ " "+output+folder+"/"+file+"/%3d.jpg"
                             print command
                             call(command, shell=True)
 
