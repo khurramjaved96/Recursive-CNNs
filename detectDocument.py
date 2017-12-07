@@ -132,10 +132,10 @@ def getCorners(img, sess, x, output):
         return tl, tr, br, bl
 
 if __name__ == "__main__":
+    args = argsProcessor()
     graph,x ,y = load_graph("cornerRefiner.pb","Corner/inputTensor", "Corner/outputTensor")
     graphCorners, xCorners, yCorners = load_graph("getCorners.pb","Input/inputTensor", "FCLayers/outputTensor")
-    
-    args = argsProcessor()
+
     img = cv2.imread(args.imagePath)
 
     sess = tf.Session(graph=graph)
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         temp[0]+= b[1]
         temp[1]+= b[2]
         corner_address.append(temp)
-        print temp
+        print (temp)
         counter+=1
 
 

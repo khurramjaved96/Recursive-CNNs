@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="38fdf816-8d29-4324-ae16-07c24e8e4a9e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/datasetGenerator/__init__.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Demo/script.py" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Demo/Icon&#13;" afterPath="$PROJECT_DIR$/TrainedModel/Icon&#13;" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Demo/cornerRefiner.pb" afterPath="$PROJECT_DIR$/TrainedModel/cornerRefiner.pb" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Demo/getCorners.pb" afterPath="$PROJECT_DIR$/TrainedModel/getCorners.pb" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Demo/img.jpg" afterPath="$PROJECT_DIR$/TrainedModel/img.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Demo/result1.jpg" afterPath="$PROJECT_DIR$/TrainedModel/result1.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/dataGeneratorCorners.py" afterPath="$PROJECT_DIR$/datasetGenerator/cornerNumpyFileGenerator.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/dataGeneratorDocuments.py" afterPath="$PROJECT_DIR$/datasetGenerator/documentsNumpyFileGenerator.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/datasetGenerator/cornerData.py" afterPath="$PROJECT_DIR$/datasetGenerator/cornersDataGenerator.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/datasetGenerator/dataset_creator.py" afterPath="$PROJECT_DIR$/datasetGenerator/documentsDataGenerator.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Training Scripts/4point_network_trainer.py" afterPath="$PROJECT_DIR$/Training Scripts/4point_network_trainer.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/trainer/trainer.py" afterPath="$PROJECT_DIR$/trainer/trainer.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/trainer/trainerFactory.py" afterPath="$PROJECT_DIR$/trainer/trainerFactory.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/detectDocument.py" afterPath="$PROJECT_DIR$/detectDocument.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -114,11 +100,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="detectDocument.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="detectDocument.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/detectDocument.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-687">
-              <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+            <state relative-caret-position="166">
+              <caret line="137" column="0" lean-forward="false" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -126,7 +112,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="210">
@@ -664,7 +650,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20386267" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1050,21 +1035,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/detectDocument.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-687">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/detectDocument.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="137" column="0" lean-forward="false" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
