@@ -25,6 +25,6 @@ Email : 14besekjaved@seecs.edu.pk in-case of any queries.
 
 ## Dataset format for training
 For training, the dataset should be in following format:
-1. .npy dumps of images. An example shape can be 10000x32x32. There should be two files; 1 for training and one for validation.
+1. .npy dumps of images. An example shape can be 10000x32x32x3. There should be two files; 1 for training and one for validation.
 2. .npy dumps for ground truth. For document detector, shape should be 10000x8. For corner detector, it should be 100000x2.
 
