@@ -1,5 +1,7 @@
 ## Khurram Javed, Faisal Shaifait "Real-time Document Localization in Natural Images by Recursive Application of a CNN" 
 
+![alt text](https://khurramjaved96.github.io/random/recursiveCNN.png "Logo Title Text 1")
+
 Paper available at : https://khurramjaved96.github.io
 
 ## Demo
