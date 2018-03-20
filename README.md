@@ -31,5 +31,6 @@ For training, the dataset should be in following format:
 1. .npy dumps of images. An example shape can be 10000x32x32x3. There should be two files; 1 for training and one for validation.
 2. .npy dumps for ground truth. For document detector, shape should be 10000x8. For corner detector, it should be 100000x2.
 
-Note : To those working on this problem, I would encourage trying out fully connected neural networks (Or some variant of pixel level segmentation network) as well; in my limited experiments, they are able to out-perform my method quite easily, and are more robust to unseen backgrounds. They do tend to be a bit slower, however, because a high-res image is used as input (For precise segmentation). 
+## Note
+To those working on this problem, I would encourage trying out fully connected neural networks (Or some variant of pixel level segmentation network) as well; in my limited experiments, they are able to out-perform my method quite easily, and are more robust to unseen backgrounds (Probably because they are able to utilize context information of the whole page when making the prediction). They do tend to be a bit slower and require more memory, however, because a high-res image is used as input. 
 
