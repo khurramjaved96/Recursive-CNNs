@@ -32,7 +32,7 @@ python DocumentDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_s
 ```
 and
 ``` bash
-python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
+python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_train_set
 ```
 
 Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
