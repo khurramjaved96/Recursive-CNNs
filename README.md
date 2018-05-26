@@ -21,6 +21,20 @@ would run the pretrained model on the sample image in the repository.
 ## Training Code
 Training code is mostly for reference only. It's not well documented or commented and it would be easier to re-implement the model from the paper than using this code. However I will be refactoring the code in the coming days to make it more accesible. 
 
+To prepare dataset for training, do the following: 
+1. 
+``` bash
+python video_to_image --d ../path_to_smartdoc_videos/ --o ../path_to_store_frames
+```
+2. After converting to frames, we need to do random crops to assure variation in the data. This can be done by:
+``` bash
+python DocumentDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
+```
+and
+``` bash
+python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
+```
+
 Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
 
 Email : 14besekjaved@seecs.edu.pk in-case of any queries. 
