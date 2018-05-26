@@ -32,7 +32,7 @@ image_list, gt_list, file_name = utils.load_data_4(inputDataDir, GT_DIR, limit=-
 image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
 
 
-print len(image_list)
+print (len(image_list))
 
 
 if (Debug):

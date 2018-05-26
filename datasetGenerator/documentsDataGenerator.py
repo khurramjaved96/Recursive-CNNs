@@ -23,6 +23,15 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
             break 
     return (x_start, int(x_start+size))
 
+
+def argsProcessor():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dataPath", help="DataPath")
+    parser.add_argument("-o", "--outputFiles", help="outputFiles", default="bar")
+    return  parser.parse_args()
+
+
 if __name__ == '__main__':
     dir = "../../Dicta_data/data"
     import csv
@@ -32,7 +41,7 @@ if __name__ == '__main__':
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
             a=0
-            print str(folder)
+            print (str(folder))
             if(os.path.isdir(dir+"/"+folder)):
                 for file in os.listdir(dir+"/"+folder):
                     images_dir= dir+"/"+folder+"/"+file
@@ -44,14 +53,14 @@ if __name__ == '__main__':
                         for a in root.iter("frame"):
                             list_gt.append(a)
 
-                        print list_gt
+                        print (list_gt)
                         for image in os.listdir(images_dir):
                             if image.endswith(".jpg"):
                                 try:
                                     #Now we have opened the file and GT. Write code to create multiple files and scale gt
                                     list_of_points = {}
                                     img = cv2.imread(images_dir+"/"+image)
-                                    print image[0:-4]
+                                    print (image[0:-4])
                                     for point in list_gt[int(float(image[0:-4]))-1].iter("point"):
                                         myDict = point.attrib
 

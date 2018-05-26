@@ -9,9 +9,9 @@ def argsProcessor():
     parser.add_argument("-o", "--outputPath", help="Path to store the result")
     parser.add_argument("-rf", "--retainFactor", help="Floating point in range (0,1) specifying retain factor", default="0.85")
     parser.add_argument("-cm", "--cornerModel", help="Model for corner point refinement",
-                        default="TrainedModel/cornerRefiner.pb")
+                        default="./TrainedModel/cornerRefiner.pb")
     parser.add_argument("-dm", "--documentModel", help="Model for document corners detection",
-                        default="TrainedModel/getCorners.pb")
+                        default="./TrainedModel/getCorners.pb")
     return  parser.parse_args()
 
 
@@ -95,7 +95,7 @@ def refineCorner(img, sess, x,y_eval, retainFactor):
     return (int(round(ans_x)), int(round(ans_y)))
 
 def getCorners(img, sess, x, output):
-        
+
         o_img = np.copy(img)
         import timeit
 
@@ -164,4 +164,4 @@ if __name__ == "__main__":
 
     cv2.imwrite(args.outputPath, img)
 
-    
+

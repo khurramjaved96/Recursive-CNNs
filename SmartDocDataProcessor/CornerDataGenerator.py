@@ -23,9 +23,9 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
         size/= random.randint(1,4) 
     while(max_end - min_start)<size:
         size=size*.9
-    x_start = random.randint(min(max(min_start, cord-size+buf), cord-buf-1), cord-buf)
+    x_start = random.randint(min(int(max(min_start, cord-size+buf)), int(cord-buf-1)), int(cord-buf))
     while(x_start+size> max_end):
-        x_start = random.randint(min(max(min_start,int(cord - size + buf)),cord-buf-1), cord - buf)
+        x_start = random.randint(min(int(max(min_start,int(cord - size + buf))),int(cord-buf-1)), int(cord - buf))
         size=size*.999
         iter+=1
         if(iter==1000):
@@ -36,6 +36,8 @@ def get_cords(cord, min_start, max_end, size = 299 , buf = 0, random_scale=True)
 if __name__ == '__main__':
     args = argsProcessor()
     dir = args.dataPath
+    if (not os.path.isdir(args.outputFiles)):
+        os.mkdir(args.outputFiles)
     import csv
 
     with open(args.outputFiles + 'gt.csv', 'a') as csvfile:
@@ -43,7 +45,7 @@ if __name__ == '__main__':
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
             a=0
-            print str(folder)
+            print (str(folder))
             if(os.path.isdir(dir+"/"+folder)):
                 for file in os.listdir(dir+"/"+folder):
                     images_dir= dir+"/"+folder+"/"+file
@@ -55,14 +57,14 @@ if __name__ == '__main__':
                         for a in root.iter("frame"):
                             list_gt.append(a)
 
-                        print list_gt
+                        print (list_gt)
                         for image in os.listdir(images_dir):
                             if image.endswith(".jpg"):
                                 try:
                                     #Now we have opened the file and GT. Write code to create multiple files and scale gt
                                     list_of_points = {}
                                     img = cv2.imread(images_dir+"/"+image)
-                                    print image[0:-4]
+                                    print (image[0:-4])
                                     for point in list_gt[int(float(image[0:-4]))-1].iter("point"):
                                         myDict = point.attrib
 
@@ -103,7 +105,7 @@ if __name__ == '__main__':
                                     list_of_points["br"] = br
                                     list_of_points["bl"] = bl
 
-                                    for k,v in list_of_points.iteritems():
+                                    for k,v in list_of_points.items():
 
                                         if(k=="tl"):
 
@@ -156,7 +158,7 @@ if __name__ == '__main__':
                                         spamwriter.writerow((folder+file+image+k+".jpg",(a,b)))
                                 except KeyboardInterrupt:
                                     raise
-                                except:
-                                    print("Exception occured; skipping this image")
+                                # except:
+                                #     print("Exception occured; skipping this image")
                         3
 

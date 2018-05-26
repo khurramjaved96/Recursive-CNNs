@@ -25,7 +25,7 @@ if __name__ == "__main__":
     image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
 
 
-    print len(image_list)
+    print (len(image_list))
 
 
     if (Debug):

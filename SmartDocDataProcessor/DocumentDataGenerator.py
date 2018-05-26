@@ -26,7 +26,7 @@ if __name__ == '__main__':
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
             a = 0
-            print str(folder)
+            print (str(folder))
             if (os.path.isdir(dir + "/" + folder)):
                 for file in os.listdir(dir + "/" + folder):
                     images_dir = dir + "/" + folder + "/" + file
@@ -36,7 +36,7 @@ if __name__ == '__main__':
                         root = tree.getroot()
                         for a in root.iter("frame"):
                             if a.attrib["rejected"] != "false":
-                                print "Some frames are not valid"
+                                print ("Some frames are not valid")
                                 0/0
                             list_gt.append(a)
 

@@ -30,7 +30,7 @@ with open(outputDir+ "/gt.csv", 'a') as csvfile:
                     spamwriter = csv.reader(csvfile, delimiter=' ',
                                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     img = cv2.imread(inputDir + "/" + image)
-                    print image
+                    print (image)
                     gt= []
                     for row in spamwriter:
                         gt.append(row)

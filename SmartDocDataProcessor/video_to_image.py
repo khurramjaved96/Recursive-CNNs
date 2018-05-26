@@ -25,12 +25,12 @@ if __name__ == '__main__':
             if os.path.isdir(dir+"/"+folder):
                 dir_temp = dir+folder+"/"
                 for file in os.listdir(dir_temp):
-                    print file
+                    print (file)
                     from subprocess import call
                     if(file.endswith(".avi")):
                         call("mkdir "+output + folder, shell=True)
                         if(os.path.isdir(output+folder+"/"+file)):
-                            print "Folder already exist"
+                            print ("Folder already exist")
                         else:
                             call("cd "+output+folder+" && mkdir "+file, shell=True)
                             call("ls", shell=True)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                             gt_address =  "cp " + location[0:-4]+".gt.xml "+output+ folder+"/"+file+"/"+file+".gt"
                             call(gt_address ,shell = True)
                             command = "ffmpeg -i "+location+ " "+output+folder+"/"+file+"/%3d.jpg"
-                            print command
+                            print (command)
                             call(command, shell=True)
 
 
