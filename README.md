@@ -26,7 +26,7 @@ To prepare dataset for training, do the following:
 ``` bash
 python video_to_image --d ../path_to_smartdoc_videos/ --o ../path_to_store_frames
 ```
-2. After converting to frames, we need to do random crops to assure variation in the data. This can be done by:
+2. After converting to frames, we need to do random crops to assure variations in the data. This can be done by:
 ``` bash
 python DocumentDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
 ```
@@ -34,6 +34,11 @@ and
 ``` bash
 python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_train_set
 ```
+
+You can bypass step 1 and 2 by directly downloading a version of processed data from here: 
+https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sharing
+
+After this, you have to convert the data into a numpy array so that it can be used for training. 
 
 Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
 
