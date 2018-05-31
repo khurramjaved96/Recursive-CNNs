@@ -25,7 +25,7 @@ logger = logging.getLogger('iCARL')
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=16, metavar='N',
                     help='input batch size for training (default: 64)')
-parser.add_argument('--lr', type=float, default=0.0001, metavar='LR',
+parser.add_argument('--lr', type=float, default=0.00001, metavar='LR',
                     help='learning rate (default: 2.0)')
 parser.add_argument('--schedule', type=int, nargs='+', default=[45, 60, 68],
                     help='Decrease learning rate at these epochs.')
@@ -37,7 +37,7 @@ parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
 parser.add_argument('--debug', action='store_true', default=True,
                     help='Debug messages')
-parser.add_argument('--seed', type=int, default=23423,
+parser.add_argument('--seed', type=int, default=2323,
                     help='Seeds values to be used')
 parser.add_argument('--log-interval', type=int, default=5, metavar='N',
                     help='how many batches to wait before logging training status')
@@ -48,7 +48,7 @@ parser.add_argument('--name', default="noname",
 parser.add_argument('--outputDir', default="../",
                     help='Directory to store the results; a new folder "DDMMYYYY" will be created '
                          'in the specified directory to save the results.')
-parser.add_argument('--decay', type=float, default=0.00005, help='Weight decay (L2 penalty).')
+parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
 parser.add_argument('--epochs', type=int, default=70, help='Number of epochs for each increment')
 parser.add_argument('--dataset', default="SmartDoc", help='Dataset to be used; example CIFAR, MNIST')
 parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/documentTest64", help="input Directory of data")

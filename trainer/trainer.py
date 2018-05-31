@@ -45,12 +45,14 @@ class Trainer(GenericTrainer):
                 img, target = img.cuda(), target.cuda()
 
             response = self.model(Variable(img))
-            loss = F.l1_loss(response, Variable(target.float()))
+            print (response[0])
+            print (target[0])
+            loss = F.mse_loss(response, Variable(target.float()))
             if lossAvg is None:
                 lossAvg = loss
             else:
                 lossAvg+= loss
-            print ("Cur loss %s", str(loss))
+            logger.debug("Cur loss %s", str(loss))
             loss.backward()
             self.optimizer.step()
 
