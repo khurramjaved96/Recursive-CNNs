@@ -18,24 +18,31 @@ python detectDocument.py -i TrainedModel/img.jpg -o ./result.jpg -rf 0.85
 ```
 would run the pretrained model on the sample image in the repository. 
 
+## Datasets 
+SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
+Self-collected dataset : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
+
 ## Training Code
 Training code is mostly for reference only. It's not well documented or commented and it would be easier to re-implement the model from the paper than using this code. However I will be refactoring the code in the coming days to make it more accesible. 
 
-To prepare dataset for training, do the following: 
-1. 
+To prepare dataset for training, run the following command following: 
+
 ``` bash
-python video_to_image --d ../path_to_smartdoc_videos/ --o ../path_to_store_frames
+python video_to_image.py --d ../path_to_smartdoc_videos/ --o ../path_to_store_frames
 ```
-2. After converting to frames, we need to do random crops to assure variations in the data. This can be done by:
+here video_to_image.py is in the SmartDocDataProcessor folder. 
+
+After converting to videos to frames, we need to do generate convert data into format required to train the models. We have to train two models. One to detect the four document corners, and the other to detect the a corner point in an image. To prepare data for the first model, run:
 ``` bash
 python DocumentDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
 ```
-and
+and for the second model, run:
+
 ``` bash
 python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_train_set
 ```
 
-You can bypass step 1 and 2 by directly downloading a version of processed data from here: 
+You can also download a version of this data in the right format from here: 
 https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sharing
 
 Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
@@ -49,15 +56,7 @@ and to train the corner detector, run:
 python cornerTrainer.py --i path_to_corner_train_set/ --o path_to_checkpoints/
 ``` 
 
-Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
-
 Email : 14besekjaved@seecs.edu.pk in-case of any queries. 
-
-
-## Dataset format for training
-For training, the dataset should be in following format:
-1. .npy dumps of images. An example shape can be 10000x32x32x3. There should be two files; 1 for training and one for validation.
-2. .npy dumps for ground truth. For document detector, shape should be 10000x8. For corner detector, it should be 100000x2.
 
 ## Note
 To those working on this problem, I would encourage trying out fully connected neural networks (Or some variant of pixel level segmentation network) as well; in my limited experiments, they are able to out-perform my method quite easily, and are more robust to unseen backgrounds (Probably because they are able to utilize context information of the whole page when making the prediction). They do tend to be a bit slower and require more memory though (Because a high-res image is used as input.) 
