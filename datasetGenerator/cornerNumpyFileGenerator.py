@@ -1,6 +1,7 @@
 import numpy as np
-import utils.utils as utils
-import os
+
+from utils import utils
+
 
 def argsProcessor():
     import argparse

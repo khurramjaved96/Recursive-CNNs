@@ -96,15 +96,34 @@ if __name__ == '__main__':
 
 
                                     img = img[start_y:end_y, start_x:end_x]
+                                    tl = [float(a) for a in tl]
+                                    tr = [float(a) for a in tr]
+                                    br = [float(a) for a in br]
+                                    bl = [float(a) for a in bl]
 
+                                    tl[0]/= float(img.shape[1])
+                                    tl[1]/= float(img.shape[0])
+
+                                    tr[0] /= float(img.shape[1])
+                                    tr[1] /= float(img.shape[0])
+
+                                    br[0] /= float(img.shape[1])
+                                    br[1] /= float(img.shape[0])
+
+                                    bl[0] /= float(img.shape[1])
+                                    bl[1] /= float(img.shape[0])
+
+                                    tl = [round(a,4) for a in tl]
+                                    tr = [round(a,4) for a in tr]
+                                    br = [round(a,4) for a in br]
+                                    bl = [round(a,4) for a in bl]
+
+
+                                    img = cv2.resize(img, (64,64))
                                     cv2.imwrite(output_dir+"/"+folder+file+image,img)
                                     spamwriter.writerow((folder + file + image, (tl, tr,br,bl)))
 
-                                    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 
-
-                                    cv2.imwrite(output_dir+"/"+folder+file+"cli"+image,img)
-                                    spamwriter.writerow((folder + file + "cli"+image, (tl, tr,br,bl)))
 
                                     # cv2.circle(img,tuple(tl),2, (255,0,0),2)
                                     # cv2.circle(img, tuple(tr), 2, (0, 255, 0), 2)

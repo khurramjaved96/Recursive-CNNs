@@ -1,8 +1,10 @@
 import os
-import numpy as np
+
 import cv2
-import csv
-import utils
+import numpy as np
+
+from datasetGenerator import utils
+
 output_dir = "multipleBackgrounds"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
@@ -34,7 +36,7 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                     print gt
 
                     for angle in range(0,271,90):
-                        img_rotate, gt_rotate = utils.rotate(img, gt,angle)
+                        img_rotate, gt_rotate = utils.rotate(img, gt, angle)
                         for random_crop in range(0,32):
                             img_crop, gt_crop = utils.random_crop(img_rotate, gt_rotate)
                             mah_size = img_crop.shape

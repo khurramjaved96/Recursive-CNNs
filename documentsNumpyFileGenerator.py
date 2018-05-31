@@ -1,8 +1,8 @@
-import numpy as np
 import cv2
+import numpy as np
 import tensorflow as tf
 import utils.utils as utils
-import os
+
 
 def argsProcessor():
     import argparse
@@ -12,7 +12,6 @@ def argsProcessor():
     parser.add_argument("-s", "--saveName", help="fileNameForSaving")
     return  parser.parse_args()
 
-import math
 
 args = argsProcessor()
 inputDataDir = args.inputDir
@@ -25,7 +24,7 @@ TEST_PERCENTAGE = .01
 Debug = True
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
-size = (224,224)
+size = (64,64)
 
 
 image_list, gt_list, file_name = utils.load_data_4(inputDataDir, GT_DIR, limit=-1, size=size)
@@ -48,7 +47,7 @@ if (Debug):
 for a in range(0, 10):
     temp_image=np.copy(image_list[a])
     for b in range(0, 4):
-        cv2.circle(temp_image, (gt_list[a][b*2], gt_list[a][b*2+1]), 2, (255, 0, 0), 4)
+        cv2.circle(temp_image, (int(gt_list[a][b*2]*64), int(gt_list[a][b*2+1]*64)), 2, (255, 0, 0), 4)
     cv2.imwrite("../temp"+str(a)+".jpg", temp_image)
 
 

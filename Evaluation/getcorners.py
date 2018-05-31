@@ -1,9 +1,7 @@
-import numpy as np
 import cv2
+import numpy as np
 import tensorflow as tf
-import utils
-import os
-import math
+
 
 class get_corners:
     def __init__(self):

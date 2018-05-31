@@ -1,9 +1,11 @@
-import numpy as np
-import cv2
-import tensorflow as tf
-import utils
-import os
 import math
+import os
+
+import cv2
+import numpy as np
+import tensorflow as tf
+
+from datasetGenerator import utils
 
 BATCH_SIZE = 100
 NO_OF_STEPS = 500000

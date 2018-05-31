@@ -1,8 +1,10 @@
 import os
-import numpy as np
+
 import cv2
-import csv
-import utils
+import numpy as np
+
+from datasetGenerator import utils
+
 
 def argsProcessor():
     import argparse
@@ -49,7 +51,7 @@ with open(outputDir+ "/gt.csv", 'a') as csvfile:
                     # cv2.imwrite("asda.jpg", img)
                     # 0/0
                     for angle in range(0,271,90):
-                        img_rotate, gt_rotate = utils.rotate(img, gt,angle)
+                        img_rotate, gt_rotate = utils.rotate(img, gt, angle)
                         for random_crop in range(0,1):
                             img_list, gt_list = utils.getCorners(img_rotate, gt_rotate)
                             for a in range(0,4):

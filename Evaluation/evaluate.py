@@ -1,14 +1,11 @@
 import os
-import cv2
 import xml.etree.ElementTree as ET
-import numpy as np
-import cv2
-import numpy as np
-import corner_refinement
-import getcorners
-import tensorflow as tf
 
-import random
+import corner_refinement
+import cv2
+import getcorners
+import numpy as np
+import tensorflow as tf
 
 if __name__ == '__main__':
     tf.reset_default_graph()
@@ -64,7 +61,6 @@ if __name__ == '__main__':
                                     #  print doc_height
                                     #  print doc_height
                                     #  print doc_width
-                                    import random
 
                                     myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
                                                        list_of_points["bl"]))
@@ -108,7 +104,6 @@ if __name__ == '__main__':
 
                                     
                                     corner_address = []
-                                    import timeit
                                     print "Gets here"
                                     
                                     #temp = np.array(model1.get_location((data[0][0], data[1][0], data[2][0], data[3][0])))
@@ -138,9 +133,10 @@ if __name__ == '__main__':
 
                                     #print myGt
                                    # print np.array(corner_address)
-                                    import utils
-                                  #  r = utils.intersection(myGt, np.array(corner_address),img)
-				    r2 = utils.intersection_with_corection(myGt, np.array(corner_address),img)
+                                    from datasetGenerator import utils
+
+                                    #  r = utils.intersection(myGt, np.array(corner_address),img)
+				    r2 = utils.intersection_with_corection(myGt, np.array(corner_address), img)
 			         #   if r2>r:
 				#	print "Good scene"
 				 #   else:

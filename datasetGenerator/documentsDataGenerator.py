@@ -33,7 +33,10 @@ def argsProcessor():
 
 
 if __name__ == '__main__':
-    dir = "../../Dicta_data/data"
+    args = argsProcessor()
+    dir = args.dataPath
+    output_dir = args.outputFiles
+
     import csv
 
     with open('../../corner_data/gt.csv', 'a') as csvfile:
@@ -101,7 +104,7 @@ if __name__ == '__main__':
                                     list_of_points["br"] = br
                                     list_of_points["bl"] = bl
 
-                                    for k,v in list_of_points.iteritems():
+                                    for k,v in list_of_points.items():
 
                                         if(k=="tl"):
 
@@ -150,7 +153,7 @@ if __name__ == '__main__':
                                         b = int(gt[1]*300/mah_size[0])
                                     
                                   
-                                        cv2.imwrite("../../corner_data/"+folder+file+image+k+".jpg", cut_image)
+                                        cv2.imwrite(output_dir+"/"+folder+file+image+k+".jpg", cut_image)
                                         spamwriter.writerow((folder+file+image+k+".jpg",(a,b)))
                                 except KeyboardInterrupt:
                                     raise

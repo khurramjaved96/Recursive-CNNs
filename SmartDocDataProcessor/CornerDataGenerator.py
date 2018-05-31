@@ -2,6 +2,7 @@ import os
 import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
+from tqdm._tqdm import tqdm
 import random
 w = 150
 h = 150
@@ -9,8 +10,8 @@ h = 150
 def argsProcessor():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataPath", help="DataPath")
-    parser.add_argument("-o", "--outputFiles", help="outputFiles", default="bar")
+    parser.add_argument("-d", "--dataPath", help="Path to data files (Extract images using video_to_image.py first")
+    parser.add_argument("-o", "--outputFiles", help="Directory to store results")
     return  parser.parse_args()
 
 
@@ -43,11 +44,11 @@ if __name__ == '__main__':
     with open(args.outputFiles + 'gt.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for folder in os.listdir(dir):
+        for folder in tqdm(os.listdir(dir)):
             a=0
-            print (str(folder))
+            # print (str(folder))
             if(os.path.isdir(dir+"/"+folder)):
-                for file in os.listdir(dir+"/"+folder):
+                for file in tqdm(os.listdir(dir+"/"+folder)):
                     images_dir= dir+"/"+folder+"/"+file
                     if(os.path.isdir(images_dir)):
                                    
@@ -57,14 +58,14 @@ if __name__ == '__main__':
                         for a in root.iter("frame"):
                             list_gt.append(a)
 
-                        print (list_gt)
+                        # print (list_gt)
                         for image in os.listdir(images_dir):
                             if image.endswith(".jpg"):
                                 try:
                                     #Now we have opened the file and GT. Write code to create multiple files and scale gt
                                     list_of_points = {}
                                     img = cv2.imread(images_dir+"/"+image)
-                                    print (image[0:-4])
+                                    # print (image[0:-4])
                                     for point in list_gt[int(float(image[0:-4]))-1].iter("point"):
                                         myDict = point.attrib
 
@@ -149,12 +150,12 @@ if __name__ == '__main__':
 
                                         #cv2.circle(cut_image, gt, 2, (255, 0, 0), 6)
                                         mah_size = cut_image.shape
-                                        cut_image = cv2.resize(cut_image, (300,300))
-                                        a = int(gt[0]*300/mah_size[1])
-                                        b = int(gt[1]*300/mah_size[0])
+                                        cut_image = cv2.resize(cut_image, (64,64))
+                                        a = round(float(gt[0]/float(mah_size[1])),4)
+                                        b = round(float(gt[1]/float(mah_size[0])),4)
                                     
                                   
-                                        cv2.imwrite(args.outputFiles +folder+file+image+k+".jpg", cut_image)
+                                        cv2.imwrite(args.outputFiles +folder+file+image+k+".jpg", cut_image,[int(cv2.IMWRITE_JPEG_QUALITY), 80])
                                         spamwriter.writerow((folder+file+image+k+".jpg",(a,b)))
                                 except KeyboardInterrupt:
                                     raise
