@@ -32,7 +32,7 @@ python video_to_image.py --d ../path_to_smartdoc_videos/ --o ../path_to_store_fr
 ```
 here video_to_image.py is in the SmartDocDataProcessor folder. 
 
-After converting to videos to frames, we need to do generate convert data into format required to train the models. We have to train two models. One to detect the four document corners, and the other to detect the a corner point in an image. To prepare data for the first model, run:
+After converting to videos to frames, we need to convert the data into format required to train the models. We have to train two models. One to detect the four document corners, and the other to detect the a corner point in an image. To prepare data for the first model, run:
 ``` bash
 python DocumentDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
 ```

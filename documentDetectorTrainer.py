@@ -161,7 +161,7 @@ with tf.name_scope("loss"):
     mySum = tf.summary.scalar('Train_loss', cross_entropy)
     validate_loss = tf.summary.scalar('Validate_loss', cross_entropy)
 with tf.name_scope("Train"):
-    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+    train_step = tf.train.AdamOptimizer(1e-3).minimize(cross_entropy)
 
 merged = tf.summary.merge_all()
 

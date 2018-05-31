@@ -176,7 +176,7 @@ for i in range(NO_OF_STEPS):
         cv2.circle(batch[0], (gt[0][0], gt[0][1]), 2, (0, 255, 0), 2)
         img = batch[0]
         img = cv2.resize(img, (320, 320))
-        cv2.imwrite("../temp" + str(temp_temp) + ".jpg", img)
+        cv2.imwrite(CHECKPOINT_DIR+"visualization" + str(temp_temp) + ".jpg", img)
     if i % 1000 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:
