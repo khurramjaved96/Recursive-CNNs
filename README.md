@@ -38,15 +38,16 @@ python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_tr
 You can bypass step 1 and 2 by directly downloading a version of processed data from here: 
 https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sharing
 
-We are ready to create numpy arrays of train and validation set now. 
-
-To create the numpy array, run:
+Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
 
 ``` bash
-python documentsNumpyFileGenerator.py --i path_to_train_set/ --o .. --s name_of_arrays
+python documentDetectorTrainer.py --i path_to_train_set/
 ```
+and to train the corner detector, run:
 
-After this, you have to convert the data into a numpy array so that it can be used for training. 
+``` bash
+python cornerTrainer.py --i path_to_corner_train_set/ --o path_to_checkpoints/
+``` 
 
 Self-collected dataset can be downloaded from : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
 
