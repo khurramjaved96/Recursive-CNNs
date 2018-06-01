@@ -47,17 +47,12 @@ if __name__ == '__main__':
                                     # Now we have opened the file and GT. Write code to create multiple files and scale gt
                                     list_of_points = {}
                                     img = cv2.imread(images_dir + "/" + image)
-                                    # print image[0:-4]
                                     for point in list_gt[int(float(image[0:-4])) - 1].iter("point"):
                                         myDict = point.attrib
 
                                         list_of_points[myDict["name"]] = (
                                             int(float(myDict['x'])), int(float(myDict['y'])))
 
-                                    doc_height = min(list_of_points["bl"][1] - list_of_points["tl"][1],
-                                                     list_of_points["br"][1] - list_of_points["tr"][1])
-                                    doc_width = min(list_of_points["br"][0] - list_of_points["bl"][0],
-                                                    list_of_points["tr"][0] - list_of_points["tl"][0])
 
                                     ptr1 = (
                                     min(list_of_points["tl"][0], list_of_points["bl"][0], list_of_points["tr"][0],
@@ -85,12 +80,8 @@ if __name__ == '__main__':
                                     tl = myGt[tl_index]
                                     br = myGt[(tl_index + 2) % 4]
                                     ptr1 = myGt[(tl_index + 1) % 4]
-                                    # print "TL : ", tl
-                                    # print "BR : ", br
-                                    # print myGt
-                                    # print myGt.shape
+
                                     slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
-                                    # print "SLOPE = ", slope
                                     y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
                                     if y_pred < ptr1[1]:
                                         bl = ptr1
@@ -98,7 +89,6 @@ if __name__ == '__main__':
                                     else:
                                         tr = ptr1
                                         bl = myGt[(tl_index + 3) % 4]
-                                    # print tl, tr, br, bl
 
 
                                     img = img[start_y:end_y, start_x:end_x]

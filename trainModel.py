@@ -25,7 +25,7 @@ logger = logging.getLogger('iCARL')
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=16, metavar='N',
                     help='input batch size for training (default: 64)')
-parser.add_argument('--lr', type=float, default=0.00001, metavar='LR',
+parser.add_argument('--lr', type=float, default=0.0001, metavar='LR',
                     help='learning rate (default: 2.0)')
 parser.add_argument('--schedule', type=int, nargs='+', default=[45, 60, 68],
                     help='Decrease learning rate at these epochs.')
@@ -106,7 +106,6 @@ train_iterator = torch.utils.data.DataLoader(train_dataset_loader,
 myModel = model.ModelFactory.get_model(args.model_type)
 if args.cuda:
     myModel.cuda()
-
 
 
 # Define the optimizer used in the experiment
