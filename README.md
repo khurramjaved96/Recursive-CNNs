@@ -56,16 +56,10 @@ To those working on this problem, I would encourage trying out fully connected n
 
 ## Citing work 
 If you end up using our code or dataset in your research, please consider citing:
+``` bash
+Javed, Khurram, and Faisal Shafait. "Real-Time Document Localization in Natural Images by Recursive Application of a CNN." Document Analysis and Recognition (ICDAR), 2017 14th IAPR International Conference on. Vol. 1. IEEE, 2017.
+```
 
-@article{javed2017real,
-  title={Real-Time Document Localization in Natural Images by Recursive Application of a CNN},
-  author={Javed, Khurram and Shafait, Faisal},
-  booktitle={Document Analysis and Recognition (ICDAR), 2017 14th IAPR International Conference on},
-  volume={1},
-  pages={105--110},
-  year={2017},
-  organization={IEEE}
-}
 
 ## References 
 [1] S.A. Abbas and S.U.Hussain "Recovering Homography from Camera Captured Documents using Convolutional
