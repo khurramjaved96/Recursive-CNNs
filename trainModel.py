@@ -51,7 +51,8 @@ parser.add_argument('--outputDir', default="../",
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
 parser.add_argument('--epochs', type=int, default=70, help='Number of epochs for each increment')
 parser.add_argument('--dataset', default="SmartDoc", help='Dataset to be used; example CIFAR, MNIST')
-parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/documentTest64", help="input Directory of data")
+parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/documentTest64", help="input Directory of train data")
+parser.add_argument("-v", "--validation-dir", default="/Users/khurramjaved96/documentTest64", help="input Directory of val data")
 
 args = parser.parse_args()
 
@@ -85,6 +86,8 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 dataset = dataHandler.DatasetFactory.get_dataset(args.data_dir)
 
+dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dir)
+
 # Fix the seed.
 seed = args.seed
 torch.manual_seed(seed)
@@ -93,13 +96,20 @@ if args.cuda:
 
 # Loader used for training data
 train_dataset_loader = dataHandler.myLoader(dataset.myData, transform=dataset.train_transform,
-                                            cuda=args.cuda
-                                            )
+                                            cuda=args.cuda)
+
+# Loader used for training data
+val_dataset_loader = dataHandler.myLoader(dataset_val.myData, transform=dataset.test_transform,
+                                            cuda=args.cuda)
 
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
 # Iterator to iterate over training data.
 train_iterator = torch.utils.data.DataLoader(train_dataset_loader,
+                                         batch_size=args.batch_size, shuffle=True, **kwargs)
+
+# Iterator to iterate over training data.
+val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
                                          batch_size=args.batch_size, shuffle=True, **kwargs)
 
 # Get the required model
@@ -115,10 +125,13 @@ optimizer = torch.optim.SGD(myModel.parameters(), args.lr, momentum=args.momentu
 # Trainer object used for training
 my_trainer = trainer.Trainer(train_iterator, myModel, args.cuda, optimizer)
 
+# Evaluator
+my_eval = trainer.EvaluatorFactory.get_evaluator("mse", args.cuda)
 # Running epochs_class epochs
 for epoch in range(0, args.epochs):
     my_trainer.update_lr(epoch, args.schedule, args.gammas)
     my_trainer.train(epoch)
+    my_eval.evaluate(my_trainer.model, val_iterator)
 
 # Evaluate the learned classifier
 img = None

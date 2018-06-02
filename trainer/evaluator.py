@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torchnet.meter import confusionmeter
+from tqdm import tqdm
 
 logger = logging.getLogger('iCARL')
 
@@ -23,22 +24,38 @@ class EvaluatorFactory():
         pass
 
     @staticmethod
-    def get_evaluator(testType="nmc", cuda=True):
-        if testType == "trainedClassifier":
-            return softmax_evaluator(cuda)
+    def get_evaluator(testType="mse", cuda=True):
+        if testType == "mse":
+            return DocumentMseEvaluator(cuda)
 
 
 
-class softmax_evaluator():
+class DocumentMseEvaluator():
     '''
     Evaluator class for softmax classification 
     '''
     def __init__(self, cuda):
         self.cuda = cuda
-        self.means = None
-        self.totalFeatures = np.zeros((100, 1))
 
-    def evaluate(self, model, loader, scale=None, thres=False, older_classes=None, step_size=10, descriptor=False,
-                 falseDec=False, higher=False):
-        pass
+
+    def evaluate(self, model, iterator):
+        model.eval()
+        lossAvg = None
+        for img, target in tqdm(iterator):
+            if self.cuda:
+                img, target = img.cuda(), target.cuda()
+
+            response = model(Variable(img))
+            # print (response[0])
+            # print (target[0])
+            loss = F.l1_loss(response, Variable(target.float()))
+            if lossAvg is None:
+                lossAvg = loss
+            else:
+                lossAvg += loss
+            # logger.debug("Cur loss %s", str(loss))
+
+        lossAvg /= len(iterator)
+        logger.info("Avg Val Loss %s", str(lossAvg))
+
 
