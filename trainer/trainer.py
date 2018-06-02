@@ -10,6 +10,7 @@ import logging
 from torch.autograd import Variable
 logger = logging.getLogger('iCARL')
 import torch.nn.functional as F
+import torch
 from tqdm import tqdm
 class GenericTrainer:
     '''
@@ -47,7 +48,7 @@ class Trainer(GenericTrainer):
             response = self.model(Variable(img))
             # print (response[0])
             # print (target[0])
-            loss = F.l1_loss(response, Variable(target.float()))
+            loss = F.mse_loss(response, Variable(target.float()))
             if lossAvg is None:
                 lossAvg = loss
             else:
@@ -57,4 +58,4 @@ class Trainer(GenericTrainer):
             self.optimizer.step()
 
         lossAvg/=len(self.train_iterator)
-        logger.info("Avg Loss %s", str(lossAvg))
+        logger.info("Avg Loss %s", str(torch.sqrt(lossAvg).cpu().numpy()))
