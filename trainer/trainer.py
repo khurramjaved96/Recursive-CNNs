@@ -27,15 +27,15 @@ class Trainer(GenericTrainer):
         self.train_iterator = train_iterator
         self.model = model
         self.optimizer = optimizer
-    def update_lr(self, epoch):
-        for temp in range(0, len(self.args.schedule)):
-            if self.args.schedule[temp] == epoch:
+    def update_lr(self, epoch, schedule, gammas):
+        for temp in range(0, len(schedule)):
+            if schedule[temp] == epoch:
                 for param_group in self.optimizer.param_groups:
                     self.current_lr = param_group['lr']
-                    param_group['lr'] = self.current_lr * self.args.gammas[temp]
+                    param_group['lr'] = self.current_lr * gammas[temp]
                     logger.debug("Changing learning rate from %0.2f to %0.2f", self.current_lr,
-                                 self.current_lr * self.args.gammas[temp])
-                    self.current_lr *= self.args.gammas[temp]
+                                 self.current_lr * gammas[temp])
+                    self.current_lr *= gammas[temp]
 
     def train(self, epoch):
         self.model.train()
