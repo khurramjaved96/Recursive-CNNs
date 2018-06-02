@@ -3,13 +3,22 @@ import os
 import cv2
 import numpy as np
 
-from datasetGenerator import utils
+import utils
 
-output_dir = "./multipleBackgroundsCorners"
+def argsProcessor():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--dataPath", help="DataPath")
+    parser.add_argument("-o", "--outputFiles", help="outputFiles", default="bar")
+    return parser.parse_args()
+
+args = argsProcessor()
+
+output_dir = args.outputFiles
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
-dir = "../data1"
+dir = args.dataPath
 import csv
 
 with open(output_dir+"/gt.csv", 'a') as csvfile:
@@ -22,7 +31,7 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                     spamwriter = csv.reader(csvfile, delimiter=' ',
                                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     img = cv2.imread(dir +"/"+ image)
-                    print image
+                    print (image)
                     gt= []
                     for row in spamwriter:
                         gt.append(row)
@@ -42,9 +51,13 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                     # 0/0
                     for angle in range(0,271,90):
                         img_rotate, gt_rotate = utils.rotate(img, gt, angle)
-                        for random_crop in range(0,1):
+                        for random_crop in range(0,8):
                             img_list, gt_list = utils.getCorners(img_rotate, gt_rotate)
                             for a in range(0,4):
-                                cv2.circle(img_list[a], tuple(gt_list[a]), 2,(255,0,0),2)
-                                cv2.imwrite( output_dir+"/"+image + str(angle) +str(random_crop) + str(a) +".jpg", img_list[a])
-                                spamwriter_1.writerow(( image + str(angle) +str(random_crop) + str(a) +".jpg", tuple(gt_list[a])))
+                                print (gt_list[a])
+                                gt_store = list(np.array(gt_list[a])/(300,300))
+                                img_store = cv2.resize(img_list[a], (64,64))
+                                print (tuple(list(np.array(gt_store)*64)))
+                                # cv2.circle(img_store, tuple(list((np.array(gt_store)*64).astype(int))), 2, (255, 0, 0), 2)
+                                cv2.imwrite( output_dir+"/"+image + str(angle) +str(random_crop) + str(a) +".jpg", img_store)
+                                spamwriter_1.writerow(( image + str(angle) +str(random_crop) + str(a) +".jpg", tuple(gt_store)))

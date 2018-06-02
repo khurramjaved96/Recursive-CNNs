@@ -8,7 +8,7 @@ import numpy as np
 def argsProcessor():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataPath", help="DataPath")
+    parser.add_argument("-i", "--dataPath", help="DataPath")
     parser.add_argument("-o", "--outputFiles", help="outputFiles", default="bar")
     return parser.parse_args()
 
@@ -75,7 +75,13 @@ if __name__ == '__main__':
                                     myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
                                                        list_of_points["bl"]))
                                     myGt = myGt - (start_x, start_y)
-                                    sum_array = myGt.sum(axis=1)
+
+                                    img = img[start_y:end_y, start_x:end_x]
+
+
+                                    myGt = myGt*(1.0 / img.shape[1], 1.0 / img.shape[0])
+                                    myGtTemp = myGt*myGt
+                                    sum_array = myGtTemp.sum(axis=1)
                                     tl_index = np.argmin(sum_array)
                                     tl = myGt[tl_index]
                                     br = myGt[(tl_index + 2) % 4]
@@ -91,30 +97,20 @@ if __name__ == '__main__':
                                         bl = myGt[(tl_index + 3) % 4]
 
 
-                                    img = img[start_y:end_y, start_x:end_x]
-                                    tl = [float(a) for a in tl]
-                                    tr = [float(a) for a in tr]
-                                    br = [float(a) for a in br]
-                                    bl = [float(a) for a in bl]
-
-                                    tl[0] /= float(img.shape[1])
-                                    tl[1] /= float(img.shape[0])
-
-                                    tr[0] /= float(img.shape[1])
-                                    tr[1] /= float(img.shape[0])
-
-                                    br[0] /= float(img.shape[1])
-                                    br[1] /= float(img.shape[0])
-
-                                    bl[0] /= float(img.shape[1])
-                                    bl[1] /= float(img.shape[0])
-
                                     tl = [round(a, 4) for a in tl]
                                     tr = [round(a, 4) for a in tr]
                                     br = [round(a, 4) for a in br]
                                     bl = [round(a, 4) for a in bl]
 
                                     img = cv2.resize(img, (64, 64))
+                                    no=0
+                                    gt_crop = np.array([tl, tr, br, bl])
+                                    # for a in range(0,4):
+                                    #     no+=1
+                                    #     cv2.circle(img, tuple(((gt_crop[a]*64).astype(int))), 2,(255-no*60,no*60,0),9)
+                                    # # cv2.imwrite("asda.jpg", img)
+
+
                                     cv2.imwrite(output_dir + "/" + folder + file + image, img)
                                     spamwriter.writerow((folder + file + image, (tl, tr, br, bl)))
 

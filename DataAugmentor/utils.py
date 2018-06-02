@@ -36,8 +36,12 @@ def random_crop(img, gt):
     end_x = np.random.randint(int(min(ptr2[0] + 1,img.shape[1]-1)), img.shape[1])
     end_y = np.random.randint(int(min(ptr2[1] + 1,img.shape[0]-1)), img.shape[0])
 
+    img = img[start_y:end_y, start_x:end_x]
+
     myGt = gt - (start_x, start_y)
-    sum_array = myGt.sum(axis=1)
+    myGt = myGt* (1.0 / img.shape[1], 1.0 / img.shape[0])
+    myGtTemp = myGt*myGt
+    sum_array = myGtTemp.sum(axis=1)
     tl_index = np.argmin(sum_array)
     tl = myGt[tl_index]
     br = myGt[(tl_index + 2) % 4]
@@ -58,7 +62,7 @@ def random_crop(img, gt):
         bl = myGt[(tl_index + 3) % 4]
     # print tl, tr, br, bl
 
-    img = img[start_y:end_y, start_x:end_x]
+
     return img, (tl,tr,br,bl)
 
 def getCorners(img,gt):
@@ -91,7 +95,7 @@ def getCorners(img,gt):
     list_of_points["bl"] = bl
     gt_list=[]
     images_list=[]
-    for k, v in list_of_points.iteritems():
+    for k, v in list_of_points.items():
 
         if (k == "tl"):
             cords_x = __get_cords(v[0], 0, list_of_points["tr"][0], buf=10, size=abs(list_of_points["tr"][0] - v[0]))
