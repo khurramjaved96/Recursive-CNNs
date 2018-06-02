@@ -56,6 +56,6 @@ class DocumentMseEvaluator():
             # logger.debug("Cur loss %s", str(loss))
 
         lossAvg /= len(iterator)
-        logger.info("Avg Val Loss %s", str(torch.sqrt(lossAvg).cpu().numpy()))
+        logger.info("Avg Val Loss %s", str(torch.sqrt(lossAvg).cpu().data.numpy()))
 
 
