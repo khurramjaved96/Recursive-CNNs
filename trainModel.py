@@ -117,6 +117,7 @@ my_trainer = trainer.Trainer(train_iterator, myModel, args.cuda, optimizer)
 
 # Running epochs_class epochs
 for epoch in range(0, args.epochs):
+    my_trainer.update_lr(epoch)
     my_trainer.train(epoch)
 
 # Evaluate the learned classifier
