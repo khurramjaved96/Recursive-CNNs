@@ -33,7 +33,7 @@ class Trainer(GenericTrainer):
                 for param_group in self.optimizer.param_groups:
                     self.current_lr = param_group['lr']
                     param_group['lr'] = self.current_lr * gammas[temp]
-                    logger.debug("Changing learning rate from %0.2f to %0.2f", self.current_lr,
+                    logger.debug("Changing learning rate from %0.9f to %0.9f", self.current_lr,
                                  self.current_lr * gammas[temp])
                     self.current_lr *= gammas[temp]
 
