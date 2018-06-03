@@ -51,8 +51,8 @@ parser.add_argument('--outputDir', default="../",
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
 parser.add_argument('--epochs', type=int, default=70, help='Number of epochs for each increment')
 parser.add_argument('--dataset', default="SmartDoc", help='Dataset to be used; example CIFAR, MNIST')
-parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/documentTest64", help="input Directory of train data")
-parser.add_argument("-v", "--validation-dir", default="/Users/khurramjaved96/documentTest64", help="input Directory of val data")
+parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of train data")
+parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of val data")
 
 args = parser.parse_args()
 
@@ -84,9 +84,9 @@ logger.addHandler(ch)
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
-dataset = dataHandler.DatasetFactory.get_dataset(args.data_dir)
+dataset = dataHandler.DatasetFactory.get_dataset(args.data_dirs)
 
-dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dir)
+dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dirs)
 
 # Fix the seed.
 seed = args.seed
