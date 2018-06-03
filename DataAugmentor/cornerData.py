@@ -51,7 +51,7 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                     # 0/0
                     for angle in range(0,271,90):
                         img_rotate, gt_rotate = utils.rotate(img, gt, angle)
-                        for random_crop in range(0,8):
+                        for random_crop in range(0,16):
                             img_list, gt_list = utils.getCorners(img_rotate, gt_rotate)
                             for a in range(0,4):
                                 print (gt_list[a])
