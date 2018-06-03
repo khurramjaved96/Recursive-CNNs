@@ -41,19 +41,20 @@ class DocumentMseEvaluator():
     def evaluate(self, model, iterator):
         model.eval()
         lossAvg = None
-        for img, target in tqdm(iterator):
-            if self.cuda:
-                img, target = img.cuda(), target.cuda()
+        with torch.no_grad():
+            for img, target in tqdm(iterator):
+                if self.cuda:
+                    img, target = img.cuda(), target.cuda()
 
-            response = model(Variable(img))
-            # print (response[0])
-            # print (target[0])
-            loss = F.mse_loss(response, Variable(target.float()))
-            if lossAvg is None:
-                lossAvg = loss
-            else:
-                lossAvg += loss
-            # logger.debug("Cur loss %s", str(loss))
+                response = model(Variable(img))
+                # print (response[0])
+                # print (target[0])
+                loss = F.mse_loss(response, Variable(target.float()))
+                if lossAvg is None:
+                    lossAvg = loss
+                else:
+                    lossAvg += loss
+                # logger.debug("Cur loss %s", str(loss))
 
         lossAvg /= len(iterator)
         logger.info("Avg Val Loss %s", str(torch.sqrt(lossAvg).cpu().data.numpy()))
