@@ -12,9 +12,12 @@ class ModelFactory():
         pass
 
     @staticmethod
-    def get_model(model_type):
+    def get_model(model_type, dataset):
         if model_type == "resnet":
-            return resnet.resnet20(8)
+            if dataset=='document':
+                return resnet.resnet20(8)
+            elif dataset=='corner':
+                return resnet.resnet20(2)
         elif model_type == 'standard':
             return tm.Net(8)
         else:

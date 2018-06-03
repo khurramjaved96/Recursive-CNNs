@@ -86,7 +86,7 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 dataset = dataHandler.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
 
-dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dirs)
+dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dirs, args.dataset)
 
 # Fix the seed.
 seed = args.seed
@@ -113,7 +113,7 @@ val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
                                          batch_size=args.batch_size, shuffle=True, **kwargs)
 
 # Get the required model
-myModel = model.ModelFactory.get_model(args.model_type)
+myModel = model.ModelFactory.get_model(args.model_type, args.dataset)
 if args.cuda:
     myModel.cuda()
 
