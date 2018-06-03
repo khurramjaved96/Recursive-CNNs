@@ -129,6 +129,7 @@ my_trainer = trainer.Trainer(train_iterator, myModel, args.cuda, optimizer)
 my_eval = trainer.EvaluatorFactory.get_evaluator("mse", args.cuda)
 # Running epochs_class epochs
 for epoch in range(0, args.epochs):
+    logger.info("Epoch : %d", epoch)
     my_trainer.update_lr(epoch, args.schedule, args.gammas)
     my_trainer.train(epoch)
     my_eval.evaluate(my_trainer.model, val_iterator)
