@@ -12,5 +12,8 @@ class DatasetFactory:
         pass
 
     @staticmethod
-    def get_dataset(directory):
-        return data.SmartDoc(directory)
+    def get_dataset(directory, type="document"):
+        if type=="document":
+            return data.SmartDoc(directory)
+        elif type =="corner":
+            return data.SmartDocCorner(directory)

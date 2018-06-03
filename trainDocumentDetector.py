@@ -50,7 +50,7 @@ parser.add_argument('--outputDir', default="../",
                          'in the specified directory to save the results.')
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
 parser.add_argument('--epochs', type=int, default=40, help='Number of epochs for each increment')
-parser.add_argument('--dataset', default="SmartDoc", help='Dataset to be used; example CIFAR, MNIST')
+parser.add_argument('--dataset', default="document", help='Dataset to be used; example CIFAR, MNIST')
 parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of train data")
 parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of val data")
 

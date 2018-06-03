@@ -68,3 +68,47 @@ class SmartDoc(Dataset):
         logger.debug("Data shape %s", str(len(self.data)))
 
         self.myData = [self.data, self.labels]
+
+
+class SmartDocCorner(Dataset):
+    '''
+    Class to include MNIST specific details
+    '''
+
+    def __init__(self, directory="data"):
+        super().__init__("smartdoc")
+        self.data = []
+        self.labels = []
+        for d in directory:
+            self.directory = d
+            self.train_transform = transforms.Compose([transforms.Resize([32, 32]),
+                                                       transforms.ColorJitter(0.5, 0.5, 0.5, 0.5),
+                                                       transforms.ToTensor()])
+
+            self.test_transform = transforms.Compose([transforms.Resize([32, 32]),
+                                                      transforms.ToTensor()])
+
+            logger.info("Pass train/test data paths here")
+
+            self.classes_list = {}
+
+
+
+            file_names = []
+            with open(os.path.join(self.directory, "gt.csv"), 'r') as csvfile:
+                spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                import ast
+                for row in spamreader:
+                    file_names.append(row[0])
+                    self.data.append(os.path.join(self.directory, row[0]))
+                    test = row[1].replace("array", "")
+                    self.labels.append((ast.literal_eval(test)))
+        self.labels = np.array(self.labels)
+
+        self.labels = np.reshape(self.labels, (-1, 2))
+        logger.debug("Ground Truth Shape: %s", str(self.labels.shape))
+        logger.debug("Data shape %s", str(len(self.data)))
+
+        self.myData = [self.data, self.labels]
+
+
