@@ -84,7 +84,7 @@ logger.addHandler(ch)
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
-dataset = dataHandler.DatasetFactory.get_dataset(args.data_dirs)
+dataset = dataHandler.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
 
 dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dirs)
 
