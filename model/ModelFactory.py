@@ -6,6 +6,7 @@
 
 import torchvision.models as models
 import model.resnet32 as resnet
+import model.testModel as tm
 class ModelFactory():
     def __init__(self):
         pass
@@ -14,8 +15,8 @@ class ModelFactory():
     def get_model(model_type):
         if model_type == "resnet":
             return resnet.resnet20(8)
-
-
+        elif model_type == 'standard':
+            return tm.Net(8)
         else:
             print("Unsupported model; either implement the model in model/ModelFactory or choose a different model")
             assert (False)
