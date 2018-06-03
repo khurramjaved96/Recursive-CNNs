@@ -134,5 +134,6 @@ for epoch in range(0, args.epochs):
     my_trainer.train(epoch)
     my_eval.evaluate(my_trainer.model, val_iterator)
 
-# Evaluate the learned classifier
-img = None
+torch.save(myModel.state_dict(), my_experiment.path+"ModelState_final")
+my_experiment.store_json()
+
