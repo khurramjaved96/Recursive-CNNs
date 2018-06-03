@@ -34,6 +34,38 @@ class myLoader(td.Dataset):
 
         return img, target
 
+class myLoaderRAM(td.Dataset):
+    def __init__(self, data, transform=None, cuda=False):
+        self.data = data
+
+        self.transform = transform
+        self.cuda = cuda
+        self.len = len(data[0])
+        self.loadInRam()
+
+    def loadInRam(self):
+        self.loaded_data = []
+        for i in tqdm.tqdm(self.data[0]):
+            img = Image.open(i)
+            if self.transform is not None:
+                img = self.transform(img)
+            self.loaded_data.append(img)
+
+    def __len__(self):
+        return self.len
+
+    def __getitem__(self, index):
+        '''
+        Replacing this with a more efficient implemnetation selection; removing c
+        :param index: 
+        :return: 
+        '''
+        assert (index < len(self.data[0]))
+        assert (index < self.len)
+        target = self.data[1][index]
+        img = self.loaded_data[index]
+        return img, target
+
 
 class myLoaderRAM(td.Dataset):
     def __init__(self, data, transform=None, cuda=False):

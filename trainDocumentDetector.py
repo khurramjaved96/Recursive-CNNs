@@ -35,6 +35,8 @@ parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                     help='SGD momentum (default: 0.9)')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
+parser.add_argument('--load-ram', action='store_true', default=False,
+                    help='Load data in ram')
 parser.add_argument('--debug', action='store_true', default=True,
                     help='Debug messages')
 parser.add_argument('--seed', type=int, default=2323,
@@ -94,13 +96,22 @@ torch.manual_seed(seed)
 if args.cuda:
     torch.cuda.manual_seed(seed)
 
-# Loader used for training data
-train_dataset_loader = dataHandler.myLoader(dataset.myData, transform=dataset.train_transform,
-                                            cuda=args.cuda)
+if args.load_ram:
+    # Loader used for training data
+    train_dataset_loader = dataHandler.myLoaderRAM(dataset.myData, transform=dataset.train_transform,
+                                                cuda=args.cuda)
 
-# Loader used for training data
-val_dataset_loader = dataHandler.myLoader(dataset_val.myData, transform=dataset.test_transform,
-                                            cuda=args.cuda)
+    # Loader used for training data
+    val_dataset_loader = dataHandler.myLoaderRAM(dataset_val.myData, transform=dataset.test_transform,
+                                                cuda=args.cuda)
+else:
+    # Loader used for training data
+    train_dataset_loader = dataHandler.myLoader(dataset.myData, transform=dataset.train_transform,
+                                                cuda=args.cuda)
+
+    # Loader used for training data
+    val_dataset_loader = dataHandler.myLoader(dataset_val.myData, transform=dataset.test_transform,
+                                              cuda=args.cuda)
 
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
