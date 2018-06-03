@@ -63,7 +63,7 @@ class SmartDoc(Dataset):
                     self.labels.append((ast.literal_eval(test)))
         self.labels = np.array(self.labels)
 
-        self.labels = np.reshape(self.labels, (-1, 8))*32
+        self.labels = np.reshape(self.labels, (-1, 8))
         logger.debug("Ground Truth Shape: %s", str(self.labels.shape))
         logger.debug("Data shape %s", str(len(self.data)))
 
