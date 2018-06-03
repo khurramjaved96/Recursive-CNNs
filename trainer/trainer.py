@@ -58,4 +58,4 @@ class Trainer(GenericTrainer):
             self.optimizer.step()
 
         lossAvg/=len(self.train_iterator)
-        logger.info("Avg Loss %s", str(lossAvg).cpu().data.numpy())
+        logger.info("Avg Loss %s", str((lossAvg).cpu().data.numpy()))

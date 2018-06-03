@@ -57,6 +57,6 @@ class DocumentMseEvaluator():
                 # logger.debug("Cur loss %s", str(loss))
 
         lossAvg /= len(iterator)
-        logger.info("Avg Val Loss %s", str(lossAvg).cpu().data.numpy())
+        logger.info("Avg Val Loss %s", str((lossAvg).cpu().data.numpy()))
 
 
