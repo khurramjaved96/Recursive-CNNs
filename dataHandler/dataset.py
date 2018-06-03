@@ -35,6 +35,8 @@ class SmartDoc(Dataset):
 
     def __init__(self, directory="data"):
         super().__init__("smartdoc")
+        self.data = []
+        self.labels = []
         for d in directory:
             self.directory = d
             self.train_transform = transforms.Compose([transforms.Resize([32, 32]),
@@ -48,8 +50,7 @@ class SmartDoc(Dataset):
 
             self.classes_list = {}
 
-            self.data = []
-            self.labels = []
+
 
             file_names = []
             with open(os.path.join(self.directory, "gt.csv"), 'r') as csvfile:

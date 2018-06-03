@@ -63,7 +63,7 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                             # # cv2.imwrite("asda.jpg", img)
 
                             cv2.imwrite(output_dir + "/" +str(angle)+str(random_crop)+ image, img_crop)
-                            spamwriter_1.writerow((str(angle)+str(random_crop)+ image, gt_crop))
+                            spamwriter_1.writerow((str(angle)+str(random_crop)+ image, tuple(list(gt_crop))))
 
                             # clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
                             # cl1 = clahe.apply(img_crop)
