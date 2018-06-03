@@ -25,9 +25,9 @@ logger = logging.getLogger('iCARL')
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                     help='input batch size for training (default: 64)')
-parser.add_argument('--lr', type=float, default=0.000001, metavar='LR',
+parser.add_argument('--lr', type=float, default=0.005, metavar='LR',
                     help='learning rate (default: 2.0)')
-parser.add_argument('--schedule', type=int, nargs='+', default=[20, 30, 40],
+parser.add_argument('--schedule', type=int, nargs='+', default=[10, 20, 30],
                     help='Decrease learning rate at these epochs.')
 parser.add_argument('--gammas', type=float, nargs='+', default=[0.2, 0.2, 0.2],
                     help='LR is multiplied by gamma on schedule, number of gammas should be equal to schedule')
@@ -49,7 +49,7 @@ parser.add_argument('--outputDir', default="../",
                     help='Directory to store the results; a new folder "DDMMYYYY" will be created '
                          'in the specified directory to save the results.')
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
-parser.add_argument('--epochs', type=int, default=70, help='Number of epochs for each increment')
+parser.add_argument('--epochs', type=int, default=40, help='Number of epochs for each increment')
 parser.add_argument('--dataset', default="SmartDoc", help='Dataset to be used; example CIFAR, MNIST')
 parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of train data")
 parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of val data")
