@@ -111,7 +111,7 @@ class CifarResNet(nn.Module):
         x = F.relu(self.bn_1(x), inplace=True)
         x = self.stage_1(x)
         x = self.stage_2(x)
-        x = self.stage_3(x)
+        # x = self.stage_3(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
