@@ -45,6 +45,7 @@ class myLoaderRAM(td.Dataset):
 
     def loadInRam(self):
         self.loaded_data = []
+        logger.info("Loading data in RAM")
         for i in tqdm.tqdm(self.data[0]):
             img = Image.open(i)
             if self.transform is not None:

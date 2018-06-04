@@ -1,5 +1,5 @@
-''' Incremental-Classifier Learning
- Authors : Khurram Javed, Muhammad Talha Paracha
+''' Recursive CNN
+ Authors : Khurram Javed
  Maintainer : Khurram Javed
  Lab : TUKL-SEECS R&D Lab
  Email : 14besekjaved@seecs.edu.pk '''
@@ -7,7 +7,6 @@ from __future__ import print_function
 
 import argparse
 import logging
-import sys
 
 import torch
 import torch.utils.data as td
@@ -15,10 +14,7 @@ import torch.utils.data as td
 import dataHandler
 import experiment as ex
 import model
-import plotter as plt
 import trainer
-
-import utils.Colorer
 
 logger = logging.getLogger('iCARL')
 
@@ -53,8 +49,10 @@ parser.add_argument('--outputDir', default="../",
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
 parser.add_argument('--epochs', type=int, default=40, help='Number of epochs for each increment')
 parser.add_argument('--dataset', default="document", help='Dataset to be used; example CIFAR, MNIST')
-parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of train data")
-parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64", help="input Directory of val data")
+parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
+                    help="input Directory of train data")
+parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
+                    help="input Directory of val data")
 
 args = parser.parse_args()
 
@@ -83,7 +81,6 @@ logger.addHandler(fh)
 logger.addHandler(fh2)
 logger.addHandler(ch)
 
-
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 dataset = dataHandler.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
@@ -99,11 +96,11 @@ if args.cuda:
 if args.load_ram:
     # Loader used for training data
     train_dataset_loader = dataHandler.myLoaderRAM(dataset.myData, transform=dataset.train_transform,
-                                                cuda=args.cuda)
+                                                   cuda=args.cuda)
 
     # Loader used for training data
     val_dataset_loader = dataHandler.myLoaderRAM(dataset_val.myData, transform=dataset.test_transform,
-                                                cuda=args.cuda)
+                                                 cuda=args.cuda)
 else:
     # Loader used for training data
     train_dataset_loader = dataHandler.myLoader(dataset.myData, transform=dataset.train_transform,
@@ -117,21 +114,20 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
 # Iterator to iterate over training data.
 train_iterator = torch.utils.data.DataLoader(train_dataset_loader,
-                                         batch_size=args.batch_size, shuffle=True, **kwargs)
+                                             batch_size=args.batch_size, shuffle=True, **kwargs)
 
 # Iterator to iterate over training data.
 val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
-                                         batch_size=args.batch_size, shuffle=True, **kwargs)
+                                           batch_size=args.batch_size, shuffle=True, **kwargs)
 
 # Get the required model
 myModel = model.ModelFactory.get_model(args.model_type, args.dataset)
 if args.cuda:
     myModel.cuda()
 
-
 # Define the optimizer used in the experiment
 optimizer = torch.optim.SGD(myModel.parameters(), args.lr, momentum=args.momentum,
-                        weight_decay=args.decay, nesterov=True)
+                            weight_decay=args.decay, nesterov=True)
 
 # Trainer object used for training
 my_trainer = trainer.Trainer(train_iterator, myModel, args.cuda, optimizer)
@@ -145,6 +141,5 @@ for epoch in range(0, args.epochs):
     my_trainer.train(epoch)
     my_eval.evaluate(my_trainer.model, val_iterator)
 
-torch.save(myModel.state_dict(), my_experiment.path+"ModelState_final")
+torch.save(myModel.state_dict(), my_experiment.path + "ModelState_final")
 my_experiment.store_json()
-

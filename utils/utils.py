@@ -129,7 +129,6 @@ def intersection_with_corection(a, b, img):
     img1 = cv2.warpPerspective(img1, mat, tuple((img.shape[0], img.shape[1])))
     img2 = cv2.warpPerspective(img2, mat, tuple((img.shape[0], img.shape[1])))
 
-
     img1 = np.sum(img1, axis=2)
     img1 = img1 / 255
     img2 = np.sum(img2, axis=2)
@@ -140,5 +139,3 @@ def intersection_with_corection(a, b, img):
     iou = np.sum(inte) / np.sum(union)
     print(iou)
     return iou
-
-
