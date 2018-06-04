@@ -84,17 +84,9 @@ if __name__ == '__main__':
                                     sum_array = myGtTemp.sum(axis=1)
                                     tl_index = np.argmin(sum_array)
                                     tl = myGt[tl_index]
+                                    tr = myGt[(tl_index + 1) % 4]
                                     br = myGt[(tl_index + 2) % 4]
-                                    ptr1 = myGt[(tl_index + 1) % 4]
-
-                                    slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
-                                    y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
-                                    if y_pred < ptr1[1]:
-                                        bl = ptr1
-                                        tr = myGt[(tl_index + 3) % 4]
-                                    else:
-                                        tr = ptr1
-                                        bl = myGt[(tl_index + 3) % 4]
+                                    bl = myGt[(tl_index + 3) % 4]
 
 
                                     tl = [round(a, 4) for a in tl]
@@ -105,11 +97,6 @@ if __name__ == '__main__':
                                     img = cv2.resize(img, (64, 64))
                                     no=0
                                     gt_crop = np.array([tl, tr, br, bl])
-                                    # for a in range(0,4):
-                                    #     no+=1
-                                    #     cv2.circle(img, tuple(((gt_crop[a]*64).astype(int))), 2,(255-no*60,no*60,0),9)
-                                    # # cv2.imwrite("asda.jpg", img)
-
 
                                     cv2.imwrite(output_dir + "/" + folder + file + image, img)
                                     spamwriter.writerow((folder + file + image, (tl, tr, br, bl)))

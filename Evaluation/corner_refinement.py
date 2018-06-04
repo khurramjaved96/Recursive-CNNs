@@ -25,7 +25,7 @@ class corner_finder():
 
         o_img = np.copy(img)
 
-        y = None
+        y = [0,0]
         x_start = 0
         y_start = 0
         up_scale_factor = (img.shape[1], img.shape[0])
@@ -76,7 +76,7 @@ class corner_finder():
         ans_x += y[0]
         ans_y += y[1]
         end = time.time()
-        print("Time to refine corners", end - start)
+        # print("Time to refine corners", end - start)
 
         return (int(round(ans_x)), int(round(ans_y)))
 

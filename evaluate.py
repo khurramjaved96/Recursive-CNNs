@@ -64,7 +64,8 @@ if __name__ == '__main__':
                                 myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
                                                    list_of_points["bl"]))
 
-                                sum_array = myGt.sum(axis=1)
+                                myGtTemp = myGt * myGt
+                                sum_array = myGtTemp.sum(axis=1)
                                 tl_index = np.argmin(sum_array)
                                 tl = myGt[tl_index]
                                 br = myGt[(tl_index + 2) % 4]
@@ -73,13 +74,14 @@ if __name__ == '__main__':
                                 slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
                                 # print "SLOPE = ", slope
                                 y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
+                                y_zero = int(slope * (0 - br[0]) + br[1])
                                 if y_pred < ptr1[1]:
                                     bl = ptr1
                                     tr = myGt[(tl_index + 3) % 4]
                                 else:
                                     tr = ptr1
                                     bl = myGt[(tl_index + 3) % 4]
-                                    # print tl, tr, br, bl
+
                                 list_of_points["tr"] = tr
                                 list_of_points["tl"] = tl
                                 list_of_points["br"] = br

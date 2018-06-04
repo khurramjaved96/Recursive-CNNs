@@ -7,7 +7,6 @@
 import model.resnet32 as resnet
 import model.testModel as tm
 
-
 class ModelFactory():
     def __init__(self):
         pass

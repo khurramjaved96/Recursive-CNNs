@@ -48,7 +48,8 @@ class Trainer(GenericTrainer):
             response = self.model(Variable(img))
             # print (response[0])
             # print (target[0])
-            loss = F.l1_loss(response, Variable(target.float()))
+            loss = F.mse_loss(response, Variable(target.float()))
+            loss = torch.sqrt(loss)
             if lossAvg is None:
                 lossAvg = loss
             else:
