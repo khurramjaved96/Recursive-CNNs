@@ -1,22 +1,19 @@
-''' Recursive CNN
- Authors : Khurram Javed
+''' Document Localization using Recursive CNN
  Maintainer : Khurram Javed
- Lab : TUKL-SEECS R&D Lab
- Email : 14besekjaved@seecs.edu.pk '''
+ Email : kjaved@ualberta.ca '''
+
 from __future__ import print_function
 
 import argparse
-import logging
 
 import torch
 import torch.utils.data as td
 
-import dataHandler
+import DataLoader
 import experiment as ex
 import model
 import trainer
-
-logger = logging.getLogger('iCARL')
+from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
@@ -49,6 +46,7 @@ parser.add_argument('--outputDir', default="../",
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
 parser.add_argument('--epochs', type=int, default=40, help='Number of epochs for each increment')
 parser.add_argument('--dataset', default="document", help='Dataset to be used; example CIFAR, MNIST')
+parser.add_argument('--loader', default="hdd", help='Dataset to be used; example CIFAR, MNIST')
 parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
                     help="input Directory of train data")
 parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
@@ -59,33 +57,14 @@ args = parser.parse_args()
 # Define an experiment.
 my_experiment = ex.experiment(args.name, args)
 
-# Adding support for logging. A .log is generated with all the logs. Logs are also stored in a temp file one directory
-# before the code repository
-logger = logging.getLogger('iCARL')
-logger.setLevel(logging.DEBUG)
-
-fh = logging.FileHandler(my_experiment.path + ".log")
-fh.setLevel(logging.DEBUG)
-
-fh2 = logging.FileHandler("../temp.log")
-fh2.setLevel(logging.DEBUG)
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-fh2.setFormatter(formatter)
-
-logger.addHandler(fh)
-logger.addHandler(fh2)
-logger.addHandler(ch)
+# Add logging support
+logger = utils.setup_logger(my_experiment.path)
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
-dataset = dataHandler.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
+dataset = DataLoader.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
 
-dataset_val = dataHandler.DatasetFactory.get_dataset(args.validation_dirs, args.dataset)
+dataset_val = DataLoader.DatasetFactory.get_dataset(args.validation_dirs, args.dataset)
 
 # Fix the seed.
 seed = args.seed
@@ -93,29 +72,18 @@ torch.manual_seed(seed)
 if args.cuda:
     torch.cuda.manual_seed(seed)
 
-if args.load_ram:
-    # Loader used for training data
-    train_dataset_loader = dataHandler.myLoaderRAM(dataset.myData, transform=dataset.train_transform,
-                                                   cuda=args.cuda)
-
-    # Loader used for training data
-    val_dataset_loader = dataHandler.myLoaderRAM(dataset_val.myData, transform=dataset.test_transform,
-                                                 cuda=args.cuda)
-else:
-    # Loader used for training data
-    train_dataset_loader = dataHandler.myLoader(dataset.myData, transform=dataset.train_transform,
-                                                cuda=args.cuda)
-
-    # Loader used for training data
-    val_dataset_loader = dataHandler.myLoader(dataset_val.myData, transform=dataset.test_transform,
-                                              cuda=args.cuda)
-
+train_dataset_loader = DataLoader.LoaderFactory.get_loader(args.loader, dataset.myData,
+                                                           transform=dataset.train_transform,
+                                                           cuda=args.cuda)
+# Loader used for training data
+val_dataset_loader = DataLoader.LoaderFactory.get_loader(args.loader, dataset_val.myData,
+                                                         transform=dataset.test_transform,
+                                                         cuda=args.cuda)
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
 # Iterator to iterate over training data.
 train_iterator = torch.utils.data.DataLoader(train_dataset_loader,
                                              batch_size=args.batch_size, shuffle=True, **kwargs)
-
 # Iterator to iterate over training data.
 val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
                                            batch_size=args.batch_size, shuffle=True, **kwargs)
@@ -141,5 +109,5 @@ for epoch in range(0, args.epochs):
     my_trainer.train(epoch)
     my_eval.evaluate(my_trainer.model, val_iterator)
 
-torch.save(myModel.state_dict(), my_experiment.path + "ModelState_final")
+torch.save(myModel.state_dict(), my_experiment.path + args.dataset + "_modelstate_dictionary")
 my_experiment.store_json()

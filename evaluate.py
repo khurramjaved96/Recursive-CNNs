@@ -1,121 +1,59 @@
-import os
-import xml.etree.ElementTree as ET
+import argparse
+import time
 
 import numpy as np
-import tensorflow as tf
-from PIL import Image
+import torch
 
+import DataLoader
+import DataLoader.dataset as dataset
 import Evaluation.corner_refinement as corner_refinement
 import Evaluation.getcorners as getcorners
 from utils import utils
-
+from PIL import Image
+parser = argparse.ArgumentParser(description='iCarl2.0')
+parser.add_argument('--no-cuda', action='store_true', default=False,
+                    help='disables CUDA training')
+parser.add_argument('--debug', action='store_true', default=True,
+                    help='Debug messages')
+parser.add_argument('--model-type', default="resnet",
+                    help='model type to be used. Example : resnet32, resnet20, densenet, test')
+parser.add_argument('--name', default="noname",
+                    help='Name of the experiment')
+parser.add_argument('--outputDir', default="../",
+                    help='Directory to store the results; a new folder "DDMMYYYY" will be created '
+                         'in the specified directory to save the results.')
+parser.add_argument('--dataset', default="document", help='Dataset to be used; example CIFAR, MNIST')
+parser.add_argument('--loader', default="hdd", help='Dataset to be used; example CIFAR, MNIST')
+parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/smartdocframestest",
+                    help="input Directory of test data")
+args = parser.parse_args()
+args.cuda = not args.no_cuda and torch.cuda.is_available()
 if __name__ == '__main__':
-    tf.reset_default_graph()
+    corner_refiner = getcorners.GetCorners("../documentModel")
+    corner_detector = corner_refinement.corner_finder("../cornerModel2")
+    test_set_dir = args.data_dir
+    iou_results = []
+    dataset_test = dataset.SmartDocDirectories(test_set_dir)
+    for data_elem in dataset_test.myData:
+        img_path = data_elem[0]
+        target = data_elem[1].reshape((4,2))
+        img = np.array(Image.open(img_path))
+        start = time.clock()
+        data = corner_refiner.get(img)
+        corner_address = []
+        for b in data:
+            a = b[0]
+            temp = np.array(corner_detector.get_location(a, 0.85))
+            temp[0] += b[1]
+            temp[1] += b[2]
+            corner_address.append(temp)
 
-    corner_e = getcorners.GetCorners()
-    model = corner_refinement.corner_finder()
-    dir = "/Users/khurramjaved96/smartdocframestest"
-    import csv
+        end = time.clock()
+        print("TOTAL TIME : ", end - start)
+        r2 = utils.intersection_with_corection(target, np.array(corner_address), img)
 
-    ans = []
-    ans2 = []
+        assert (r2 > 0 and r2 < 1)
+        iou_results.append(r2)
+        print("MEAN CORRECTED: ", np.mean(np.array(iou_results)))
 
-    with open('../bg1_2.csv', 'a') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for folder in os.listdir(dir):
-            a = 0
-            print(str(folder))
-            if (os.path.isdir(dir + "/" + folder)):
-                for file in os.listdir(dir + "/" + folder):
-                    images_dir = dir + "/" + folder + "/" + file
-                    if (os.path.isdir(images_dir)):
-
-                        list_gt = []
-                        tree = ET.parse(images_dir + "/" + file + ".gt")
-                        root = tree.getroot()
-                        for a in root.iter("frame"):
-                            list_gt.append(a)
-
-                        im_no = 0
-                        for image in os.listdir(images_dir):
-                            if image.endswith(".jpg"):
-                                print(im_no)
-                                im_no += 1
-
-                                # Now we have opened the file and GT. Write code to create multiple files and scale gt
-                                list_of_points = {}
-
-                                # img = cv2.imread(images_dir + "/" + image)
-                                img = np.array(Image.open(images_dir + "/" + image))
-                                print("IMAGE NAME = ", images_dir + "/" + image)
-                                for point in list_gt[int(float(image[0:-4])) - 1].iter("point"):
-                                    myDict = point.attrib
-
-                                    list_of_points[myDict["name"]] = (
-                                        int(float(myDict['x'])), int(float(myDict['y'])))
-                                299
-
-                                doc_height = min(list_of_points["bl"][1] - list_of_points["tl"][1],
-                                                 list_of_points["br"][1] - list_of_points["tr"][1])
-                                doc_width = min(list_of_points["br"][0] - list_of_points["bl"][0],
-                                                list_of_points["tr"][0] - list_of_points["tl"][0])
-
-                                myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
-                                                   list_of_points["bl"]))
-
-                                myGtTemp = myGt * myGt
-                                sum_array = myGtTemp.sum(axis=1)
-                                tl_index = np.argmin(sum_array)
-                                tl = myGt[tl_index]
-                                br = myGt[(tl_index + 2) % 4]
-                                ptr1 = myGt[(tl_index + 1) % 4]
-
-                                slope = (float(tl[1] - br[1])) / float(tl[0] - br[0])
-                                # print "SLOPE = ", slope
-                                y_pred = int(slope * (ptr1[0] - br[0]) + br[1])
-                                y_zero = int(slope * (0 - br[0]) + br[1])
-                                if y_pred < ptr1[1]:
-                                    bl = ptr1
-                                    tr = myGt[(tl_index + 3) % 4]
-                                else:
-                                    tr = ptr1
-                                    bl = myGt[(tl_index + 3) % 4]
-
-                                list_of_points["tr"] = tr
-                                list_of_points["tl"] = tl
-                                list_of_points["br"] = br
-                                list_of_points["bl"] = bl
-
-                                myGt = np.asarray((list_of_points["tl"], list_of_points["tr"], list_of_points["br"],
-                                                   list_of_points["bl"]))
-
-                                import time
-
-                                result = np.copy(img)
-
-                                start = time.clock()
-                                data = corner_e.get(img)
-                                # print time.clock() - start
-
-
-                                corner_address = []
-                                print("Gets here")
-
-                                for b in data:
-                                    a = b[0]
-
-                                    temp = np.array(model.get_location(a))
-                                    temp[0] += b[1]
-                                    temp[1] += b[2]
-                                    corner_address.append(temp)
-
-                                end = time.clock()
-                                print("TOTAL TIME : ", end - start)
-                                r2 = utils.intersection_with_corection(myGt, np.array(corner_address), img)
-                                spamwriter.writerow((images_dir + "/" + image, np.array((tl, tr, br, bl)),
-                                                     np.array(corner_address), r2))
-                                if r2 < 1 and r2 > 0:
-                                    ans2.append(r2)
-                                print("MEAN CORRECTED: ", np.mean(np.array(ans2)))
-    print(np.mean(np.array(ans2)))
+    print(np.mean(np.array(iou_results)))

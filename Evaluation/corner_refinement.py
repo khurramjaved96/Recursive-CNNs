@@ -8,7 +8,7 @@ import model
 
 
 class corner_finder():
-    def __init__(self, CHECKPOINT_DIR="../cornerModel"):
+    def __init__(self, CHECKPOINT_DIR):
 
         self.model = model.ModelFactory.get_model("resnet", "corner")
         self.model.load_state_dict(torch.load(CHECKPOINT_DIR, map_location='cpu'))

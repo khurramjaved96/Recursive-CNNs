@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class Net(nn.Module):
-    def __init__(self, noClasses, channels=3):
-        super(Net, self).__init__()
+class cornerModel(nn.Module):
+    def __init__(self, noClasses=2, channels=3):
+        super(cornerModel, self).__init__()
         self.conv1 = nn.Conv2d(channels, 4, kernel_size=5, padding=(2, 2))
         self.conv2 = nn.Conv2d(4, 6, kernel_size=5, padding=(2, 2))
         self.conv2_bn1 = nn.BatchNorm2d(6)

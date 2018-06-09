@@ -8,7 +8,7 @@ from PIL import Image
 logger = logging.getLogger('iCARL')
 
 
-class myLoader(td.Dataset):
+class HddLoader(td.Dataset):
     def __init__(self, data, transform=None, cuda=False):
         self.data = data
 
@@ -34,7 +34,7 @@ class myLoader(td.Dataset):
 
         return img, target
 
-class myLoaderRAM(td.Dataset):
+class RamLoader(td.Dataset):
     def __init__(self, data, transform=None, cuda=False):
         self.data = data
 
@@ -69,7 +69,7 @@ class myLoaderRAM(td.Dataset):
 
 
 
-class myLoaderDecoded(td.Dataset):
+class SingleFolderLoaderResized(td.Dataset):
     '''
     This loader class decodes all the images into tensors; this removes the decoding time.
     '''
@@ -89,7 +89,7 @@ class myLoaderDecoded(td.Dataset):
         for i in tqdm.tqdm(self.data):
             i = i[0]
             img = Image.open(i)
-            img = img.resize((300, 300), PIL.Image.ANTIALIAS)
+            img = img.resize((32, 32), PIL.Image.ANTIALIAS)
             img.save(i)
 
     def __len__(self):
@@ -111,6 +111,3 @@ class myLoaderDecoded(td.Dataset):
 
         return img, target
 
-
-if __name__ == "__main__":
-    pass

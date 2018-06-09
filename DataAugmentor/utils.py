@@ -118,19 +118,28 @@ def getCorners(img,gt):
         images_list.append(cut_image)
         gt_list.append((a,b))
     return images_list, gt_list
-def __get_cords(cord, min_start, max_end, size = 299 , buf = 5, random_scale=True):
-    #size = max(abs(cord-min_start), abs(cord-max_end))
-    iter=0
-    if(random_scale):
-        size/= random.randint(1,4)
-    while(max_end - min_start)<size:
-        size=size*.9
-    x_start = random.randint(int(min(max(min_start, cord-size+buf), cord-buf-1)), cord-buf)
-    while(x_start+size> max_end):
-        x_start = random.randint(int(min(max(min_start,int(cord - size + buf)),cord-buf-1)), cord - buf)
-        size=size*.999
-        iter+=1
-        if(iter==1000):
-            x_start= min_start
+
+def __get_cords(cord, min_start, max_end, size=299, buf=5, random_scale=True):
+    # size = max(abs(cord-min_start), abs(cord-max_end))
+    iter = 0
+    if (random_scale):
+        size /= random.randint(1, 4)
+    while (max_end - min_start) < size:
+        size = size * .9
+    temp = random.normalvariate(size / 2, size / 10)
+    x_start = cord - temp
+    x_start = max(0, min(max(0, x_start), cord - (size / 10)))
+    x_start = int(x_start)
+    while (x_start + size > max_end):
+        # x_start = random.randint(int(min(max(min_start, int(cord - size + buf)), cord - buf - 1)), cord - buf)
+        temp = random.normalvariate(size / 2, size / 10)
+        x_start = cord - temp
+
+        x_start = min(max(0, x_start), cord - 1)
+        x_start = int(x_start)
+        size = size * .999
+        iter += 1
+        if (iter == 1000):
+            x_start = min_start
             break
-    return (x_start, int(x_start+size))
+    return (x_start, int(x_start + size))

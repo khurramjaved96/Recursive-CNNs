@@ -8,7 +8,7 @@ import model
 
 
 class GetCorners:
-    def __init__(self, checkpoint_dir="../documentModel"):
+    def __init__(self, checkpoint_dir):
         self.model = model.ModelFactory.get_model("resnet", 'document')
         self.model.load_state_dict(torch.load(checkpoint_dir, map_location='cpu'))
         if torch.cuda.is_available():
@@ -35,12 +35,12 @@ class GetCorners:
         # x = response[[0, 2, 4, 6]]
         # y = response[[1, 3, 5, 7]]
 
-        if response[0]<response[6]:
-            x = response[[0, 6, 4, 2]]
-            y = response[[1, 7, 5, 3]]
-        else:
-            x = response[[0, 2, 4, 6]]
-            y = response[[1, 3, 5, 7]]
+        # if response[0]<response[6]:
+        #     x = response[[0, 6, 4, 2]]
+        #     y = response[[1, 7, 5, 3]]
+        # else:
+        x = response[[0, 2, 4, 6]]
+        y = response[[1, 3, 5, 7]]
 
         x = x * myImage.shape[1]
         y = y * myImage.shape[0]

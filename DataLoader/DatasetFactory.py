@@ -4,7 +4,7 @@
  Lab : TUKL-SEECS R&D Lab
  Email : 14besekjaved@seecs.edu.pk '''
 
-import dataHandler.dataset as data
+import DataLoader.dataset as data
 
 
 class DatasetFactory:
