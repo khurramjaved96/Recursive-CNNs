@@ -54,6 +54,7 @@ class SmartDoc(Dataset):
             self.classes_list = {}
 
             file_names = []
+            print (self.directory, "gt.csv")
             with open(os.path.join(self.directory, "gt.csv"), 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 import ast

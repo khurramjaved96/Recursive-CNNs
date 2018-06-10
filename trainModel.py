@@ -28,6 +28,8 @@ parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                     help='SGD momentum (default: 0.9)')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
+parser.add_argument('--pretrain', action='store_false', default=True,
+                    help='Pretrain the model on CIFAR dataset?')
 parser.add_argument('--load-ram', action='store_true', default=False,
                     help='Load data in ram')
 parser.add_argument('--debug', action='store_true', default=True,
@@ -92,6 +94,8 @@ val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
 myModel = model.ModelFactory.get_model(args.model_type, args.dataset)
 if args.cuda:
     myModel.cuda()
+
+# Should I pretrain the model on CIFAR?
 
 # Define the optimizer used in the experiment
 optimizer = torch.optim.SGD(myModel.parameters(), args.lr, momentum=args.momentum,

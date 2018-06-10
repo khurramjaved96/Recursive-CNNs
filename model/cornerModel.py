@@ -18,7 +18,7 @@ class cornerModel(nn.Module):
         self.conv5_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(48, 100)
         self.fc = nn.Linear(100, noClasses)
-        self.featureSize = 48
+
 
     def forward(self, x):
 

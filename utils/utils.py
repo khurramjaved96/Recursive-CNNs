@@ -1,89 +1,7 @@
-import csv
-import math
 import random
 
 import cv2
 import numpy as np
-
-
-def load_data(DATA_DIR, GT_DIR, size=(300, 300), debug=False, limit=-1, remove_background=0):
-    gt_list = []
-    file_names = []
-    image_list = []
-    with open(GT_DIR, 'r') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        import ast
-        a = 0
-        temp = 0
-        for row in spamreader:
-            if row[0][0:12] == "background0" + str(remove_background):
-                print(row[0])
-                continue
-            temp += 1
-            if (temp == limit):
-                break
-            file_names.append(row[0])
-            gt_list.append((ast.literal_eval(row[1])[0], ast.literal_eval(row[1])[1]))
-    if (debug):
-        print("GT Loaded : ", len(gt_list), " Files")
-    gt_list = np.array(gt_list)
-    counter = 0
-    for a in file_names:
-        img = cv2.imread(DATA_DIR + "/" + a)
-        img = cv2.resize(img, size)
-        image_list.append(img)
-        counter += 1
-
-    print(len(image_list))
-
-    image_list = np.array(image_list)
-    print(image_list.shape)
-    print(gt_list.shape)
-    print(gt_list[0])
-    return image_list, gt_list, file_names
-
-
-def load_data_4(DATA_DIR, GT_DIR, size=(300, 300), debug=False, limit=-1, remove_background=0):
-    gt_list = []
-    file_names = []
-    image_list = []
-
-    with open(GT_DIR, 'r') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        import ast
-        a = 0
-        temp = 0
-        for row in spamreader:
-            # print row
-            if row[0][0:12] == "background0" + str(remove_background):
-                print(row[0])
-                continue
-            temp += 1
-            if (temp == limit):
-                break
-
-            file_names.append(row[0])
-            test = row[1].replace("array", "")
-            gt_list.append((ast.literal_eval(test)))
-    gt_list = np.array(gt_list)
-    print("GT SHAPE : ", gt_list.shape)
-    if (debug):
-        print("GT Loaded : ", len(gt_list), " Files")
-    counter = 0
-    for a in file_names:
-        img = cv2.imread(DATA_DIR + "/" + a)
-        img = cv2.resize(img, size)
-        image_list.append(img)
-        counter += 1
-    print(len(image_list))
-
-    print(gt_list[0])
-    gt_list = np.reshape(gt_list, (-1, 8))
-    print(gt_list[0])
-
-    image_list = np.array(image_list)
-
-    return image_list, gt_list, file_names
 
 
 def unison_shuffled_copies(a, b):
@@ -110,14 +28,11 @@ def intersection(a, b, img):
     iou = np.sum(inte) / np.sum(union)
     print(iou)
     return iou
-    print(np.sum(inte))
-    print(np.sum(union))
 
 
 def intersection_with_corection(a, b, img):
     img1 = np.zeros_like(img)
     cv2.fillConvexPoly(img1, a, (255, 0, 0))
-    # cv2.fillConvexPoly(img1,a,(255,0,0))
 
     img2 = np.zeros_like(img)
     cv2.fillConvexPoly(img2, b, (255, 0, 0))
@@ -154,13 +69,6 @@ def rotate(img, gt, angle):
     gt = gt.astype(np.float64)
     for a in range(0, 4):
         gt[a] = np.dot(mat[..., 0:2], gt[a]) + mat[..., 2]
-    a = float(angle) * math.pi / 180
-
-    # gt[0,0] = gt[3,0] = img.shape[1]*math.sin(float(angle)*math.pi/180)*cos(a)
-    # gt[0,1] = gt[1,1] = R2 math.sin(a) - W*(sin(a)**2)
-    # gt[1,0] = gt[2,0] = gt[0,0]+H
-    # gt[2,1] = gt[3,1] = gt[1,1] + W
-    # gt = gt.astype(np.int32)
     return img, gt
 
 
@@ -181,6 +89,7 @@ def random_crop(img, gt):
 
     myGt = gt - (start_x, start_y)
     myGt = myGt * (1.0 / img.shape[1], 1.0 / img.shape[0])
+
     myGtTemp = myGt * myGt
     sum_array = myGtTemp.sum(axis=1)
     tl_index = np.argmin(sum_array)
@@ -192,7 +101,7 @@ def random_crop(img, gt):
     return img, (tl, tr, br, bl)
 
 
-def getCorners(img, gt):
+def get_corners(img, gt):
     gt = gt.astype(int)
     list_of_points = {}
     myGt = gt
@@ -282,10 +191,10 @@ def __get_cords(cord, min_start, max_end, size=299, buf=5, random_scale=True):
         if (iter == 1000):
             x_start = min_start
             break
-    assert(x_start>=0)
-    assert (x_start<cord)
-    assert(x_start+size<=max_end)
-    assert (x_start+size>cord)
+    assert (x_start >= 0)
+    assert (x_start < cord)
+    assert (x_start + size <= max_end)
+    assert (x_start + size > cord)
     return (x_start, int(x_start + size))
 
 
@@ -312,13 +221,14 @@ def setup_logger(path):
     logger.addHandler(ch)
     return logger
 
+
 def sort_gt(gt):
     '''
     Sort the ground truth labels so that TL corresponds to the label with smallest distance from O
     :param gt: 
     :return: sorted gt
     '''
-    myGtTemp = gt*gt
+    myGtTemp = gt * gt
     sum_array = myGtTemp.sum(axis=1)
     tl_index = np.argmin(sum_array)
     tl = gt[tl_index]
