@@ -11,7 +11,7 @@ This is a new and improved implementation of the paper (Improved in the sense th
 2. Self-collected dataset : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
 3. Synthetic Dataset created by S.A Abbas and S.ul.Hussan [2] : https://drive.google.com/open?id=0B0ZBpkjFckxyNms0Smp0RWFsdTQ
 
-## Training Code
+## Preparing Dataset
  
 To prepare dataset for training, run the following command following: 
 
@@ -33,6 +33,8 @@ python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_tr
 You can also download a version of this data in the right format from here: 
 https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sharing
 
+## Training using generated data
+
 Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
 
 ``` bash
@@ -46,6 +48,10 @@ And to train the corner refiner model, simple specify "--dataset corner" in the 
 The results of the experiments will be stored in "../DateOfExperiment/NameOfExperiment." You can also specify the output directory using the --outputDir parameter. 
 
 Note that you can use multiple datasets by providing a list in -i parameter. Finally, the --loader parameter specifies if the data is loaded in ram initially or not. If you have enough memory, it's better to load the data in ram (Otherwise the hard-drive can be a bottleneck). With a fast SSD, it might not be necessary to load the data in ram. 
+
+## Evaluating Performance 
+
+You can evaluate the performance of the code using evaluate.py file. For now, you will have to hardcode the model state dictionary in the evaluate.py script. Also make sure that the correct version of the model is loading by changing model type in getcorners.py and corner_refinement.py. I'll shift to a better, parameter based approach soon. 
 
 Email : kjaved@ualberta.ca in-case of any queries. 
 
