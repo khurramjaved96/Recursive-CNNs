@@ -14,6 +14,7 @@ import experiment as ex
 import model
 import trainer
 from utils import utils
+import utils.Colorer
 import torchvision
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
@@ -123,6 +124,7 @@ if args.pretrain:
             logger.warning(name)
         else:
             logger.info(name)
+        counter+=1
 
 # Define the optimizer used in the experiment
 optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, myModel.parameters()), args.lr,
