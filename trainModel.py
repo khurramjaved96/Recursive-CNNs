@@ -14,7 +14,6 @@ import experiment as ex
 import model
 import trainer
 from utils import utils, Colorer
-import torchvision
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
@@ -103,7 +102,7 @@ if args.pretrain:
 
     # Define the optimizer used in the experiment
     cifar_optimizer = torch.optim.SGD(myModel.parameters(), args.lr, momentum=args.momentum,
-                                weight_decay=args.decay, nesterov=True)
+                                      weight_decay=args.decay, nesterov=True)
 
     # Trainer object used for training
     cifar_trainer = trainer.CIFARTrainer(train_iterator_cifar, myModel, args.cuda, cifar_optimizer)
@@ -113,23 +112,22 @@ if args.pretrain:
         cifar_trainer.update_lr(epoch, [30, 45, 60], args.gammas)
         cifar_trainer.train(epoch)
 
-#     Freeze the model
-    counter=0
+    #     Freeze the model
+    counter = 0
     for name, param in myModel.named_parameters():
         # Getting the length of total layers so I can freeze x% of layers
         gen_len = sum(1 for _ in myModel.parameters())
-        if counter<int(gen_len*0.5):
+        if counter < int(gen_len * 0.5):
             param.requires_grad = False
             logger.warning(name)
         else:
             logger.info(name)
-        counter+=1
+        counter += 1
 
 # Define the optimizer used in the experiment
 optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, myModel.parameters()), args.lr,
                             momentum=args.momentum,
                             weight_decay=args.decay, nesterov=True)
-
 
 # Trainer object used for training
 my_trainer = trainer.Trainer(train_iterator, myModel, args.cuda, optimizer)

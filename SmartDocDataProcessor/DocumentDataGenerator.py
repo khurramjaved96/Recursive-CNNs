@@ -53,18 +53,17 @@ if __name__ == '__main__':
                                         list_of_points[myDict["name"]] = (
                                             int(float(myDict['x'])), int(float(myDict['y'])))
 
-
                                     ptr1 = (
-                                    min(list_of_points["tl"][0], list_of_points["bl"][0], list_of_points["tr"][0],
-                                        list_of_points["br"][0]),
-                                    min(list_of_points["tr"][1], list_of_points["tl"][1], list_of_points["br"][1],
-                                        list_of_points["bl"][1]))
+                                        min(list_of_points["tl"][0], list_of_points["bl"][0], list_of_points["tr"][0],
+                                            list_of_points["br"][0]),
+                                        min(list_of_points["tr"][1], list_of_points["tl"][1], list_of_points["br"][1],
+                                            list_of_points["bl"][1]))
 
                                     ptr2 = (
-                                    max(list_of_points["tl"][0], list_of_points["bl"][0], list_of_points["tr"][0],
-                                        list_of_points["br"][0]),
-                                    max(list_of_points["tr"][1], list_of_points["tl"][1], list_of_points["br"][1],
-                                        list_of_points["bl"][1]))
+                                        max(list_of_points["tl"][0], list_of_points["bl"][0], list_of_points["tr"][0],
+                                            list_of_points["br"][0]),
+                                        max(list_of_points["tr"][1], list_of_points["tl"][1], list_of_points["br"][1],
+                                            list_of_points["bl"][1]))
 
                                     start_x = np.random.randint(0, ptr1[0] - 2)
                                     start_y = np.random.randint(0, ptr1[1] - 2)
@@ -78,9 +77,8 @@ if __name__ == '__main__':
 
                                     img = img[start_y:end_y, start_x:end_x]
 
-
-                                    myGt = myGt*(1.0 / img.shape[1], 1.0 / img.shape[0])
-                                    myGtTemp = myGt*myGt
+                                    myGt = myGt * (1.0 / img.shape[1], 1.0 / img.shape[0])
+                                    myGtTemp = myGt * myGt
                                     sum_array = myGtTemp.sum(axis=1)
                                     tl_index = np.argmin(sum_array)
                                     tl = myGt[tl_index]
@@ -88,14 +86,13 @@ if __name__ == '__main__':
                                     br = myGt[(tl_index + 2) % 4]
                                     bl = myGt[(tl_index + 3) % 4]
 
-
                                     tl = [round(a, 4) for a in tl]
                                     tr = [round(a, 4) for a in tr]
                                     br = [round(a, 4) for a in br]
                                     bl = [round(a, 4) for a in bl]
 
                                     img = cv2.resize(img, (64, 64))
-                                    no=0
+                                    no = 0
                                     gt_crop = np.array([tl, tr, br, bl])
 
                                     cv2.imwrite(output_dir + "/" + folder + file + image, img)

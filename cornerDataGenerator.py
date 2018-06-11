@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     # Dataset iterator
     dataset_test = dataset.SmartDocDirectories(input_directory)
-    with open(args.outputFiles + 'gt.csv', 'a') as csvfile:
+    with open(os.path.join(args.output_dir, 'gt.csv'), 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # Counter for file naming
@@ -49,6 +49,6 @@ if __name__ == '__main__':
                         img_store = cv2.resize(img_list[a], (64, 64))
                         # cv2.circle(img_store, tuple(list((np.array(gt_store)*64).astype(int))), 2, (255, 0, 0), 2)
 
-                        cv2.imwrite(args.outputFiles + f_name + str(a) + str(angle) + str(random_crop) + ".jpg",
+                        cv2.imwrite(os.path.join(args.output_dir, f_name + str(a) + str(angle) + str(random_crop) + ".jpg"),
                                     img_store, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
                         spamwriter.writerow((f_name + str(a) + str(angle) + str(random_crop) + ".jpg", tuple(gt_store)))

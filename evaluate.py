@@ -3,12 +3,12 @@ import time
 
 import numpy as np
 import torch
+from PIL import Image
 
 import DataLoader.dataset as dataset
 import Evaluation.corner_refinement as corner_refinement
 import Evaluation.getcorners as getcorners
 from utils import utils
-from PIL import Image
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -24,19 +24,19 @@ parser.add_argument('--outputDir', default="../",
                          'in the specified directory to save the results.')
 parser.add_argument('--dataset', default="document", help='Dataset to be used; example CIFAR, MNIST')
 parser.add_argument('--loader', default="hdd", help='Dataset to be used; example CIFAR, MNIST')
-parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/bg5",
+parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/smartdocframestest",
                     help="input Directory of test data")
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 if __name__ == '__main__':
-    corners_extractor = getcorners.GetCorners("../documentModel")
-    corner_refiner = corner_refinement.corner_finder("../cornerModel2")
+    corners_extractor = getcorners.GetCorners("../documentModelPre")
+    corner_refiner = corner_refinement.corner_finder("../cornerModel3")
     test_set_dir = args.data_dir
     iou_results = []
     dataset_test = dataset.SmartDocDirectories(test_set_dir)
     for data_elem in dataset_test.myData:
         img_path = data_elem[0]
-        target = data_elem[1].reshape((4,2))
+        target = data_elem[1].reshape((4, 2))
         img_array = np.array(Image.open(img_path))
         computation_start_time = time.clock()
         extracted_corners = corners_extractor.get(img_array)

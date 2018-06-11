@@ -7,11 +7,15 @@
 from __future__ import print_function
 
 import logging
+
 from torch.autograd import Variable
+
 logger = logging.getLogger('iCARL')
 import torch.nn.functional as F
 import torch
 from tqdm import tqdm
+
+
 class GenericTrainer:
     '''
     Base class for trainer; to implement a new training routine, inherit from this. 
@@ -28,6 +32,7 @@ class Trainer(GenericTrainer):
         self.train_iterator = train_iterator
         self.model = model
         self.optimizer = optimizer
+
     def update_lr(self, epoch, schedule, gammas):
         for temp in range(0, len(schedule)):
             if schedule[temp] == epoch:
@@ -40,7 +45,7 @@ class Trainer(GenericTrainer):
 
     def train(self, epoch):
         self.model.train()
-        lossAvg=None
+        lossAvg = None
         for img, target in tqdm(self.train_iterator):
             if self.cuda:
                 img, target = img.cuda(), target.cuda()
@@ -53,12 +58,12 @@ class Trainer(GenericTrainer):
             if lossAvg is None:
                 lossAvg = loss
             else:
-                lossAvg+= loss
+                lossAvg += loss
             # logger.debug("Cur loss %s", str(loss))
             loss.backward()
             self.optimizer.step()
 
-        lossAvg/=len(self.train_iterator)
+        lossAvg /= len(self.train_iterator)
         logger.info("Avg Loss %s", str((lossAvg).cpu().data.numpy()))
 
 
@@ -69,7 +74,8 @@ class CIFARTrainer(GenericTrainer):
         self.train_iterator = train_iterator
         self.model = model
         self.optimizer = optimizer
-        self.criterion =  torch.nn.CrossEntropyLoss()
+        self.criterion = torch.nn.CrossEntropyLoss()
+
     def update_lr(self, epoch, schedule, gammas):
         for temp in range(0, len(schedule)):
             if schedule[temp] == epoch:
@@ -79,7 +85,6 @@ class CIFARTrainer(GenericTrainer):
                     logger.debug("Changing learning rate from %0.9f to %0.9f", self.current_lr,
                                  self.current_lr * gammas[temp])
                     self.current_lr *= gammas[temp]
-
 
     def train(self, epoch):
         self.model.train()
@@ -100,5 +105,5 @@ class CIFARTrainer(GenericTrainer):
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-        logger.info("Accuracy : %s", str((correct*100)/total))
-        return correct/total
+        logger.info("Accuracy : %s", str((correct * 100) / total))
+        return correct / total

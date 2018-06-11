@@ -177,21 +177,31 @@ def __get_cords(cord, min_start, max_end, size=299, buf=5, random_scale=True):
         size /= random.randint(1, 4)
     while (max_end - min_start) < size:
         size = size * .9
-    temp = random.normalvariate(size / 2, size / 10)
-    x_start = cord - temp
+    temp=-1
+    while (temp<1):
+        temp = random.normalvariate(size / 2, size / 6)
+    x_start = max(cord - temp, min_start)
     x_start = int(x_start)
+    if x_start>=cord:
+        print ("XSTART AND CORD", x_start, cord)
     assert (x_start < cord)
-    while ((x_start < 0) or (x_start + size > max_end)):
+    while ((x_start < min_start) or (x_start + size > max_end) or (x_start+size<=cord)):
         # x_start = random.randint(int(min(max(min_start, int(cord - size + buf)), cord - buf - 1)), cord - buf)
-        temp = random.normalvariate(size / 2, size / 10)
-        x_start = cord - temp
+        temp = -1
+        while (temp < 1):
+            temp = random.normalvariate(size / 2, size / 6)
+        temp = max(temp, 1)
+        x_start = max(cord - temp, min_start)
         x_start = int(x_start)
         size = size * .995
         iter += 1
         if (iter == 1000):
-            x_start = min_start
+            x_start = int(cord-(size/2))
+            print ("Gets here")
             break
     assert (x_start >= 0)
+    if x_start>=cord:
+        print ("XSTART AND CORD", x_start, cord)
     assert (x_start < cord)
     assert (x_start + size <= max_end)
     assert (x_start + size > cord)
