@@ -2,21 +2,10 @@
 
 ![alt text](https://khurramjaved96.github.io/random/recursiveCNN.png "Logo Title Text 1")
 
-Paper available at : https://khurramjaved96.github.io
+Paper available at : www.ualberta.ca/~kjaved
 
-## Demo
-To test the system, you can use the pretrained models by:
-
-``` bash
-usage: python detectDocument.py [-i IMAGEPATH] [-o OUTPUTPATH]
-                         [-rf RETAINFACTOR] [-cm CORNERMODEL]
-                         [-dm DOCUMENTMODEL]
-```
-For example:
-``` bash
-python detectDocument.py -i TrainedModel/img.jpg -o ./result.jpg -rf 0.85
-```
-would run the pretrained model on the sample image in the repository. 
+## NOTE 
+This is a new and improved implementation of the paper (Improved in the sense that the code is better commented and structured). If you are interested in the Tensorflow implementation which was used in the paper, please checkout the "server_branch" branch of this repository. 
 
 ## Datasets 
 1. SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
@@ -24,8 +13,7 @@ would run the pretrained model on the sample image in the repository.
 3. Synthetic Dataset created by S.A Abbas and S.ul.Hussan [2] : https://drive.google.com/open?id=0B0ZBpkjFckxyNms0Smp0RWFsdTQ
 
 ## Training Code
-Training code is mostly for reference only. It's not well documented or commented and it would be easier to re-implement the model from the paper than using this code. However I will be refactoring the code in the coming days to make it more accesible. 
-
+ 
 To prepare dataset for training, run the following command following: 
 
 ``` bash
@@ -48,11 +36,18 @@ https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sha
 
 Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
 
+``` bash
+python trainModel.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2 --lr 0.5 --schedule 20 30 35  -v pathToValidationSet --batch-size 16 --model-type resnet --loader ram
+``` 
 
-Email : 14besekjaved@seecs.edu.pk in-case of any queries. 
+The results of the experiments will be stored in "../DateOfExperiment/NameOfExperiment." You can also specify the output directory using the --outputDir parameter. 
+
+Note that you can use multiple datasets by providing a list in -i parameter. Finally, the --loader parameter specifies if the data is loaded in ram initially or not. If you have enough memory, it's better to load the data in ram (Otherwise the hard-drive can be a bottleneck). With a fast SSD, it might not be necessary to load the data in ram. 
+
+Email : kjaved@ualberta.ca in-case of any queries. 
 
 ## Note
-To those working on this problem, I would encourage trying out fully connected neural networks (Or some variant of pixel level segmentation network) as well; in my limited experiments, they are able to out-perform my method quite easily, and are more robust to unseen backgrounds (Probably because they are able to utilize context information of the whole page when making the prediction). They do tend to be a bit slower and require more memory though (Because a high-res image is used as input.) 
+To those working on this problem, I would encourage trying out fully connected neural networks (Or some variant of pixel level segmentation network) as well; in my limited experiments, they are able to out-perform my method quite easily, and are more robust to unseen backgrounds (Probably because they are able to utilize context information of the whole page when making the prediction). They do tend to be a bit slower and require more memory though (Because a high-res image is used as input.) I might release my implemented of FCN based detector soon as well depending on my schedule. 
 
 ## Citing work 
 If you end up using our code or dataset in your research, please consider citing:
