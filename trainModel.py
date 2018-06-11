@@ -14,6 +14,7 @@ import experiment as ex
 import model
 import trainer
 from utils import utils
+import torchvision
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
@@ -28,7 +29,7 @@ parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                     help='SGD momentum (default: 0.9)')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
-parser.add_argument('--pretrain', action='store_false', default=True,
+parser.add_argument('--pretrain', action='store_true', default=False,
                     help='Pretrain the model on CIFAR dataset?')
 parser.add_argument('--load-ram', action='store_true', default=False,
                     help='Load data in ram')
@@ -96,16 +97,42 @@ if args.cuda:
     myModel.cuda()
 
 # Should I pretrain the model on CIFAR?
+if args.pretrain:
+    trainset = DataLoader.DatasetFactory.get_dataset(None, "CIFAR")
+    train_iterator_cifar = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True, num_workers=2)
+
+    # Define the optimizer used in the experiment
+    cifar_optimizer = torch.optim.SGD(myModel.parameters(), args.lr, momentum=args.momentum,
+                                weight_decay=args.decay, nesterov=True)
+
+    # Trainer object used for training
+    cifar_trainer = trainer.CIFARTrainer(train_iterator_cifar, myModel, args.cuda, cifar_optimizer)
+
+    for epoch in range(0, 70):
+        logger.info("Epoch : %d", epoch)
+        cifar_trainer.update_lr(epoch, args.schedule, args.gammas)
+        cifar_trainer.train(epoch)
+
+#     Freeze the model
+    counter=0
+    for name, param in myModel.named_parameters():
+        if counter<int(len(myModel.parameters())*0.5):
+            param.requires_grad = False
+            logger.warning(name)
+        else:
+            logger.info(name)
 
 # Define the optimizer used in the experiment
-optimizer = torch.optim.SGD(myModel.parameters(), args.lr, momentum=args.momentum,
+optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, myModel.parameters()), args.lr,
+                            momentum=args.momentum,
                             weight_decay=args.decay, nesterov=True)
+
 
 # Trainer object used for training
 my_trainer = trainer.Trainer(train_iterator, myModel, args.cuda, optimizer)
 
 # Evaluator
-my_eval = trainer.EvaluatorFactory.get_evaluator("mse", args.cuda)
+my_eval = trainer.EvaluatorFactory.get_evaluator("rmse", args.cuda)
 # Running epochs_class epochs
 for epoch in range(0, args.epochs):
     logger.info("Epoch : %d", epoch)

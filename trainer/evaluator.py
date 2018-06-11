@@ -24,8 +24,8 @@ class EvaluatorFactory():
         pass
 
     @staticmethod
-    def get_evaluator(testType="mse", cuda=True):
-        if testType == "mse":
+    def get_evaluator(testType="rmse", cuda=True):
+        if testType == "rmse":
             return DocumentMseEvaluator(cuda)
 
 

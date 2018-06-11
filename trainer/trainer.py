@@ -60,3 +60,45 @@ class Trainer(GenericTrainer):
 
         lossAvg/=len(self.train_iterator)
         logger.info("Avg Loss %s", str((lossAvg).cpu().data.numpy()))
+
+
+class CIFARTrainer(GenericTrainer):
+    def __init__(self, train_iterator, model, cuda, optimizer):
+        super().__init__()
+        self.cuda = cuda
+        self.train_iterator = train_iterator
+        self.model = model
+        self.optimizer = optimizer
+        self.criterion =  torch.nn.CrossEntropyLoss()
+    def update_lr(self, epoch, schedule, gammas):
+        for temp in range(0, len(schedule)):
+            if schedule[temp] == epoch:
+                for param_group in self.optimizer.param_groups:
+                    self.current_lr = param_group['lr']
+                    param_group['lr'] = self.current_lr * gammas[temp]
+                    logger.debug("Changing learning rate from %0.9f to %0.9f", self.current_lr,
+                                 self.current_lr * gammas[temp])
+                    self.current_lr *= gammas[temp]
+
+
+    def train(self, epoch):
+        self.model.train()
+        train_loss = 0
+        correct = 0
+        total = 0
+        for inputs, targets in tqdm(self.train_iterator):
+            if self.cuda:
+                inputs, targets = inputs.cuda(), targets.cuda()
+            self.optimizer.zero_grad()
+            outputs = self.model(Variable(inputs), pretrain=True)
+            loss = self.criterion(outputs, Variable(targets))
+            loss.backward()
+            self.optimizer.step()
+
+            train_loss += loss.item()
+            _, predicted = outputs.max(1)
+            total += targets.size(0)
+            correct += predicted.eq(targets).sum().item()
+
+            logger.info("Accuracy : %s", str((correct*100)/total))
+        return correct/total

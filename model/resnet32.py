@@ -79,6 +79,7 @@ class CifarResNet(nn.Module):
         self.stage_3 = self._make_layer(block, 64, layer_blocks, 2)
         self.avgpool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64 * block.expansion, num_classes)
+        self.fc2 = nn.Linear(64 * block.expansion, 100)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -105,7 +106,7 @@ class CifarResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(self, x, pretrain=False):
 
         x = self.conv_1_3x3(x)
         x = F.relu(self.bn_1(x), inplace=True)
@@ -114,6 +115,8 @@ class CifarResNet(nn.Module):
         x = self.stage_3(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
+        if pretrain:
+            return self.fc2(x)
         x = self.fc(x)
         return x
 
