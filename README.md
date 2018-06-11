@@ -37,7 +37,9 @@ https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sha
 Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
 
 ``` bash
-python trainModel.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2 --lr 0.5 --schedule 20 30 35  -v pathToValidationSet --batch-size 16 --model-type resnet --loader ram
+python trainModel.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2 
+--lr 0.5 --schedule 20 30 35  -v pathToValidationSet --batch-size 16 
+--model-type resnet --loader ram
 ``` 
 
 The results of the experiments will be stored in "../DateOfExperiment/NameOfExperiment." You can also specify the output directory using the --outputDir parameter. 
