@@ -108,7 +108,7 @@ if args.pretrain:
     # Trainer object used for training
     cifar_trainer = trainer.CIFARTrainer(train_iterator_cifar, myModel, args.cuda, cifar_optimizer)
 
-    for epoch in range(0, 70):
+    for epoch in range(0, 7):
         logger.info("Epoch : %d", epoch)
         cifar_trainer.update_lr(epoch, [30, 45, 60], args.gammas)
         cifar_trainer.train(epoch)
@@ -116,7 +116,9 @@ if args.pretrain:
 #     Freeze the model
     counter=0
     for name, param in myModel.named_parameters():
-        if counter<int(len(myModel.parameters())*0.5):
+        # Getting the length of total layers so I can freeze x% of layers
+        gen_len = sum(1 for _ in myModel.parameters())
+        if counter<int(gen_len*0.5):
             param.requires_grad = False
             logger.warning(name)
         else:
