@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-import DataLoader.dataset as dataset
+import dataprocessor
 from utils import utils
 
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     import csv
 
     # Dataset iterator
-    dataset_test = dataset.SmartDocDirectories(input_directory)
+    dataset_test = dataprocessor.dataset.SmartDocDirectories(input_directory)
     with open(os.path.join(args.output_dir, 'gt.csv'), 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)

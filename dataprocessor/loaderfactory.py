@@ -4,7 +4,7 @@
 
 
 
-import DataLoader.Loaders as loader
+import dataprocessor.dataloaders as loader
 
 
 class LoaderFactory:

@@ -4,7 +4,7 @@
  Lab : TUKL-SEECS R&D Lab
  Email : 14besekjaved@seecs.edu.pk '''
 
-import DataLoader.dataset as data
+import dataprocessor.dataset as data
 import torchvision
 
 class DatasetFactory:

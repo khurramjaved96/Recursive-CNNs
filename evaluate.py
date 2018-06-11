@@ -5,9 +5,9 @@ import numpy as np
 import torch
 from PIL import Image
 
-import DataLoader.dataset as dataset
-import Evaluation.corner_refinement as corner_refinement
-import Evaluation.getcorners as getcorners
+import dataprocessor
+import evaluation.corner_refinement as corner_refinement
+import evaluation.getcorners as getcorners
 from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     corner_refiner = corner_refinement.corner_finder("../cornerResnet")
     test_set_dir = args.data_dir
     iou_results = []
-    dataset_test = dataset.SmartDocDirectories(test_set_dir)
+    dataset_test = dataprocessor.dataset.SmartDocDirectories(test_set_dir)
     for data_elem in dataset_test.myData:
         img_path = data_elem[0]
         target = data_elem[1].reshape((4, 2))

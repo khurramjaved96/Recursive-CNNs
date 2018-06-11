@@ -14,7 +14,7 @@ for image in os.listdir(dir):
                 no = 0
                 for row in spamwriter:
                     no+=1
-                    print row
+                    print (row)
                     img = cv2.circle(img, (int(float(row[0])), int(float(row[1]))), 2,(255-no*60,no*60,0),90)
                 img = cv2.resize(img, (300,300))
                 cv2.imshow("a",img)

@@ -9,11 +9,11 @@ import argparse
 import torch
 import torch.utils.data as td
 
-import DataLoader
+import dataprocessor
 import experiment as ex
 import model
 import trainer
-from utils import utils, Colorer
+from utils import utils, colorer
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
@@ -64,9 +64,9 @@ logger = utils.setup_logger(my_experiment.path)
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
-dataset = DataLoader.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
+dataset = dataprocessor.DatasetFactory.get_dataset(args.data_dirs, args.dataset)
 
-dataset_val = DataLoader.DatasetFactory.get_dataset(args.validation_dirs, args.dataset)
+dataset_val = dataprocessor.DatasetFactory.get_dataset(args.validation_dirs, args.dataset)
 
 # Fix the seed.
 seed = args.seed
@@ -74,13 +74,13 @@ torch.manual_seed(seed)
 if args.cuda:
     torch.cuda.manual_seed(seed)
 
-train_dataset_loader = DataLoader.LoaderFactory.get_loader(args.loader, dataset.myData,
-                                                           transform=dataset.train_transform,
-                                                           cuda=args.cuda)
+train_dataset_loader = dataprocessor.LoaderFactory.get_loader(args.loader, dataset.myData,
+                                                              transform=dataset.train_transform,
+                                                              cuda=args.cuda)
 # Loader used for training data
-val_dataset_loader = DataLoader.LoaderFactory.get_loader(args.loader, dataset_val.myData,
-                                                         transform=dataset.test_transform,
-                                                         cuda=args.cuda)
+val_dataset_loader = dataprocessor.LoaderFactory.get_loader(args.loader, dataset_val.myData,
+                                                            transform=dataset.test_transform,
+                                                            cuda=args.cuda)
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
 # Iterator to iterate over training data.
@@ -97,7 +97,7 @@ if args.cuda:
 
 # Should I pretrain the model on CIFAR?
 if args.pretrain:
-    trainset = DataLoader.DatasetFactory.get_dataset(None, "CIFAR")
+    trainset = dataprocessor.DatasetFactory.get_dataset(None, "CIFAR")
     train_iterator_cifar = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True, num_workers=2)
 
     # Define the optimizer used in the experiment

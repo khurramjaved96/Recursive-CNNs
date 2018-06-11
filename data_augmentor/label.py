@@ -26,7 +26,7 @@ for image in os.listdir(dir):
         else:
             fig = plt.figure()
             cid = fig.canvas.mpl_connect('button_press_event', onclick)
-            print dir+image
+            print (dir+image)
             current_file = dir+image
             img=mpimg.imread(dir+image)
             plt.imshow(img)

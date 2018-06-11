@@ -1,1 +1,1 @@
-from model.ModelFactory import *
+from model.modelfactory import *
