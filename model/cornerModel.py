@@ -76,5 +76,3 @@ class MobileNet(nn.Module):
         out = self.linear(out)
         return out
 
-
-d
