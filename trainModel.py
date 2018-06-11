@@ -13,8 +13,7 @@ import DataLoader
 import experiment as ex
 import model
 import trainer
-from utils import utils
-import utils.Colorer
+from utils import utils, Colorer
 import torchvision
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
