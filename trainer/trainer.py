@@ -100,5 +100,5 @@ class CIFARTrainer(GenericTrainer):
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            logger.info("Accuracy : %s", str((correct*100)/total))
+        logger.info("Accuracy : %s", str((correct*100)/total))
         return correct/total

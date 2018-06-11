@@ -110,7 +110,7 @@ if args.pretrain:
 
     for epoch in range(0, 70):
         logger.info("Epoch : %d", epoch)
-        cifar_trainer.update_lr(epoch, args.schedule, args.gammas)
+        cifar_trainer.update_lr(epoch, [30, 45, 60], args.gammas)
         cifar_trainer.train(epoch)
 
 #     Freeze the model
