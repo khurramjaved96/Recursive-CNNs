@@ -16,8 +16,8 @@ class cornerModel(nn.Module):
         self.conv5 = nn.Conv2d(10, 12, kernel_size=5, padding=(2, 2))
         self.conv5_bn3 = nn.BatchNorm2d(12)
         self.conv5_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(48, 100)
-        self.fc = nn.Linear(100, noClasses)
+        self.fc1 = nn.Linear(48, noClasses)
+        # self.fc = nn.Linear(100, noClasses)
 
 
     def forward(self, x):
@@ -28,6 +28,7 @@ class cornerModel(nn.Module):
         x = F.relu(F.max_pool2d(self.conv2_bn3(self.conv4(x)), 2))
         x = F.relu(F.max_pool2d(self.conv5_drop(self.conv5_bn3(self.conv5(x))), 2))
         x = x.view(x.size(0), -1)
-        x = F.dropout(x, training=self.training)
-        x = F.relu(self.fc1(x))
-        return self.fc(x)
+        return self.fc1(x)
+        # x = F.dropout(x, training=self.training)
+        # x = F.relu(self.fc1(x))
+        # return self.fc(x)

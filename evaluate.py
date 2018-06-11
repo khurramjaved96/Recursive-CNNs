@@ -12,14 +12,14 @@ from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 
-parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/smartdocframestest",
+parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/bg5",
                     help="input Directory of test data")
 
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
 if __name__ == '__main__':
     corners_extractor = getcorners.GetCorners("../documentModelNoPre")
-    corner_refiner = corner_refinement.corner_finder("../cornerModel3")
+    corner_refiner = corner_refinement.corner_finder("../cornerResnet")
     test_set_dir = args.data_dir
     iou_results = []
     dataset_test = dataset.SmartDocDirectories(test_set_dir)
@@ -29,21 +29,21 @@ if __name__ == '__main__':
         img_array = np.array(Image.open(img_path))
         computation_start_time = time.clock()
         extracted_corners = corners_extractor.get(img_array)
+        temp_time = time.clock()
         corner_address = []
         # Refine the detected corners using corner refiner
+        counter=0
         for corner in extracted_corners:
+            counter+=1
             corner_img = corner[0]
             refined_corner = np.array(corner_refiner.get_location(corner_img, 0.85))
-            # Converting from local co-ordinate to global co-ordinate of the image
-            # refined_corner[0] = corner_img.shape[1]/2
-            # refined_corner[1] = corner_img.shape[0]/2
 
+            # Converting from local co-ordinate to global co-ordinate of the image
             refined_corner[0] += corner[1]
             refined_corner[1] += corner[2]
 
             # Final results
             corner_address.append(refined_corner)
-
         computation_end_time = time.clock()
         print("TOTAL TIME : ", computation_end_time - computation_start_time)
         r2 = utils.intersection_with_corection(target, np.array(corner_address), img_array)
