@@ -26,9 +26,9 @@ class ModelFactory():
                 return resnet.resnet8(2)
         elif model_type == 'shallow':
             if dataset == 'document':
-                return tm.cornerModel(8)
+                return tm.MobileNet(8)
             elif dataset == 'corner':
-                return tm.cornerModel(2)
+                return tm.MobileNet(2)
         elif model_type =="squeeze":
             if dataset == 'document':
                 return models.squeezenet1_1(True)

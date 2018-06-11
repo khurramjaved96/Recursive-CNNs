@@ -1,34 +1,80 @@
+# Reference : Taken from https://github.com/kuangliu/pytorch-cifar
+
+# License
+# MIT License
+#
+# Copyright (c) 2017 liukuang
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+'''MobileNet in PyTorch.
+See the paper "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications"
+for more details.
+'''
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-class cornerModel(nn.Module):
-    def __init__(self, noClasses=2, channels=3):
-        super(cornerModel, self).__init__()
-        self.conv1 = nn.Conv2d(channels, 4, kernel_size=5, padding=(2, 2))
-        self.conv2 = nn.Conv2d(4, 6, kernel_size=5, padding=(2, 2))
-        self.conv2_bn1 = nn.BatchNorm2d(6)
-        self.conv3 = nn.Conv2d(6, 8, kernel_size=5, padding=(2, 2))
-        self.conv2_bn2 = nn.BatchNorm2d(8)
-        self.conv4 = nn.Conv2d(8, 10, kernel_size=5, padding=(2, 2))
-        self.conv2_bn3 = nn.BatchNorm2d(10)
-        self.conv5 = nn.Conv2d(10, 12, kernel_size=5, padding=(2, 2))
-        self.conv5_bn3 = nn.BatchNorm2d(12)
-        self.conv5_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(48, noClasses)
-        # self.fc = nn.Linear(100, noClasses)
-
+class Block(nn.Module):
+    '''Depthwise conv + Pointwise conv'''
+    def __init__(self, in_planes, out_planes, stride=1):
+        super(Block, self).__init__()
+        self.conv1 = nn.Conv2d(in_planes, in_planes, kernel_size=3, stride=stride, padding=1, groups=in_planes, bias=False)
+        self.bn1 = nn.BatchNorm2d(in_planes)
+        self.conv2 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=1, padding=0, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_planes)
 
     def forward(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(out)))
+        return out
 
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = self.conv2_bn1(self.conv2(x))
-        x = F.relu(F.max_pool2d(self.conv2_bn2(self.conv3(x)), 2))
-        x = F.relu(F.max_pool2d(self.conv2_bn3(self.conv4(x)), 2))
-        x = F.relu(F.max_pool2d(self.conv5_drop(self.conv5_bn3(self.conv5(x))), 2))
-        x = x.view(x.size(0), -1)
-        return self.fc1(x)
-        # x = F.dropout(x, training=self.training)
-        # x = F.relu(self.fc1(x))
-        # return self.fc(x)
+
+class MobileNet(nn.Module):
+    # (128,2) means conv planes=128, conv stride=2, by default conv stride=1
+    cfg = [64, (128,2), 128, (256,2), 256, (512,2), 512, 512, 512, 512, 512, (1024,2), 1024]
+
+    def __init__(self, num_classes=10):
+        super(MobileNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(32)
+        self.layers = self._make_layers(in_planes=32)
+        self.linear = nn.Linear(1024, num_classes)
+
+    def _make_layers(self, in_planes):
+        layers = []
+        for x in self.cfg:
+            out_planes = x if isinstance(x, int) else x[0]
+            stride = 1 if isinstance(x, int) else x[1]
+            layers.append(Block(in_planes, out_planes, stride))
+            in_planes = out_planes
+        return nn.Sequential(*layers)
+
+    def forward(self, x, pretrain=False):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.layers(out)
+        out = F.avg_pool2d(out, 2)
+        out = out.view(out.size(0), -1)
+        out = self.linear(out)
+        return out
+
+
+d
