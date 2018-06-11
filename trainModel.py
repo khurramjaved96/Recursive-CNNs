@@ -108,7 +108,7 @@ if args.pretrain:
     # Trainer object used for training
     cifar_trainer = trainer.CIFARTrainer(train_iterator_cifar, myModel, args.cuda, cifar_optimizer)
 
-    for epoch in range(0, 7):
+    for epoch in range(0, 70):
         logger.info("Epoch : %d", epoch)
         cifar_trainer.update_lr(epoch, [30, 45, 60], args.gammas)
         cifar_trainer.train(epoch)
