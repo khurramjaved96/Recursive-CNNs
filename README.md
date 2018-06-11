@@ -4,7 +4,6 @@
 
 Paper available at : www.ualberta.ca/~kjaved
 
-## NOTE 
 This is a new and improved implementation of the paper (Improved in the sense that the code is better commented and structured). If you are interested in the Tensorflow implementation which was used in the paper, please checkout the "server_branch" branch of this repository. 
 
 ## Datasets 
@@ -41,6 +40,8 @@ python trainModel.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2
 --lr 0.5 --schedule 20 30 35  -v pathToValidationSet --batch-size 16 
 --model-type resnet --loader ram
 ``` 
+
+And to train the corner refiner model, simple specify "--dataset corner" in the above command.
 
 The results of the experiments will be stored in "../DateOfExperiment/NameOfExperiment." You can also specify the output directory using the --outputDir parameter. 
 
