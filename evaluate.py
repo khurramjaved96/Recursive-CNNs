@@ -18,7 +18,7 @@ parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/smartdocf
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
 if __name__ == '__main__':
-    corners_extractor = getcorners.GetCorners("../documentModelPre")
+    corners_extractor = getcorners.GetCorners("../documentModelNoPre")
     corner_refiner = corner_refinement.corner_finder("../cornerModel3")
     test_set_dir = args.data_dir
     iou_results = []
@@ -35,8 +35,12 @@ if __name__ == '__main__':
             corner_img = corner[0]
             refined_corner = np.array(corner_refiner.get_location(corner_img, 0.85))
             # Converting from local co-ordinate to global co-ordinate of the image
+            # refined_corner[0] = corner_img.shape[1]/2
+            # refined_corner[1] = corner_img.shape[0]/2
+
             refined_corner[0] += corner[1]
             refined_corner[1] += corner[2]
+
             # Final results
             corner_address.append(refined_corner)
 

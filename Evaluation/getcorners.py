@@ -13,7 +13,7 @@ class GetCorners:
         self.model.load_state_dict(torch.load(checkpoint_dir, map_location='cpu'))
         if torch.cuda.is_available():
             self.model.cuda()
-
+        self.model.eval()
     def get(self, img):
 
         import time
@@ -27,8 +27,8 @@ class GetCorners:
         img_temp = img_temp.unsqueeze(0)
         if torch.cuda.is_available():
             img_temp = img_temp.cuda()
-
-        response = self.model(Variable(img_temp)).cpu().data.numpy()[0]
+        with torch.no_grad():
+            response = self.model(Variable(img_temp)).cpu().data.numpy()[0]
 
         response = np.array(response)
         #

@@ -14,7 +14,7 @@ class corner_finder():
         self.model.load_state_dict(torch.load(CHECKPOINT_DIR, map_location='cpu'))
         if torch.cuda.is_available():
             self.model.cuda()
-
+        self.model.eval()
     def get_location(self, img, retainFactor=0.85):
 
         import time
@@ -42,8 +42,8 @@ class corner_finder():
             img_temp = Image.fromarray(myImage)
             img_temp = test_transform(img_temp)
             img_temp = img_temp.unsqueeze(0)
-
-            response = self.model(Variable(img_temp)).cpu().data.numpy()
+            with torch.no_grad():
+                response = self.model(Variable(img_temp)).cpu().data.numpy()
             response = response[0]
             # response = np.array([0.5, 0.5])
             response_up = response
