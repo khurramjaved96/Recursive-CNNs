@@ -13,7 +13,7 @@ This is a new and improved implementation of the paper (Improved in the sense th
 4. Numpy
 5. tqdm 
 
-## Randomly selected test set images
+## Results on randomly selected test set images
 ![alt text](results/qualitativeResults.jpg "Qualitative Results")
 ## Datasets 
 1. SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
