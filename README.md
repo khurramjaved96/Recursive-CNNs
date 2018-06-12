@@ -1,6 +1,6 @@
 ## Khurram Javed, Faisal Shaifait "Real-time Document Localization in Natural Images by Recursive Application of a CNN" 
 
-![alt text](https://khurramjaved96.github.io/random/recursiveCNN.png "Logo Title Text 1")
+![alt text](https://khurramjaved96.github.io/random/recursiveCNN.png "Architecture")
 
 Paper available at : www.ualberta.ca/~kjaved
 
@@ -13,6 +13,8 @@ This is a new and improved implementation of the paper (Improved in the sense th
 4. Numpy
 5. tqdm 
 
+## Randomly selected test set images
+![alt text](results/qualitativeResults.jpg "Qualitative Results")
 ## Datasets 
 1. SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
 2. Self-collected dataset : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing

@@ -137,7 +137,7 @@ class SelfCollectedDataset(Dataset):
         self.labels = []
 
         for image in os.listdir(directory):
-            print (image)
+            # print (image)
             if image.endswith("jpg") or image.endswith("JPG"):
                 if os.path.isfile(os.path.join(directory, image + ".csv")):
                     with open(os.path.join(directory, image + ".csv"), 'r') as csvfile:

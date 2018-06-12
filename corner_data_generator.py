@@ -52,9 +52,9 @@ if __name__ == '__main__':
 
             corner_cords = target
 
-            for angle in range(0, 271, 90):
+            for angle in range(0, 1, 90):
                 img_rotate, gt_rotate = utils.rotate(img, corner_cords, angle)
-                for random_crop in range(0, 8):
+                for random_crop in range(0, 1):
                     img_list, gt_list = utils.get_corners(img_rotate, gt_rotate)
                     for a in range(0, 4):
                         counter += 1
