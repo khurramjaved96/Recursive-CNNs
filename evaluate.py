@@ -1,3 +1,7 @@
+''' Document Localization using Recursive CNN
+ Maintainer : Khurram Javed
+ Email : kjaved@ualberta.ca '''
+
 import argparse
 import time
 
@@ -7,7 +11,7 @@ from PIL import Image
 
 import dataprocessor
 import evaluation.corner_refinement as corner_refinement
-import evaluation.getcorners as getcorners
+import evaluation.corner_extractor as getcorners
 from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')

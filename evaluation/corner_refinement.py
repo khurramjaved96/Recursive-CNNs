@@ -1,7 +1,10 @@
+''' Document Localization using Recursive CNN
+ Maintainer : Khurram Javed
+ Email : kjaved@ualberta.ca '''
+
 import numpy as np
 import torch
 from PIL import Image
-from torch.autograd import Variable
 from torchvision import transforms
 
 import model
@@ -15,17 +18,15 @@ class corner_finder():
         if torch.cuda.is_available():
             self.model.cuda()
         self.model.eval()
+
     def get_location(self, img, retainFactor=0.85):
         with torch.no_grad():
-            import time
-
-            start = time.time()
             ans_x = 0.0
             ans_y = 0.0
 
             o_img = np.copy(img)
 
-            y = [0,0]
+            y = [0, 0]
             x_start = 0
             y_start = 0
             up_scale_factor = (img.shape[1], img.shape[0])
@@ -70,14 +71,12 @@ class corner_finder():
 
                 myImage = myImage[start_y:start_y + int(myImage.shape[0] * CROP_FRAC),
                           start_x:start_x + int(myImage.shape[1] * CROP_FRAC)]
-                img = img[start_y:start_y + int(img.shape[0] * CROP_FRAC), start_x:start_x + int(img.shape[1] * CROP_FRAC)]
+                img = img[start_y:start_y + int(img.shape[0] * CROP_FRAC),
+                      start_x:start_x + int(img.shape[1] * CROP_FRAC)]
                 up_scale_factor = (img.shape[1], img.shape[0])
 
             ans_x += y[0]
             ans_y += y[1]
-            end = time.time()
-            # print("Time to refine corners", end - start)
-
             return (int(round(ans_x)), int(round(ans_y)))
 
 

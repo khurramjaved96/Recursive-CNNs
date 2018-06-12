@@ -1,3 +1,7 @@
+''' Document Localization using Recursive CNN
+ Maintainer : Khurram Javed
+ Email : kjaved@ualberta.ca '''
+
 import numpy as np
 import torch
 from PIL import Image

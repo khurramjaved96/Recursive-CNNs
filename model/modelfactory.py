@@ -1,8 +1,6 @@
-''' Incremental-Classifier Learning 
- Authors : Khurram Javed
+''' Document Localization using Recursive CNN
  Maintainer : Khurram Javed
- Lab : TUKL-SEECS R&D Lab
- Email : 14besekjaved@seecs.edu.pk '''
+ Email : kjaved@ualberta.ca '''
 
 import model.resnet32 as resnet
 import model.cornerModel as tm

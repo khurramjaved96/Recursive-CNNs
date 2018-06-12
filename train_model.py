@@ -13,7 +13,7 @@ import dataprocessor
 import experiment as ex
 import model
 import trainer
-from utils import utils, colorer
+import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
@@ -42,7 +42,7 @@ parser.add_argument('--model-type', default="resnet",
                     help='model type to be used. Example : resnet32, resnet20, densenet, test')
 parser.add_argument('--name', default="noname",
                     help='Name of the experiment')
-parser.add_argument('--outputDir', default="../",
+parser.add_argument('--output-dir', default="../",
                     help='Directory to store the results; a new folder "DDMMYYYY" will be created '
                          'in the specified directory to save the results.')
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
@@ -57,7 +57,7 @@ parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurra
 args = parser.parse_args()
 
 # Define an experiment.
-my_experiment = ex.experiment(args.name, args)
+my_experiment = ex.experiment(args.name, args, args.output_dir)
 
 # Add logging support
 logger = utils.setup_logger(my_experiment.path)
@@ -112,7 +112,7 @@ if args.pretrain:
         cifar_trainer.update_lr(epoch, [30, 45, 60], args.gammas)
         cifar_trainer.train(epoch)
 
-    #     Freeze the model
+    # Freeze the model
     counter = 0
     for name, param in myModel.named_parameters():
         # Getting the length of total layers so I can freeze x% of layers

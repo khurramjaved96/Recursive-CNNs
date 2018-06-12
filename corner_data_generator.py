@@ -1,3 +1,7 @@
+''' Document Localization using Recursive CNN
+ Maintainer : Khurram Javed
+ Email : kjaved@ualberta.ca '''
+
 import os
 import cv2
 import numpy as np

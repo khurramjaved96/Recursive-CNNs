@@ -1,7 +1,7 @@
-
+# This is someone elses implementation of resnet optimized for CIFAR; I can't seem to find the repository again to reference the work.
+# I will keep on looking.
 import math
 
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init

@@ -1,3 +1,7 @@
+''' Document Localization using Recursive CNN
+ Maintainer : Khurram Javed
+ Email : kjaved@ualberta.ca '''
+
 import cv2
 import numpy as np
 
@@ -12,17 +16,17 @@ def args_processor():
     parser.add_argument("-rf", "--retainFactor", help="Floating point in range (0,1) specifying retain factor",
                         default="0.85")
     parser.add_argument("-cm", "--cornerModel", help="Model for corner point refinement",
-                        default="./TrainedModel/cornerRefiner.pb")
+                        default="../cornerResnet")
     parser.add_argument("-dm", "--documentModel", help="Model for document corners detection",
-                        default="./TrainedModel/getCorners.pb")
+                        default="../documentModelNoPre")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = args_processor()
 
-    corners_extractor = evaluation.getcorners.GetCorners("../documentModelNoPre")
-    corner_refiner = evaluation.corner_refinement.corner_finder("../cornerResnet")
+    corners_extractor = evaluation.corner_extractor.GetCorners(args.documentModel)
+    corner_refiner = evaluation.corner_refinement.corner_finder(args.cornerModel)
 
     img = cv2.imread(args.imagePath)
 
@@ -37,7 +41,7 @@ if __name__ == "__main__":
         corner_img = corner[0]
         refined_corner = np.array(corner_refiner.get_location(corner_img, 0.85))
 
-        # Converting from local co-ordinate to global co-ordinate of the image
+        # Converting from local co-ordinate to global co-ordinates of the image
         refined_corner[0] += corner[1]
         refined_corner[1] += corner[2]
 
@@ -48,5 +52,3 @@ if __name__ == "__main__":
         cv2.line(oImg, tuple(corner_address[a % 4]), tuple(corner_address[(a + 1) % 4]), (255, 0, 0), 4)
 
     cv2.imwrite(args.outputPath, oImg)
-    #
-    #
