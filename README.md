@@ -6,6 +6,13 @@ Paper available at : www.ualberta.ca/~kjaved
 
 This is a new and improved implementation of the paper (Improved in the sense that the code is better commented and structured). If you are interested in the Tensorflow implementation which was used in the paper, please checkout the "server_branch" branch of this repository. 
 
+## Dependencies
+1. Pytorch 0.4.0
+2. OpenCV
+3. PIL 
+4. Numpy
+5. tqdm 
+
 ## Datasets 
 1. SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
 2. Self-collected dataset : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
