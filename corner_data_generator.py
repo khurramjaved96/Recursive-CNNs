@@ -1,7 +1,6 @@
 import os
 import cv2
 import numpy as np
-from PIL import Image
 
 import dataprocessor
 from utils import utils
@@ -33,7 +32,6 @@ if __name__ == '__main__':
 
             img_path = data_elem[0]
             target = data_elem[1].reshape((4, 2))
-            img_array = np.array(Image.open(img_path))
             img = cv2.imread(img_path)
             corner_cords = target
 
@@ -49,6 +47,6 @@ if __name__ == '__main__':
                         img_store = cv2.resize(img_list[a], (64, 64))
                         # cv2.circle(img_store, tuple(list((np.array(gt_store)*64).astype(int))), 2, (255, 0, 0), 2)
 
-                        cv2.imwrite(os.path.join(args.output_dir, f_name + str(a) + str(angle) + str(random_crop) + ".jpg"),
+                        cv2.imwrite(os.path.join(args.output_dir, f_name + ".jpg"),
                                     img_store, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
-                        spamwriter.writerow((f_name + str(a) + str(angle) + str(random_crop) + ".jpg", tuple(gt_store)))
+                        spamwriter.writerow((f_name + ".jpg", tuple(gt_store)))
