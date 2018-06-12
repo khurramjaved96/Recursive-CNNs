@@ -10,8 +10,8 @@ import torch
 from PIL import Image
 
 import dataprocessor
-import evaluation.corner_refinement as corner_refinement
-import evaluation.corner_extractor as getcorners
+import evaluation
+
 from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
@@ -22,8 +22,8 @@ parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/bg5",
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
 if __name__ == '__main__':
-    corners_extractor = getcorners.GetCorners("../documentModelNoPre")
-    corner_refiner = corner_refinement.corner_finder("../cornerResnet")
+    corners_extractor = evaluation.corner_extractor.GetCorners("../documentModelNoPre")
+    corner_refiner = evaluation.corner_refiner.corner_finder("../cornerResnet")
     test_set_dir = args.data_dir
     iou_results = []
     dataset_test = dataprocessor.dataset.SmartDocDirectories(test_set_dir)

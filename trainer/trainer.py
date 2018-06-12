@@ -25,6 +25,7 @@ class GenericTrainer:
         pass
 
 
+
 class Trainer(GenericTrainer):
     def __init__(self, train_iterator, model, cuda, optimizer):
         super().__init__()

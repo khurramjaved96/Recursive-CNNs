@@ -1,8 +1,6 @@
-''' Incremental-Classifier Learning 
- Authors : Khurram Javed, Muhammad Talha Paracha
+''' Document Localization using Recursive CNN
  Maintainer : Khurram Javed
- Lab : TUKL-SEECS R&D Lab
- Email : 14besekjaved@seecs.edu.pk '''
+ Email : kjaved@ualberta.ca '''
 
 import dataprocessor.dataset as data
 import torchvision

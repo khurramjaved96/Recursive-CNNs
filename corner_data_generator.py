@@ -15,6 +15,7 @@ def args_processor():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input-dir", help="Path to data files (Extract images using video_to_image.py first")
     parser.add_argument("-o", "--output-dir", help="Directory to store results")
+    parser.add_argument("--dataset", default="smartdoc", help="'smartdoc' or 'selfcollected' dataset")
     return parser.parse_args()
 
 
@@ -26,7 +27,13 @@ if __name__ == '__main__':
     import csv
 
     # Dataset iterator
-    dataset_test = dataprocessor.dataset.SmartDocDirectories(input_directory)
+    if args.dataset=="smartdoc":
+        dataset_test = dataprocessor.dataset.SmartDocDirectories(input_directory)
+    elif args.dataset=="selfcollected":
+        dataset_test = dataprocessor.dataset.SelfCollectedDataset(input_directory)
+    else:
+        print ("Incorrect dataset type; please choose between smartdoc or selfcollected")
+        assert(False)
     with open(os.path.join(args.output_dir, 'gt.csv'), 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -37,11 +44,17 @@ if __name__ == '__main__':
             img_path = data_elem[0]
             target = data_elem[1].reshape((4, 2))
             img = cv2.imread(img_path)
+
+            if args.dataset=="selfcollected":
+                target = target / (img.shape[1], img.shape[0])
+                target = target * (1920, 1920)
+                img = cv2.resize(img, (1920, 1920))
+
             corner_cords = target
 
-            for angle in range(0, 1):
+            for angle in range(0, 271, 90):
                 img_rotate, gt_rotate = utils.rotate(img, corner_cords, angle)
-                for random_crop in range(0, 1):
+                for random_crop in range(0, 8):
                     img_list, gt_list = utils.get_corners(img_rotate, gt_rotate)
                     for a in range(0, 4):
                         counter += 1

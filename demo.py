@@ -26,7 +26,7 @@ if __name__ == "__main__":
     args = args_processor()
 
     corners_extractor = evaluation.corner_extractor.GetCorners(args.documentModel)
-    corner_refiner = evaluation.corner_refinement.corner_finder(args.cornerModel)
+    corner_refiner = evaluation.corner_refiner.corner_finder(args.cornerModel)
 
     img = cv2.imread(args.imagePath)
 
@@ -35,9 +35,9 @@ if __name__ == "__main__":
     extracted_corners = corners_extractor.get(oImg)
     corner_address = []
     # Refine the detected corners using corner refiner
-    counter = 0
+    image_name = 0
     for corner in extracted_corners:
-        counter += 1
+        image_name += 1
         corner_img = corner[0]
         refined_corner = np.array(corner_refiner.get_location(corner_img, 0.85))
 

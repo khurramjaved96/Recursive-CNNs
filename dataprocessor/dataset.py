@@ -1,8 +1,6 @@
-''' Incremental-Classifier Learning 
- Authors : Khurram Javed, Muhammad Talha Paracha
+''' Document Localization using Recursive CNN
  Maintainer : Khurram Javed
- Lab : TUKL-SEECS R&D Lab
- Email : 14besekjaved@seecs.edu.pk '''
+ Email : kjaved@ualberta.ca '''
 
 import csv
 import logging
@@ -117,6 +115,44 @@ class SmartDocDirectories(Dataset):
                                      list_of_points["bl"]))
                                 ground_truth = utils.sort_gt(ground_truth)
                                 self.labels.append(ground_truth)
+
+        self.labels = np.array(self.labels)
+
+        self.labels = np.reshape(self.labels, (-1, 8))
+        logger.debug("Ground Truth Shape: %s", str(self.labels.shape))
+        logger.debug("Data shape %s", str(len(self.data)))
+
+        self.myData = []
+        for a in range(len(self.data)):
+            self.myData.append([self.data[a], self.labels[a]])
+
+class SelfCollectedDataset(Dataset):
+    '''
+    Class to include MNIST specific details
+    '''
+
+    def __init__(self, directory="data"):
+        super().__init__("smartdoc")
+        self.data = []
+        self.labels = []
+
+        for image in os.listdir(directory):
+            print (image)
+            if image.endswith("jpg") or image.endswith("JPG"):
+                if os.path.isfile(os.path.join(directory, image + ".csv")):
+                    with open(os.path.join(directory, image + ".csv"), 'r') as csvfile:
+                        spamwriter = csv.reader(csvfile, delimiter=' ',
+                                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+                        img_path = os.path.join(directory, image)
+
+                        gt = []
+                        for row in spamwriter:
+                            gt.append(row)
+                        gt = np.array(gt).astype(np.float32)
+                        ground_truth = utils.sort_gt(gt)
+                        self.labels.append(ground_truth)
+                        self.data.append(img_path)
 
         self.labels = np.array(self.labels)
 

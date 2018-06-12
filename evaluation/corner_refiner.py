@@ -39,18 +39,16 @@ class corner_finder():
             CROP_FRAC = retainFactor
             while (myImage.shape[0] > 10 and myImage.shape[1] > 10):
 
-                # img_temp = cv2.resize(myImage, (32, 32))
                 img_temp = Image.fromarray(myImage)
                 img_temp = test_transform(img_temp)
                 img_temp = img_temp.unsqueeze(0)
 
                 response = self.model(img_temp).cpu().data.numpy()
                 response = response[0]
-                # response = np.array([0.5, 0.5])
+
                 response_up = response
 
                 response_up = response_up * up_scale_factor
-                # response_up = np.array(response_up[1], response_up[0])
                 y = response_up + (x_start, y_start)
                 x_loc = int(y[0])
                 y_loc = int(y[1])

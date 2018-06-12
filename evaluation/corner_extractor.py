@@ -5,7 +5,6 @@
 import numpy as np
 import torch
 from PIL import Image
-from torch.autograd import Variable
 from torchvision import transforms
 
 import model
@@ -18,46 +17,56 @@ class GetCorners:
         if torch.cuda.is_available():
             self.model.cuda()
         self.model.eval()
-    def get(self, img):
+
+    def get(self, pil_image):
         with torch.no_grad():
-            import time
-            myImage = np.copy(img)
-            img = Image.fromarray(img)
+            image_array = np.copy(pil_image)
+            pil_image = Image.fromarray(pil_image)
             test_transform = transforms.Compose([transforms.Resize([32, 32]),
                                                  transforms.ToTensor()])
-            img_temp = test_transform(img)
+            img_temp = test_transform(pil_image)
 
             img_temp = img_temp.unsqueeze(0)
             if torch.cuda.is_available():
                 img_temp = img_temp.cuda()
 
-            response = self.model(img_temp).cpu().data.numpy()[0]
+            model_prediction = self.model(img_temp).cpu().data.numpy()[0]
 
-            response = np.array(response)
+            model_prediction = np.array(model_prediction)
 
-            x = response[[0, 2, 4, 6]]
-            y = response[[1, 3, 5, 7]]
+            x_cords = model_prediction[[0, 2, 4, 6]]
+            y_cords = model_prediction[[1, 3, 5, 7]]
 
-            x = x * myImage.shape[1]
-            y = y * myImage.shape[0]
-            # print(x, y)
+            x_cords = x_cords * image_array.shape[1]
+            y_cords = y_cords * image_array.shape[0]
 
-            tl = myImage[max(0, int(2 * y[0] - (y[3] + y[0]) / 2)):int((y[3] + y[0]) / 2),
-                 max(0, int(2 * x[0] - (x[1] + x[0]) / 2)):int((x[1] + x[0]) / 2)]
+            # Extract the four corners of the image. Read "Region Extractor" in Section III of the paper for an explanation.
 
-            tr = myImage[max(0, int(2 * y[1] - (y[1] + y[2]) / 2)):int((y[1] + y[2]) / 2),
-                 int((x[1] + x[0]) / 2):min(myImage.shape[1] - 1, int(x[1] + (x[1] - x[0]) / 2))]
+            top_left = image_array[
+                       max(0, int(2 * y_cords[0] - (y_cords[3] + y_cords[0]) / 2)):int((y_cords[3] + y_cords[0]) / 2),
+                       max(0, int(2 * x_cords[0] - (x_cords[1] + x_cords[0]) / 2)):int((x_cords[1] + x_cords[0]) / 2)]
 
-            br = myImage[int((y[1] + y[2]) / 2):min(myImage.shape[0] - 1, int(y[2] + (y[2] - y[1]) / 2)),
-                 int((x[2] + x[3]) / 2):min(myImage.shape[1] - 1, int(x[2] + (x[2] - x[3]) / 2))]
+            top_right = image_array[
+                        max(0, int(2 * y_cords[1] - (y_cords[1] + y_cords[2]) / 2)):int((y_cords[1] + y_cords[2]) / 2),
+                        int((x_cords[1] + x_cords[0]) / 2):min(image_array.shape[1] - 1,
+                                                               int(x_cords[1] + (x_cords[1] - x_cords[0]) / 2))]
 
-            bl = myImage[int((y[0] + y[3]) / 2):min(myImage.shape[0] - 1, int(y[3] + (y[3] - y[0]) / 2)),
-                 max(0, int(2 * x[3] - (x[2] + x[3]) / 2)):int((x[3] + x[2]) / 2)]
+            bottom_right = image_array[int((y_cords[1] + y_cords[2]) / 2):min(image_array.shape[0] - 1, int(
+                y_cords[2] + (y_cords[2] - y_cords[1]) / 2)),
+                           int((x_cords[2] + x_cords[3]) / 2):min(image_array.shape[1] - 1,
+                                                                  int(x_cords[2] + (x_cords[2] - x_cords[3]) / 2))]
 
-            tl = (tl, max(0, int(2 * x[0] - (x[1] + x[0]) / 2)), max(0, int(2 * y[0] - (y[3] + y[0]) / 2)))
-            tr = (tr, int((x[1] + x[0]) / 2), max(0, int(2 * y[1] - (y[1] + y[2]) / 2)))
-            br = (br, int((x[2] + x[3]) / 2), int((y[1] + y[2]) / 2))
-            bl = (bl, max(0, int(2 * x[3] - (x[2] + x[3]) / 2)), int((y[0] + y[3]) / 2))
-            end = time.time()
-            # print("Time to Extract Corners", start - end)
-            return tl, tr, br, bl
+            bottom_left = image_array[int((y_cords[0] + y_cords[3]) / 2):min(image_array.shape[0] - 1, int(
+                y_cords[3] + (y_cords[3] - y_cords[0]) / 2)),
+                          max(0, int(2 * x_cords[3] - (x_cords[2] + x_cords[3]) / 2)):int(
+                              (x_cords[3] + x_cords[2]) / 2)]
+
+            top_left = (top_left, max(0, int(2 * x_cords[0] - (x_cords[1] + x_cords[0]) / 2)),
+                        max(0, int(2 * y_cords[0] - (y_cords[3] + y_cords[0]) / 2)))
+            top_right = (
+            top_right, int((x_cords[1] + x_cords[0]) / 2), max(0, int(2 * y_cords[1] - (y_cords[1] + y_cords[2]) / 2)))
+            bottom_right = (bottom_right, int((x_cords[2] + x_cords[3]) / 2), int((y_cords[1] + y_cords[2]) / 2))
+            bottom_left = (bottom_left, max(0, int(2 * x_cords[3] - (x_cords[2] + x_cords[3]) / 2)),
+                           int((y_cords[0] + y_cords[3]) / 2))
+
+            return top_left, top_right, bottom_right, bottom_left
