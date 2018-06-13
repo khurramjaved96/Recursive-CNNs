@@ -6,7 +6,7 @@ import random
 
 import cv2
 import numpy as np
-
+import Polygon
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
@@ -58,8 +58,49 @@ def intersection_with_corection(a, b, img):
     inte = img1 * img2
     union = np.logical_or(img1, img2)
     iou = np.sum(inte) / np.sum(union)
-    print(iou)
+    print("My Version", iou)
     return iou
+
+def intersection_with_corection2(gt, prediction, img):
+
+    img1 = np.zeros_like(img)
+    cv2.fillConvexPoly(img1, gt, (255, 0, 0))
+
+    target_width = 2100
+    target_height = 2970
+    # Referential: (0,0) at TL, x > 0 toward right and y > 0 toward bottom
+    # Corner order: TL, BL, BR, TR
+    # object_coord_target = np.float32([[0, 0], [0, target_height], [target_width, target_height], [target_width, 0]])
+    object_coord_target = np.array(np.float32([[0, 0], [target_width, 0], [target_width, target_height],[0, target_height]]))
+    # print (gt, object_coord_target)
+    H = cv2.getPerspectiveTransform(gt.astype(np.float32).reshape(-1, 1, 2), object_coord_target.reshape(-1, 1, 2))
+
+    # 2/ Apply to test result to project in target referential
+    test_coords = cv2.perspectiveTransform(prediction.astype(np.float32).reshape(-1, 1, 2), H)
+
+    # 3/ Compute intersection between target region and test result region
+    # poly = Polygon.Polygon([(0,0),(1,0),(0,1)])
+    poly_target = Polygon.Polygon(object_coord_target.reshape(-1, 2))
+    poly_test = Polygon.Polygon(test_coords.reshape(-1, 2))
+    poly_inter = poly_target & poly_test
+
+    area_target = poly_target.area()
+    area_test = poly_test.area()
+    area_inter = poly_inter.area()
+
+    area_union = area_test + area_target - area_inter
+    # Little hack to cope with float precision issues when dealing with polygons:
+    #   If intersection area is close enough to target area or GT area, but slighlty >,
+    #   then fix it, assuming it is due to rounding issues.
+    area_min = min(area_target, area_test)
+    if area_min < area_inter and area_min * 1.0000000001 > area_inter:
+        area_inter = area_min
+        print("Capping area_inter.")
+
+    jaccard_index = area_inter / area_union
+    print ("JI Index", jaccard_index)
+    return jaccard_index
+
 
 
 def __rotateImage(image, angle):

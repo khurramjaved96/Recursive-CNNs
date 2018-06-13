@@ -26,6 +26,7 @@ if __name__ == '__main__':
     corner_refiner = evaluation.corner_refiner.corner_finder("../cornerModelWell")
     test_set_dir = args.data_dir
     iou_results = []
+    my_results = []
     dataset_test = dataprocessor.dataset.SmartDocDirectories(test_set_dir)
     for data_elem in dataset_test.myData:
         img_path = data_elem[0]
@@ -50,10 +51,13 @@ if __name__ == '__main__':
             corner_address.append(refined_corner)
         computation_end_time = time.clock()
         print("TOTAL TIME : ", computation_end_time - computation_start_time)
-        r2 = utils.intersection_with_corection(target, np.array(corner_address), img_array)
+        r2 = utils.intersection_with_corection2(target, np.array(corner_address), img_array)
+        r3 = utils.intersection_with_corection(target, np.array(corner_address), img_array)
 
         assert (r2 > 0 and r2 < 1)
         iou_results.append(r2)
-        print("MEAN CORRECTED: ", np.mean(np.array(iou_results)))
+        my_results.append(r3)
+        print("MEAN CORRECTED JI: ", np.mean(np.array(iou_results)))
+        print("MEAN CORRECTED MY: ", np.mean(np.array(my_results)))
 
     print(np.mean(np.array(iou_results)))
