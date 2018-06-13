@@ -4,7 +4,7 @@
 
 Paper available at : www.ualberta.ca/~kjaved
 
-This is a new and improved implementation of the paper (Improved in the sense that the code is better commented and structured). If you are interested in the Tensorflow implementation which was used in the paper, please checkout the "server_branch" branch of this repository. 
+This is a new and slightly improved implementation of the paper (Improved in the sense that the code is better commented and structured, and is more extendable to new models). If you are interested in the Tensorflow implementation which was used in the paper, please checkout the "server_branch" branch of this repository. 
 
 ## Dependencies
 1. Pytorch 0.4.0
@@ -13,7 +13,7 @@ This is a new and improved implementation of the paper (Improved in the sense th
 4. Numpy
 5. tqdm 
 
-## Randomly selected test set images
+## Results on randomly selected test set images
 ![alt text](results/qualitativeResults.jpg "Qualitative Results")
 ## Datasets 
 1. SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
@@ -22,21 +22,21 @@ This is a new and improved implementation of the paper (Improved in the sense th
 
 ## Preparing Dataset
  
-To prepare dataset for training, run the following command following: 
+To prepare the smartdoc dataset for training, run the following command: 
 
 ``` bash
 python video_to_image.py --d ../path_to_smartdoc_videos/ --o ../path_to_store_frames
 ```
-here video_to_image.py is in the SmartDocDataProcessor folder. 
+here the script video_to_image.py is in the smartdoc_data_processor folder. 
 
 After converting to videos to frames, we need to convert the data into format required to train the models. We have to train two models. One to detect the four document corners, and the other to detect the a corner point in an image. To prepare data for the first model, run:
 ``` bash
-python DocumentDataGenerator --d ../path_to_store_frames/ --o ../path_to_train_set
+python document_data_generator.py --d ../path_to_store_frames/ --o ../path_to_train_set
 ```
 and for the second model, run:
 
 ``` bash
-python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_train_set
+python corner_data_generator.py --i ../path_to_store_frames/ --o ../path_to_corner_train_set
 ```
 
 You can also download a version of this data in the right format from here: 
@@ -54,13 +54,13 @@ python trainModel.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2
 
 And to train the corner refiner model, simple specify "--dataset corner" in the above command.
 
-The results of the experiments will be stored in "../DateOfExperiment/NameOfExperiment." You can also specify the output directory using the --outputDir parameter. 
+The results of the experiments will be stored in "../DDMMYYYY/NameOfExperiment." You can also specify the output directory using the --output-dir parameter. 
 
-Note that you can use multiple datasets by providing a list in -i parameter. Finally, the --loader parameter specifies if the data is loaded in ram initially or not. If you have enough memory, it's better to load the data in ram (Otherwise the hard-drive can be a bottleneck). With a fast SSD, it might not be necessary to load the data in ram. 
+Note that you can use multiple datasets by providing a list in -i parameter. Finally, the --loader parameter specifies if the data is loaded in ram initially or not (Supported options are "hdd" or "ram"). If you have enough memory, it's better to load the data in ram (Otherwise the hard-drive can be a bottleneck). 
 
 ## Evaluating Performance 
 
-You can evaluate the performance of the code using evaluate.py file. For now, you will have to hardcode the model state dictionary in the evaluate.py script. Also make sure that the correct version of the model is loading by changing model type in getcorners.py and corner_refinement.py. I'll shift to a better, parameter based approach soon. 
+You can evaluate the performance of the code using evaluate.py file. For evaluation, For now, you will have to hardcode the model state dictionary oath in the evaluate.py script. Also make sure that the correct version of the model is loaded by changing model type in evaluation/corner_extractor.py and evaluation/corner_refiner.py. I'll shift to a better, parameter based approach soon. 
 
 Email : kjaved@ualberta.ca in-case of any queries. 
 
