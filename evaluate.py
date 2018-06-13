@@ -16,14 +16,14 @@ from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 
-parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/bg5",
+parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/smartdocframestest",
                     help="input Directory of test data")
 
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
 if __name__ == '__main__':
-    corners_extractor = evaluation.corner_extractor.GetCorners("../documentModelNoPre")
-    corner_refiner = evaluation.corner_refiner.corner_finder("../cornerResnet")
+    corners_extractor = evaluation.corner_extractor.GetCorners("../documentModelWell")
+    corner_refiner = evaluation.corner_refiner.corner_finder("../cornerModelWell")
     test_set_dir = args.data_dir
     iou_results = []
     dataset_test = dataprocessor.dataset.SmartDocDirectories(test_set_dir)
