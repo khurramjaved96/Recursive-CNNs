@@ -60,7 +60,7 @@ args = parser.parse_args()
 my_experiment = ex.experiment(args.name, args, args.output_dir)
 
 # Add logging support
-logger = utils.setup_logger(my_experiment.path)
+logger = utils.utils.setup_logger(my_experiment.path)
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
