@@ -43,6 +43,8 @@ class corner_finder():
                 img_temp = test_transform(img_temp)
                 img_temp = img_temp.unsqueeze(0)
 
+                if torch.cuda.is_available():
+                    img_temp = img_temp.cuda()
                 response = self.model(img_temp).cpu().data.numpy()
                 response = response[0]
 
