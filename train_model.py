@@ -141,5 +141,5 @@ for epoch in range(0, args.epochs):
     my_trainer.train(epoch)
     my_eval.evaluate(my_trainer.model, val_iterator)
 
-torch.save(myModel.state_dict(), my_experiment.path + args.dataset + "_modelstate_dictionary")
+torch.save(myModel.state_dict(), my_experiment.path + args.dataset + "_" + args.model_type+ ".pb")
 my_experiment.store_json()
