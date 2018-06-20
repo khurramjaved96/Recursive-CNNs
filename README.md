@@ -47,7 +47,7 @@ https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sha
 Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
 
 ``` bash
-python trainModel.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2 
+python train_model.py --name NameOfExperiment -i  pathToTrainSet1 pathToTrainSet2 
 --lr 0.5 --schedule 20 30 35  -v pathToValidationSet --batch-size 16 
 --model-type resnet --loader ram
 ``` 
@@ -60,7 +60,7 @@ Note that you can use multiple datasets by providing a list in -i parameter. Fin
 
 ## Evaluating Performance 
 
-You can evaluate the performance of the code using evaluate.py file. For evaluation, For now, you will have to hardcode the model state dictionary oath in the evaluate.py script. Also make sure that the correct version of the model is loaded by changing model type in evaluation/corner_extractor.py and evaluation/corner_refiner.py. I'll shift to a better, parameter based approach soon. 
+You can evaluate the performance of the code using evaluate.py file. For evaluation, For now, you will have to hardcode the model state dictionary in the evaluate.py script. Also make sure that the correct version of the model is loaded by changing model type in evaluation/corner_extractor.py and evaluation/corner_refiner.py. I'll shift to a better, parameter based approach soon. 
 
 Email : kjaved@ualberta.ca in-case of any queries. 
 
