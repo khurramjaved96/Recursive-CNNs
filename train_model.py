@@ -15,15 +15,15 @@ import model
 import trainer
 import utils
 
-parser = argparse.ArgumentParser(description='iCarl2.0')
+parser = argparse.ArgumentParser(description='Recursive-CNNs')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
-                    help='input batch size for training (default: 64)')
+                    help='input batch size for training (default: 32)')
 parser.add_argument('--lr', type=float, default=0.005, metavar='LR',
-                    help='learning rate (default: 2.0)')
+                    help='learning rate (default: 0.005)')
 parser.add_argument('--schedule', type=int, nargs='+', default=[10, 20, 30],
                     help='Decrease learning rate at these epochs.')
 parser.add_argument('--gammas', type=float, nargs='+', default=[0.2, 0.2, 0.2],
-                    help='LR is multiplied by gamma on schedule, number of gammas should be equal to schedule')
+                    help='LR is multiplied by gamma[k] on schedule[k], number of gammas should be equal to schedule')
 parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                     help='SGD momentum (default: 0.9)')
 parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -31,7 +31,7 @@ parser.add_argument('--no-cuda', action='store_true', default=False,
 parser.add_argument('--pretrain', action='store_true', default=False,
                     help='Pretrain the model on CIFAR dataset?')
 parser.add_argument('--load-ram', action='store_true', default=False,
-                    help='Load data in ram')
+                    help='Load data in ram: TODO : Remove this')
 parser.add_argument('--debug', action='store_true', default=True,
                     help='Debug messages')
 parser.add_argument('--seed', type=int, default=2323,
@@ -46,9 +46,10 @@ parser.add_argument('--output-dir', default="../",
                     help='Directory to store the results; a new folder "DDMMYYYY" will be created '
                          'in the specified directory to save the results.')
 parser.add_argument('--decay', type=float, default=0.00001, help='Weight decay (L2 penalty).')
-parser.add_argument('--epochs', type=int, default=40, help='Number of epochs for each increment')
-parser.add_argument('--dataset', default="document", help='Dataset to be used; example CIFAR, MNIST')
-parser.add_argument('--loader', default="hdd", help='Dataset to be used; example CIFAR, MNIST')
+parser.add_argument('--epochs', type=int, default=40, help='Number of epochs for trianing')
+parser.add_argument('--dataset', default="document", help='Dataset to be used; example document, corner')
+parser.add_argument('--loader', default="hdd", 
+                    help='Loader to load data; hdd for reading from the hdd and ram for loading all data in the memory')
 parser.add_argument("-i", "--data-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
                     help="input Directory of train data")
 parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
