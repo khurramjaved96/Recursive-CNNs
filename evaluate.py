@@ -16,7 +16,7 @@ from utils import utils
 
 parser = argparse.ArgumentParser(description='iCarl2.0')
 
-parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/smartdocframestest",
+parser.add_argument("-i", "--data-dir", default="/Users/khurramjaved96/bg5",
                     help="input Directory of test data")
 
 args = parser.parse_args()
@@ -29,7 +29,9 @@ if __name__ == '__main__':
     my_results = []
     dataset_test = dataprocessor.dataset.SmartDocDirectories(test_set_dir)
     for data_elem in dataset_test.myData:
+
         img_path = data_elem[0]
+        # print(img_path)
         target = data_elem[1].reshape((4, 2))
         img_array = np.array(Image.open(img_path))
         computation_start_time = time.clock()
@@ -51,9 +53,13 @@ if __name__ == '__main__':
             corner_address.append(refined_corner)
         computation_end_time = time.clock()
         print("TOTAL TIME : ", computation_end_time - computation_start_time)
-        r2 = utils.intersection_with_corection2(target, np.array(corner_address), img_array)
+        r2 = utils.intersection_with_corection_smart_doc_implementation(target, np.array(corner_address), img_array)
         r3 = utils.intersection_with_corection(target, np.array(corner_address), img_array)
 
+        if r3 - r2 > 0.1:
+            print ("Image Name", img_path)
+            print ("Prediction", np.array(corner_address), target)
+            0/0
         assert (r2 > 0 and r2 < 1)
         iou_results.append(r2)
         my_results.append(r3)

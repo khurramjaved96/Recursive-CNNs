@@ -34,16 +34,16 @@ def intersection(a, b, img):
     return iou
 
 
-def intersection_with_corection(a, b, img):
+def intersection_with_correction(a, b, img):
     img1 = np.zeros_like(img)
     cv2.fillConvexPoly(img1, a, (255, 0, 0))
 
     img2 = np.zeros_like(img)
     cv2.fillConvexPoly(img2, b, (255, 0, 0))
     min_x = min(a[0][0], a[1][0], a[2][0], a[3][0])
-    min_y = min(a[0][1], a[1][1], a[2][0], a[3][0])
+    min_y = min(a[0][1], a[1][1], a[2][1], a[3][1])
     max_x = max(a[0][0], a[1][0], a[2][0], a[3][0])
-    max_y = max(a[0][1], a[1][1], a[2][0], a[3][0])
+    max_y = max(a[0][1], a[1][1], a[2][1], a[3][1])
 
     dst = np.array(((min_x, min_y), (max_x, min_y), (max_x, max_y), (min_x, max_y)))
     mat = cv2.getPerspectiveTransform(a.astype(np.float32), dst.astype(np.float32))
@@ -58,11 +58,14 @@ def intersection_with_corection(a, b, img):
     inte = img1 * img2
     union = np.logical_or(img1, img2)
     iou = np.sum(inte) / np.sum(union)
-    print("My Version", iou)
     return iou
 
-def intersection_with_corection2(gt, prediction, img):
+def intersection_with_correction_smart_doc_implementation(gt, prediction, img):
 
+    # Reference : https://github.com/jchazalon/smartdoc15-ch1-eval
+
+    gt = sort_gt(gt)
+    prediction = sort_gt(prediction)
     img1 = np.zeros_like(img)
     cv2.fillConvexPoly(img1, gt, (255, 0, 0))
 
@@ -98,7 +101,6 @@ def intersection_with_corection2(gt, prediction, img):
         print("Capping area_inter.")
 
     jaccard_index = area_inter / area_union
-    print ("JI Index", jaccard_index)
     return jaccard_index
 
 

@@ -11,14 +11,14 @@ import evaluation
 def args_processor():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--imagePath", default="../img2.jpg", help="Path to the document image")
+    parser.add_argument("-i", "--imagePath", default="../058.jpg", help="Path to the document image")
     parser.add_argument("-o", "--outputPath", default="../output.jpg", help="Path to store the result")
     parser.add_argument("-rf", "--retainFactor", help="Floating point in range (0,1) specifying retain factor",
                         default="0.85")
     parser.add_argument("-cm", "--cornerModel", help="Model for corner point refinement",
-                        default="../cornerResnet")
+                        default="../cornerModelWell")
     parser.add_argument("-dm", "--documentModel", help="Model for document corners detection",
-                        default="../documentModelNoPre")
+                        default="../documentModelWell")
     return parser.parse_args()
 
 
