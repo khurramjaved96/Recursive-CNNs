@@ -64,6 +64,8 @@ You can evaluate the performance of the code using evaluate.py file. For evaluat
 
 Email : kjaved@ualberta.ca in-case of any queries. 
 
+A version of trained models can be downloaded from : https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX
+
 ## Note
 To those working on this problem, I would encourage trying out fully connected neural networks (Or some variant of pixel level segmentation network) as well; in my limited experiments, they are able to out-perform my method quite easily, and are more robust to unseen backgrounds (Probably because they are able to utilize context information of the whole page when making the prediction). They do tend to be a bit slower and require more memory though (Because a high-res image is used as input.) I might release my implemented of FCN based detector soon as well depending on my schedule. 
 
