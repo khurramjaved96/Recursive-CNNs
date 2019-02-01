@@ -4,7 +4,24 @@
 
 Paper available at : https://khurramjaved96.github.io
 
-## Demo
+- Install Tensorflow >= 1.8.0
+``` bash
+pip install -r requirements.txt
+```
+- Pre-requisite:  
+    - Tensorflow >= 1.8.0
+    - Python3.6  
+    - Numpy  
+    - SciPy  
+    - Opencv 4.0.0.21 for Python
+
+
+- clone the source code 
+``` bash
+git clone -b server_branch https://github.com/xiaoyubing/Recursive-CNNs.git
+```
+
+## Quick Start:  
 To test the system, you can use the pretrained models by:
 
 ``` bash
@@ -14,7 +31,7 @@ usage: python detectDocument.py [-i IMAGEPATH] [-o OUTPUTPATH]
 ```
 For example:
 ``` bash
-python detectDocument.py -i TrainedModel/img.jpg -o ./result.jpg -rf 0.85
+python detectDocument.py -i TrainedModel/img.jpg -o TrainedModel/result.jpg -rf 0.85
 ```
 would run the pretrained model on the sample image in the repository. 
 
@@ -42,8 +59,9 @@ and for the second model, run:
 python CornerDataGenerator --d ../path_to_store_frames/ --o ../path_to_corner_train_set
 ```
 
-You can also download a version of this data in the right format from here: 
-https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sharing
+You can also download a version of this data in the right format from here:   
+[Baidu pan](https://pan.baidu.com/s/1pSJDvhWczeNYrv6epbSQgA) Code:zex0  
+[Google Drive](https://drive.google.com/drive/folders/1N9M8dHIMt6sQdoqZ8Y66EJVQSaBTq9cX?usp=sharing)
 
 Now we can use the data to train our models. To train the document detector (The model that detects 4 corners), run:
 
