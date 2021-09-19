@@ -17,7 +17,7 @@ This is a new and slightly improved implementation of the paper (Improved in the
 ![alt text](results/qualitativeResults.jpg "Qualitative Results")
 ## Datasets 
 1. SmartDoc Competition 2 dataset : https://sites.google.com/site/icdar15smartdoc/challenge-1/challenge1dataset
-2. Self-collected dataset : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?usp=sharing
+2. Self-collected dataset : https://drive.google.com/drive/folders/0B9Sr0v9WkqCmekhjTTY2aV9hUmM?resourcekey=0-LT3nxEsFbvklyHdC2AjaYg&usp=sharing
 3. Synthetic Dataset created by S.A Abbas and S.ul.Hussan [2] : https://drive.google.com/open?id=0B0ZBpkjFckxyNms0Smp0RWFsdTQ
 
 ## Preparing Dataset
