@@ -14,7 +14,12 @@ class corner_finder():
     def __init__(self, CHECKPOINT_DIR):
 
         self.model = model.ModelFactory.get_model("resnet", "corner")
-        self.model.load_state_dict(torch.load(CHECKPOINT_DIR, map_location='cpu'))
+        model_data_dict=torch.load(CHECKPOINT_DIR, map_location='cpu')
+        model_state_dict=self.model.state_dict()
+        missing_layers_keys=set([x for x in model_state_dict.keys()])-set([x for x in model_data_dict.keys()])
+        missing_layers= {x: model_state_dict[x] for x in missing_layers_keys}
+        model_data_dict.update(missing_layers)
+        self.model.load_state_dict(model_data_dict)
         if torch.cuda.is_available():
             self.model.cuda()
         self.model.eval()

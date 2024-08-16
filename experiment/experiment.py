@@ -19,7 +19,7 @@ class experiment:
         print(self.gitHash)
         if not args is None:
             self.name = name
-            self.params = vars(args)
+            self.params = args
             self.results = {}
             self.dir = output_dir
 

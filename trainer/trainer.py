@@ -13,6 +13,7 @@ from torch.autograd import Variable
 logger = logging.getLogger('iCARL')
 import torch.nn.functional as F
 import torch
+import wandb
 from tqdm import tqdm
 
 
@@ -44,8 +45,9 @@ class Trainer(GenericTrainer):
                                  self.current_lr * gammas[temp])
                     self.current_lr *= gammas[temp]
 
-    def train(self, epoch):
+    def train(self, epoch,):
         self.model.train()
+        logging_batch=epoch*len(self.train_iterator)
         lossAvg = None
         for img, target in tqdm(self.train_iterator):
             if self.cuda:
@@ -56,6 +58,8 @@ class Trainer(GenericTrainer):
             # print (target[0])
             loss = F.mse_loss(response, Variable(target.float()))
             loss = torch.sqrt(loss)
+            wandb.log({"batch": logging_batch, "batch_training_loss":loss.cpu().data.numpy()})
+            logging_batch+=1
             if lossAvg is None:
                 lossAvg = loss
             else:
@@ -65,8 +69,9 @@ class Trainer(GenericTrainer):
             self.optimizer.step()
 
         lossAvg /= len(self.train_iterator)
-        logger.info("Avg Loss %s", str((lossAvg).cpu().data.numpy()))
-
+        lossAvg=(lossAvg).cpu().data.numpy()
+        logger.info("Avg Loss %s", str(lossAvg))
+        wandb.log({"epoch": epoch, "avg_train_loss": lossAvg})
 
 class CIFARTrainer(GenericTrainer):
     def __init__(self, train_iterator, model, cuda, optimizer):

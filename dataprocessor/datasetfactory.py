@@ -10,9 +10,9 @@ class DatasetFactory:
         pass
 
     @staticmethod
-    def get_dataset(directory, type="document"):
+    def get_dataset(directory, type="document",csv_name="gt.csv"):
         if type=="document":
-            return data.SmartDoc(directory)
+            return data.SmartDoc(directory,csv_name)
         elif type =="corner":
             return data.SmartDocCorner(directory)
         elif type=="CIFAR":

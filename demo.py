@@ -39,7 +39,7 @@ if __name__ == "__main__":
     for corner in extracted_corners:
         image_name += 1
         corner_img = corner[0]
-        refined_corner = np.array(corner_refiner.get_location(corner_img, 0.85))
+        refined_corner = np.array(corner_refiner.get_location(corner_img, float(args.retainFactor)))
 
         # Converting from local co-ordinate to global co-ordinates of the image
         refined_corner[0] += corner[1]

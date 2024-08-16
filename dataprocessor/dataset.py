@@ -34,8 +34,9 @@ class SmartDoc(Dataset):
     Class to include MNIST specific details
     '''
 
-    def __init__(self, directory="data"):
+    def __init__(self, directory="data",csv_name="gt.csv"):
         super().__init__("smartdoc")
+        self.csv_name=csv_name
         self.data = []
         self.labels = []
         for d in directory:
@@ -52,14 +53,14 @@ class SmartDoc(Dataset):
             self.classes_list = {}
 
             file_names = []
-            print (self.directory, "gt.csv")
-            with open(os.path.join(self.directory, "gt.csv"), 'r') as csvfile:
+            print (self.directory, self.csv_name)
+            with open(os.path.join(self.directory, self.csv_name), 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 import ast
                 for row in spamreader:
                     file_names.append(row[0])
                     self.data.append(os.path.join(self.directory, row[0]))
-                    test = row[1].replace("array", "")
+                    test = row[1].replace("array", "").replace("\\","")
                     self.labels.append((ast.literal_eval(test)))
         self.labels = np.array(self.labels)
 
@@ -82,12 +83,12 @@ class SmartDocDirectories(Dataset):
 
         for folder in os.listdir(directory):
             if (os.path.isdir(directory + "/" + folder)):
-                for file in os.listdir(directory + "/" + folder):
-                    images_dir = directory + "/" + folder + "/" + file
+                for file in os.listdir(directory + "\\" + folder):
+                    images_dir = directory + "\\" + folder + "\\" + file
                     if (os.path.isdir(images_dir)):
 
                         list_gt = []
-                        tree = ET.parse(images_dir + "/" + file + ".gt")
+                        tree = ET.parse(images_dir + "\\" + file.replace(".avi",".gt") + ".xml")
                         root = tree.getroot()
                         for a in root.iter("frame"):
                             list_gt.append(a)
@@ -194,10 +195,11 @@ class SmartDocCorner(Dataset):
                 spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 import ast
                 for row in spamreader:
-                    file_names.append(row[0])
-                    self.data.append(os.path.join(self.directory, row[0]))
-                    test = row[1].replace("array", "")
-                    self.labels.append((ast.literal_eval(test)))
+                    if len(row)>0:
+                        file_names.append(row[0])
+                        self.data.append(os.path.join(self.directory, row[0]))
+                        test = row[1].replace("array", "")
+                        self.labels.append((ast.literal_eval(test)))
         self.labels = np.array(self.labels)
 
         self.labels = np.reshape(self.labels, (-1, 2))

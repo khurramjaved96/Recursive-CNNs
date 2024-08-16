@@ -31,6 +31,7 @@ class HddLoader(td.Dataset):
         '''
         assert (index < len(self.data[0]))
         assert (index < self.len)
+        # print(self.data[0][index])
         img = Image.open(self.data[0][index])
         target = self.data[1][index]
         if self.transform is not None:

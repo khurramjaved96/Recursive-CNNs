@@ -10,6 +10,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
+import wandb
 from torchnet.meter import confusionmeter
 from tqdm import tqdm
 
@@ -38,7 +39,7 @@ class DocumentMseEvaluator():
         self.cuda = cuda
 
 
-    def evaluate(self, model, iterator):
+    def evaluate(self, model, iterator,epoch):
         model.eval()
         lossAvg = None
         with torch.no_grad():
@@ -58,6 +59,7 @@ class DocumentMseEvaluator():
                 # logger.debug("Cur loss %s", str(loss))
 
         lossAvg /= len(iterator)
+        wandb.log({"epoch":epoch,"eval_loss": lossAvg})
         logger.info("Avg Val Loss %s", str((lossAvg).cpu().data.numpy()))
 
 

@@ -6,7 +6,7 @@ import random
 
 import cv2
 import numpy as np
-import Polygon
+import polygon
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
@@ -82,9 +82,9 @@ def intersection_with_correction_smart_doc_implementation(gt, prediction, img):
     test_coords = cv2.perspectiveTransform(prediction.astype(np.float32).reshape(-1, 1, 2), H)
 
     # 3/ Compute intersection between target region and test result region
-    # poly = Polygon.Polygon([(0,0),(1,0),(0,1)])
-    poly_target = Polygon.Polygon(object_coord_target.reshape(-1, 2))
-    poly_test = Polygon.Polygon(test_coords.reshape(-1, 2))
+    # poly = polygon.Polygon([(0,0),(1,0),(0,1)])
+    poly_target = polygon.Polygon(object_coord_target.reshape(-1, 2))
+    poly_test = polygon.Polygon(test_coords.reshape(-1, 2))
     poly_inter = poly_target & poly_test
 
     area_target = poly_target.area()
