@@ -9,6 +9,7 @@ import argparse
 import torch
 import torch.utils.data as td
 import wandb
+from torchvision import transforms
 
 import dataprocessor
 import experiment as ex
@@ -57,23 +58,31 @@ import utils
 # parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
 #                     help="input Directory of val data")
 
-experiment_names = "Experiment-1-doc"
+experiment_names = "Experiment-10"
 
 output_dir = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments"
 no_cuda = True
+dataset_type = "complete_document"
 data_dirs = [
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\testDataset\smart-doc-train",
-
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\self-collected"
+    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\augmentations",
+    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\kosmos",
+    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\self-collected",
+    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\smart-doc"
 ]
-dataset_type = "document"
-validation_dirs = [
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\testDataset\smart-doc-train",
 
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\self-collected"]
-loader = "hdd"
+validation_dirs = [
+        r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\augmentations",
+        r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\kosmos",
+        r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\self-collected",
+    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\smart-doc"
+]
+testing_dirs = [
+        r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\augmentations",
+        r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\kosmos",
+        r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\self-collected",
+    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\full_document_datasets\complete_documents\smart-doc"
+]
+loader = "hdd_complete_doc"
 
 model_type = "resnet"
 
@@ -86,10 +95,10 @@ seed = 42
 momentum = 0.9
 decay = 0.00001
 
-gammas = [0.2, 0.2, 0.2]
+gammas = [.2, .2, .2, .2,.2,.2,.2,.2]
 
-epochs = 40
-schedule = [10, 20, 30]
+epochs = 75
+schedule = [10, 20, 30, 40, 45,50,60,70]
 cuda = not no_cuda and torch.cuda.is_available()
 
 arguments = {
@@ -111,35 +120,46 @@ arguments = {
     "epochs": epochs,
     "schedule": schedule,
 }
-
-wandb.init(project="document-detection",
+#
+wandb.init(project="full-document-detection",
            entity="kosmos-randd",
            config=arguments)
 
 wandb.run.name = wandb.run.name + "-" + experiment_names
 # Define an experiment.
-my_experiment = ex.experiment(experiment_names, arguments, output_dir)
-
+my_experiment = ex.experiment(wandb.run.name, arguments, output_dir)
+print(arguments)
 # Add logging support
 logger = utils.utils.setup_logger(my_experiment.path)
-#%%
-dataset = dataprocessor.DatasetFactory.get_dataset(data_dirs, dataset_type, "train.csv")
-#%%
-dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type, "test.csv")
-#%%
+# %%
+dataset = dataprocessor.DatasetFactory.get_dataset(data_dirs, dataset_type, "train1.csv")
+# %%
+dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type, "val1.csv")
+# %%
+dataset_test = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type, "test1.csv")
+# %%
 # Fix the seed.
-seed = seed
-torch.manual_seed(seed)
-if cuda:
-    torch.cuda.manual_seed(seed)
+# seed = seed
+# torch.manual_seed(seed)
+# if cuda:
+#     torch.cuda.manual_seed(seed)
+
+train_transform = transforms.Compose([transforms.Resize([64, 64]),
+                                      # transforms.ColorJitter(1.5, 1.5, 0.9, 0.5),
+                                      transforms.ToTensor()])
+test_transform = transforms.Compose([transforms.Resize([64, 64]),
+                                     transforms.ToTensor()])
 
 train_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset.myData,
-                                                              transform=dataset.train_transform,
+                                                              transform=test_transform,
                                                               cuda=cuda)
 # Loader used for training data
 val_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset_val.myData,
-                                                            transform=dataset.test_transform,
-                                                            cuda=cuda)
+                                                            transform=test_transform,
+                                                            cuda=cuda)  # Loader used for training data
+test_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset_test.myData,
+                                                             transform=test_transform,
+                                                             cuda=cuda)
 kwargs = {'num_workers': 1, 'pin_memory': True} if cuda else {}
 
 # Iterator to iterate over training data.
@@ -148,9 +168,12 @@ train_iterator = torch.utils.data.DataLoader(train_dataset_loader,
 # Iterator to iterate over training data.
 val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
                                            batch_size=batch_size, shuffle=True, **kwargs)
+# Iterator to iterate over training data.
+test_iterator = torch.utils.data.DataLoader(test_dataset_loader,
+                                            batch_size=batch_size, shuffle=True, **kwargs)
 
 # Get the required model
-myModel = model.ModelFactory.get_model(model_type, dataset_type)
+myModel = model.ModelFactory.get_model(model_type, "complete_document_64")
 if cuda:
     myModel.cuda()
 
@@ -168,7 +191,7 @@ if pretrain:
 
     for epoch in range(0, 70):
         logger.info("Epoch : %d", epoch)
-        cifar_trainer.update_lr(epoch, [30, 45, 60], gammas)
+        cifar_trainer.update_lr(epoch, schedule, gammas)
         cifar_trainer.train(epoch)
 
     # Freeze the model
@@ -189,17 +212,20 @@ optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, myModel.parameters
                             weight_decay=decay, nesterov=True)
 
 # Trainer object used for training
-my_trainer = trainer.Trainer(train_iterator, myModel, cuda, optimizer)
+my_trainer = trainer.CompleteDocumentTrainer(train_iterator, myModel, cuda, optimizer)
 
 # Evaluator
-my_eval = trainer.EvaluatorFactory.get_evaluator("rmse", cuda)
+my_eval = trainer.EvaluatorFactory.get_evaluator("cross_entropy", cuda)
 # Running epochs_class epochs
 for epoch in range(0, epochs):
     logger.info("Epoch : %d", epoch)
     my_trainer.update_lr(epoch, schedule, gammas)
     my_trainer.train(epoch)
-    my_eval.evaluate(my_trainer.model, val_iterator, epoch)
+    my_eval.evaluate(my_trainer.model, val_iterator, epoch, prefix="val_",table=False)
+my_eval.evaluate(my_trainer.model, test_iterator, epoch, prefix="test_",table=True)
 
 torch.save(myModel.state_dict(), my_experiment.path + dataset_type + "_" + model_type + ".pb")
 my_experiment.store_json()
 wandb.finish()
+
+#%%

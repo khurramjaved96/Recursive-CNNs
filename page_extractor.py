@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import evaluation
-
+from PIL import Image
 
 class PageExtractor(object):
     def __init__(self, cornerModel_path: str, documentModel_path: str):
@@ -12,7 +12,7 @@ class PageExtractor(object):
 
     def extract_corners(self, image_path: str, retain_factor: float=.85):
         img = cv2.imread(image_path)
-
+        # img=np.array(Image.open(image_path))
         oImg = img
         self.img = oImg
 

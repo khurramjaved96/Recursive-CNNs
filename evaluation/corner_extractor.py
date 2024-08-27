@@ -13,19 +13,19 @@ import model
 class GetCorners:
     def __init__(self, checkpoint_dir):
         self.model = model.ModelFactory.get_model("resnet", 'document')
-        dummy_input=torch.randn(1, 3, 32, 32)
-        torch.onnx.export(
-            self.model,  # Model to export
-            dummy_input,  # Dummy input tensor
-            "model_doc.onnx",  # Output file name
-            export_params=True,  # Store the trained parameter weights inside the model file
-            opset_version=11,  # ONNX version to export to (choose a suitable opset version)
-            do_constant_folding=True,  # Whether to execute constant folding for optimization
-            input_names=['input'],  # Name for the input tensor
-            output_names=['output'],  # Name for the output tensor
-            dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}  # Allow variable batch size
-        )
-
+        # dummy_input=torch.randn(1, 3, 32, 32)
+        # torch.onnx.export(
+        #     self.model,  # Model to export
+        #     dummy_input,  # Dummy input tensor
+        #     "model_doc.onnx",  # Output file name
+        #     export_params=True,  # Store the trained parameter weights inside the model file
+        #     opset_version=11,  # ONNX version to export to (choose a suitable opset version)
+        #     do_constant_folding=True,  # Whether to execute constant folding for optimization
+        #     input_names=['input'],  # Name for the input tensor
+        #     output_names=['output'],  # Name for the output tensor
+        #     dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}  # Allow variable batch size
+        # )
+        #
 
         model_data_dict=torch.load(checkpoint_dir, map_location='cpu')
         model_state_dict=self.model.state_dict()

@@ -19,3 +19,6 @@ class LoaderFactory:
         elif type =="ram":
             return loader.RamLoader(data, transform=transform,
                                     cuda=cuda)
+        elif type=="hdd_complete_doc":
+            return loader.HddLoader_complete(data, transform=transform,
+                                    cuda=cuda)

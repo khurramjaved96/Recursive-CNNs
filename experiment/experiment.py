@@ -26,8 +26,8 @@ class experiment:
             import datetime
             now = datetime.datetime.now()
             rootFolder = str(now.day) + str(now.month) + str(now.year)
-            if not os.path.exists(output_dir + rootFolder):
-                os.makedirs(output_dir + rootFolder)
+            if not os.path.exists(output_dir+"\\" + rootFolder):
+                os.makedirs(output_dir+"\\" + rootFolder)
             self.name = rootFolder + "/" + self.name
             ver = 0
 

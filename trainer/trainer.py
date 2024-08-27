@@ -73,6 +73,52 @@ class Trainer(GenericTrainer):
         logger.info("Avg Loss %s", str(lossAvg))
         wandb.log({"epoch": epoch, "avg_train_loss": lossAvg})
 
+class CompleteDocumentTrainer(GenericTrainer):
+    def __init__(self, train_iterator, model, cuda, optimizer):
+        super().__init__()
+        self.cuda = cuda
+        self.train_iterator = train_iterator
+        self.model = model
+        self.optimizer = optimizer
+
+    def update_lr(self, epoch, schedule, gammas):
+        for temp in range(0, len(schedule)):
+            if schedule[temp] == epoch:
+                for param_group in self.optimizer.param_groups:
+                    self.current_lr = param_group['lr']
+                    param_group['lr'] = self.current_lr * gammas[temp]
+                    logger.debug("Changing learning rate from %0.9f to %0.9f", self.current_lr,
+                                 self.current_lr * gammas[temp])
+                    self.current_lr *= gammas[temp]
+
+    def train(self, epoch,):
+        self.model.train()
+        logging_batch=epoch*len(self.train_iterator)
+        lossAvg = None
+        loss_function = torch.nn.CrossEntropyLoss()
+        for img, target ,type,dataset,path in tqdm(self.train_iterator):
+            if self.cuda:
+                img, target = img.cuda(), target.cuda()
+            self.optimizer.zero_grad()
+            response = self.model(Variable(img))
+
+            loss =loss_function(response, Variable(target.float()))
+
+            wandb.log({"batch": logging_batch, "batch_training_loss":loss.cpu().data.numpy()})
+            logging_batch+=1
+            if lossAvg is None:
+                lossAvg = loss
+            else:
+                lossAvg += loss
+
+            loss.backward()
+            self.optimizer.step()
+
+        lossAvg /= len(self.train_iterator)
+        lossAvg=(lossAvg).cpu().data.numpy()
+        logger.info("Avg Loss %s", str(lossAvg))
+        wandb.log({"epoch": epoch, "avg_train_loss": lossAvg})
+
 class CIFARTrainer(GenericTrainer):
     def __init__(self, train_iterator, model, cuda, optimizer):
         super().__init__()

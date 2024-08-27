@@ -6,10 +6,10 @@ import evaluation
 from PIL import Image
 from document_localization_metrics import DocumentLocalizationMetrics
 import pandas as pd
-cornerModel_path = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\model-data\cornerModelPyTorch"
-documentModel_path = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments882024\Validation_run_12\Validation_rundocument_resnet.pb"
-corners_extractor = evaluation.corner_extractor.GetCorners(documentModel_path)
-corner_refiner = evaluation.corner_refiner.corner_finder(cornerModel_path)
+# cornerModel_path = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\model-data\cornerModelPyTorch"
+# documentModel_path = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments882024\Validation_run_12\Validation_rundocument_resnet.pb"
+# corners_extractor = evaluation.corner_extractor.GetCorners(documentModel_path)
+# corner_refiner = evaluation.corner_refiner.corner_finder(cornerModel_path)
 from page_extractor import PageExtractor
 from document_localization_utils import DocumentVisualization
 
@@ -27,6 +27,7 @@ corner_name = ["top_left",
                "bottom_right",
 
                "top_right", ]
+#%%
 path=[]
 
 top_left_interval_x_s = []

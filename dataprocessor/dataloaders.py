@@ -5,9 +5,12 @@
 import logging
 
 import PIL
+import torch
 import torch.utils.data as td
 import tqdm
 from PIL import Image
+
+from create_dataset_full_document import directory
 
 logger = logging.getLogger('iCARL')
 
@@ -38,6 +41,36 @@ class HddLoader(td.Dataset):
             img = self.transform(img)
 
         return img, target
+
+class HddLoader_complete(td.Dataset):
+    def __init__(self, data, transform=None, cuda=False):
+        self.data = data
+
+        self.transform = transform
+        self.cuda = cuda
+        self.len = len(data[0])
+
+    def __len__(self):
+        return self.len
+
+    def __getitem__(self, index):
+        '''
+        Replacing this with a more efficient implemnetation selection; removing c
+        :param index:
+        :return:
+        '''
+        assert (index < len(self.data[0]))
+        assert (index < self.len)
+
+        path=self.data[0][index]
+        dataset=path.split("\\")[-3]
+        img = Image.open(path)
+        target = self.data[1][index]
+        if self.transform is not None:
+            img = self.transform(img)
+        directory=self.data[2][index]
+        return img, torch.tensor(target),directory,dataset,path
+
 
 class RamLoader(td.Dataset):
     def __init__(self, data, transform=None, cuda=False):

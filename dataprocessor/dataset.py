@@ -6,6 +6,7 @@ import csv
 import logging
 import os
 import xml.etree.ElementTree as ET
+import pandas as pd
 
 import numpy as np
 from torchvision import transforms
@@ -18,6 +19,9 @@ import utils.utils as utils
 logger = logging.getLogger('iCARL')
 
 
+
+
+
 class Dataset():
     '''
     Base class to reprenent a Dataset
@@ -27,6 +31,40 @@ class Dataset():
         self.name = name
         self.data = []
         self.labels = []
+
+
+class CompleteDocuments(Dataset):
+    def __init__(self,directory="data",csv_name="gt.csv"):
+        super().__init__("completedocuments")
+        self.csv_name=csv_name
+        self.data = []
+        self.labels = []
+        self.train_transform = transforms.Compose([transforms.Resize([32, 32]),
+                                                   transforms.ColorJitter(1.5, 1.5, 0.9, 0.5),
+                                                   transforms.ToTensor()])
+
+        self.test_transform = transforms.Compose([transforms.Resize([32, 32]),
+                                                  transforms.ToTensor()])
+        paths = []
+        labels = []
+        directories = []
+        for d in directory:
+            self.directory = d
+            df=pd.read_csv(os.path.join(d,csv_name))
+            arr = df["label"]
+            encoded_arr = np.zeros((arr.size, arr.max() + 1), dtype=int)
+            encoded_arr[np.arange(arr.size), arr] = 1
+            df["label"] = encoded_arr.tolist()
+
+
+            for idx,row in df.iterrows():
+                paths.append(row["file_path"])
+                labels.append(row["label"])
+                directories.append(row["directory"])
+        self.data=paths
+        self.labels=labels
+        self.myData = [self.data, self.labels,directories]
+
 
 
 class SmartDoc(Dataset):

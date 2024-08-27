@@ -17,6 +17,10 @@ class ModelFactory():
                 return resnet.resnet20(8)
             elif dataset == 'corner':
                 return resnet.resnet20(2)
+            elif dataset == 'complete_document':
+                return resnet.resnet20_class(2)
+            elif dataset == 'complete_document_64':
+                return resnet.resnet64(2)
         if model_type == "resnet8":
             if dataset == 'document':
                 return resnet.resnet8(8)
