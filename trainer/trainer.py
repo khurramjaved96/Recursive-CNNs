@@ -49,7 +49,7 @@ class Trainer(GenericTrainer):
         self.model.train()
         logging_batch=epoch*len(self.train_iterator)
         lossAvg = None
-        for img, target in tqdm(self.train_iterator):
+        for img, target,_ in tqdm(self.train_iterator):
             if self.cuda:
                 img, target = img.cuda(), target.cuda()
             self.optimizer.zero_grad()

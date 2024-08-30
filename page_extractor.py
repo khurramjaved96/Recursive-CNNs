@@ -11,8 +11,8 @@ class PageExtractor(object):
         self.corner_refiner = evaluation.corner_refiner.corner_finder(cornerModel_path)
 
     def extract_corners(self, image_path: str, retain_factor: float=.85):
-        img = cv2.imread(image_path)
-        # img=np.array(Image.open(image_path))
+        # img = cv2.imread(image_path)
+        img=np.array(Image.open(image_path))
         oImg = img
         self.img = oImg
 

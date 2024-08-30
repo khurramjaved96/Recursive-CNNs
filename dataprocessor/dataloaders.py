@@ -40,7 +40,7 @@ class HddLoader(td.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        return img, target
+        return img, target,self.data[0][index]
 
 class HddLoader_complete(td.Dataset):
     def __init__(self, data, transform=None, cuda=False):
@@ -103,7 +103,7 @@ class RamLoader(td.Dataset):
         assert (index < self.len)
         target = self.data[1][index]
         img = self.loaded_data[index]
-        return img, target
+        return img, target,self.data[0][index]
 
 
 

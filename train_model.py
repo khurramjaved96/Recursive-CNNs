@@ -57,21 +57,21 @@ import utils
 # parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
 #                     help="input Directory of val data")
 
-experiment_names = "Experiment-1-doc"
+experiment_names = "_____"
 
 output_dir = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments"
 no_cuda = True
 data_dirs = [
     r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\testDataset\smart-doc-train",
 
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\self-collected"
+    # r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations",
+    # r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\self-collected"
 ]
 dataset_type = "document"
 validation_dirs = [
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\testDataset\smart-doc-train",
+    # r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\testDataset\smart-doc-train",
 
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations",
+    # r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations",
     r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\self-collected"]
 loader = "hdd"
 
@@ -88,7 +88,7 @@ decay = 0.00001
 
 gammas = [0.2, 0.2, 0.2]
 
-epochs = 40
+epochs = 0
 schedule = [10, 20, 30]
 cuda = not no_cuda and torch.cuda.is_available()
 
@@ -125,7 +125,7 @@ logger = utils.utils.setup_logger(my_experiment.path)
 #%%
 dataset = dataprocessor.DatasetFactory.get_dataset(data_dirs, dataset_type, "train.csv")
 #%%
-dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type, "test.csv")
+dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type)
 #%%
 # Fix the seed.
 seed = seed
@@ -151,6 +151,9 @@ val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
 
 # Get the required model
 myModel = model.ModelFactory.get_model(model_type, dataset_type)
+
+myModel.load_state_dict(torch.load(r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments2982024\______31\_____document_resnet.pb", map_location='cpu'))
+
 if cuda:
     myModel.cuda()
 
@@ -198,7 +201,7 @@ for epoch in range(0, epochs):
     logger.info("Epoch : %d", epoch)
     my_trainer.update_lr(epoch, schedule, gammas)
     my_trainer.train(epoch)
-    my_eval.evaluate(my_trainer.model, val_iterator, epoch)
+my_eval.evaluate(my_trainer.model, val_iterator, 0,True)
 
 torch.save(myModel.state_dict(), my_experiment.path + dataset_type + "_" + model_type + ".pb")
 my_experiment.store_json()
