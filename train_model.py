@@ -201,7 +201,7 @@ for epoch in range(0, epochs):
     logger.info("Epoch : %d", epoch)
     my_trainer.update_lr(epoch, schedule, gammas)
     my_trainer.train(epoch)
-my_eval.evaluate(my_trainer.model, val_iterator, 0,True)
+my_eval.evaluate(my_trainer.model, val_iterator, 0,"test_",True)
 
 torch.save(myModel.state_dict(), my_experiment.path + dataset_type + "_" + model_type + ".pb")
 my_experiment.store_json()

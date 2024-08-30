@@ -11,6 +11,7 @@ from sys import prefix
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+import pandas as pd
 from PIL import Image
 import cv2
 import torch.nn.functional as F
@@ -214,7 +215,7 @@ class DocumentMseEvaluator():
             resut_dicts.append(resut_dict)
         return resut_dicts
 
-    def evaluate(self, model, iterator, epoch,table):
+    def evaluate(self, model, iterator, epoch,prefix,table):
         model.eval()
         lossAvg = None
         classification_results=[]
@@ -236,7 +237,7 @@ class DocumentMseEvaluator():
                 y_cords = model_prediction[:, [1, 3, 5, 7]]
 
                 classification_result = self.evaluate_corners(x_cords, y_cords, target,paths)
-                classification_results.append(classification_result)
+                classification_results.extend(classification_result)
                 if table:
                     self.fill_table(img,classification_result)
 
@@ -245,12 +246,19 @@ class DocumentMseEvaluator():
                 else:
                     lossAvg += loss
                 # logger.debug("Cur loss %s", str(loss))
-
+        df=pd.DataFrame(classification_results)
         lossAvg /= len(iterator)
-        wandb.log({"epoch": epoch, "eval_loss": lossAvg})
-        logger.info("Avg Val Loss %s", str((lossAvg).cpu().data.numpy()))
+        total_corners=df["total_corners"]
+        wandb.log({"epoch": epoch,
+                   prefix+"eval_loss": lossAvg,
+                   prefix+"accuracy": lossAvg,
+                   prefix+"4_corners_accuracy": np.sum(total_corners>=3)/len(total_corners),
+                   prefix+"3_corners_accuracy": np.sum(total_corners==4)/len(total_corners),
+
+                   })
+        # logger.info("Avg Val Loss %s", str((lossAvg).cpu().data.numpy()))
         if table:
-            wandb.log({"test_table":self.table})
+            wandb.log({prefix+"table":self.table})
 
 
 
