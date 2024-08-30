@@ -91,14 +91,15 @@ class SmartDoc(Dataset):
             self.classes_list = {}
 
             file_names = []
-            print (self.directory, self.csv_name)
+            print (os.path.join(self.directory, self.csv_name))
             with open(os.path.join(self.directory, self.csv_name), 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 import ast
                 for row in spamreader:
                     file_names.append(row[0])
-                    self.data.append(os.path.join(self.directory, row[0]))
-                    test = row[1].replace("array", "").replace("\\","")
+                    # print(row[0])
+                    self.data.append(os.path.join(self.directory, row[0].replace("\\\\","/")))
+                    test = row[1].replace("array", "").replace("\\","").replace("\\\\","/")
                     self.labels.append((ast.literal_eval(test)))
         self.labels = np.array(self.labels)
 
@@ -121,12 +122,12 @@ class SmartDocDirectories(Dataset):
 
         for folder in os.listdir(directory):
             if (os.path.isdir(directory + "/" + folder)):
-                for file in os.listdir(directory + "\\" + folder):
-                    images_dir = directory + "\\" + folder + "\\" + file
+                for file in os.listdir(directory + "/" + folder):
+                    images_dir = directory + "/" + folder + "/" + file
                     if (os.path.isdir(images_dir)):
 
                         list_gt = []
-                        tree = ET.parse(images_dir + "\\" + file.replace(".avi",".gt") + ".xml")
+                        tree = ET.parse(images_dir + "/" + file.replace(".avi",".gt").replace("\\","/") + ".xml")
                         root = tree.getroot()
                         for a in root.iter("frame"):
                             list_gt.append(a)

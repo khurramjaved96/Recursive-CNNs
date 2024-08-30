@@ -10,7 +10,7 @@ import torch.utils.data as td
 import tqdm
 from PIL import Image
 
-from create_dataset_full_document import directory
+# from create_dataset_full_document import directory
 
 logger = logging.getLogger('iCARL')
 
