@@ -131,7 +131,7 @@ class Trainer_with_class(GenericTrainer):
         total_corners = df["total_corners"]
         wandb.log({"epoch": epoch,
                    "avg_train_loss": lossAvg,
-                   "train_accuracy": lossAvg,
+                   "train_accuracy": (np.sum(total_corners)/4)/len(total_corners),
                    "train_4_corners_accuracy": np.sum(total_corners == 4) / len(total_corners),
                    "train_3_corners_accuracy": np.sum(total_corners >= 3) / len(total_corners),
 

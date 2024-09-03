@@ -269,7 +269,7 @@ class DocumentMseEvaluator():
         total_corners=df["total_corners"]
         wandb.log({"epoch": epoch,
                    prefix+"eval_loss": lossAvg,
-                   prefix+"accuracy": lossAvg,
+                   prefix+"accuracy": (np.sum(total_corners)/4)/len(total_corners),
                    prefix+"4_corners_accuracy": np.sum(total_corners==4)/len(total_corners),
                    prefix+"3_corners_accuracy": np.sum(total_corners>=3)/len(total_corners),
 
