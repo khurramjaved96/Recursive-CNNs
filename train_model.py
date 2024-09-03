@@ -193,7 +193,7 @@ optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, myModel.parameters
                             weight_decay=decay, nesterov=True)
 
 # Trainer object used for training
-my_trainer = trainer.Trainer(train_iterator, myModel, cuda, optimizer)
+my_trainer = trainer.Trainer_with_class(train_iterator, myModel, cuda, optimizer)
 
 # Evaluator
 my_eval = trainer.EvaluatorFactory.get_evaluator("rmse", cuda)

@@ -144,7 +144,7 @@ class DocumentMseEvaluator():
             total=result["total_corners"]
             self.table.add_data(wandb.Image(np.array(img)),contains_tl,contains_tr,contains_br,contains_bl,path,total)
 
-    def evaluate_corners(self, x_cords: np.ndarray, y_cords: np.ndarray, target: np.ndarray,paths:str) -> Tuple[List,List]:
+    def evaluate_corners(self, x_cords: np.ndarray, y_cords: np.ndarray, target: np.ndarray,paths:str) -> Dict:
 
         target = target.cpu().data.numpy()
         target_x = target[:, [0, 2, 4, 6]]
@@ -270,8 +270,8 @@ class DocumentMseEvaluator():
         wandb.log({"epoch": epoch,
                    prefix+"eval_loss": lossAvg,
                    prefix+"accuracy": lossAvg,
-                   prefix+"4_corners_accuracy": np.sum(total_corners>=3)/len(total_corners),
-                   prefix+"3_corners_accuracy": np.sum(total_corners==4)/len(total_corners),
+                   prefix+"4_corners_accuracy": np.sum(total_corners==4)/len(total_corners),
+                   prefix+"3_corners_accuracy": np.sum(total_corners>=3)/len(total_corners),
 
                    })
         # logger.info("Avg Val Loss %s", str((lossAvg).cpu().data.numpy()))

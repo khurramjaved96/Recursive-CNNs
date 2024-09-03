@@ -14,6 +14,8 @@ logger = logging.getLogger('iCARL')
 import torch.nn.functional as F
 import torch
 import wandb
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
 
 
@@ -72,6 +74,148 @@ class Trainer(GenericTrainer):
         lossAvg=(lossAvg).cpu().data.numpy()
         logger.info("Avg Loss %s", str(lossAvg))
         wandb.log({"epoch": epoch, "avg_train_loss": lossAvg})
+
+
+
+class Trainer_with_class(GenericTrainer):
+    def __init__(self, train_iterator, model, cuda, optimizer):
+        super().__init__()
+        self.cuda = cuda
+        self.train_iterator = train_iterator
+        self.model = model
+        self.optimizer = optimizer
+
+    def update_lr(self, epoch, schedule, gammas):
+        for temp in range(0, len(schedule)):
+            if schedule[temp] == epoch:
+                for param_group in self.optimizer.param_groups:
+                    self.current_lr = param_group['lr']
+                    param_group['lr'] = self.current_lr * gammas[temp]
+                    logger.debug("Changing learning rate from %0.9f to %0.9f", self.current_lr,
+                                 self.current_lr * gammas[temp])
+                    self.current_lr *= gammas[temp]
+
+    def train(self, epoch,):
+        self.model.train()
+        logging_batch=epoch*len(self.train_iterator)
+        lossAvg = None
+        classification_results=[]
+
+        for img, target,_ in tqdm(self.train_iterator):
+            if self.cuda:
+                img, target = img.cuda(), target.cuda()
+            self.optimizer.zero_grad()
+            model_prediction = self.model(Variable(img))
+            x_cords = model_prediction[:, [0, 2, 4, 6]]
+            y_cords = model_prediction[:, [1, 3, 5, 7]]
+            classification_result = self.evaluate_corners(x_cords, y_cords, target, path)
+            classification_results.extend(classification_result)
+            loss = F.mse_loss(model_prediction, Variable(target.float()))
+            loss = torch.sqrt(loss)
+            wandb.log({"batch": logging_batch, "batch_training_loss":loss.cpu().data.numpy()})
+            logging_batch+=1
+            if lossAvg is None:
+                lossAvg = loss
+            else:
+                lossAvg += loss
+            # logger.debug("Cur loss %s", str(loss))
+            loss.backward()
+            self.optimizer.step()
+
+        lossAvg /= len(self.train_iterator)
+        lossAvg=(lossAvg).cpu().data.numpy()
+        logger.info("Avg Loss %s", str(lossAvg))
+        # wandb.log({"epoch": epoch, "avg_train_loss": lossAvg})
+        df = pd.DataFrame(classification_results)
+        # lossAvg /= len(iterator)
+        total_corners = df["total_corners"]
+        wandb.log({"epoch": epoch,
+                   "avg_train_loss": lossAvg,
+                   "train_accuracy": lossAvg,
+                   "train_4_corners_accuracy": np.sum(total_corners == 4) / len(total_corners),
+                   "train_3_corners_accuracy": np.sum(total_corners >= 3) / len(total_corners),
+
+                   })
+
+    def evaluate_corners(self, x_cords: np.ndarray, y_cords: np.ndarray, target: np.ndarray,paths:str) -> Tuple[List,List]:
+
+        target = target.cpu().data.numpy()
+        target_x = target[:, [0, 2, 4, 6]]
+        target_y = target[:, [1, 3, 5, 7]]
+        resut_dicts=[]
+
+        for entry in range(len(target)):
+            top_left_y_lower_bound = max(0, (2 * y_cords[entry, 0] - (y_cords[entry, 3] + y_cords[entry, 0]) / 2))
+            top_left_y_upper_bound = ((y_cords[entry, 3] + y_cords[entry, 0]) / 2)
+            top_left_x_lower_bound = max(0, (2 * x_cords[entry, 0] - (x_cords[entry, 1] + x_cords[entry, 0]) / 2))
+            top_left_x_upper_bound = ((x_cords[entry, 1] + x_cords[entry, 0]) / 2)
+
+            top_right_y_lower_bound = max(0, (2 * y_cords[entry, 1] - (y_cords[entry, 1] + y_cords[entry, 2]) / 2))
+            top_right_y_upper_bound = ((y_cords[entry, 1] + y_cords[entry, 2]) / 2)
+            top_right_x_lower_bound = ((x_cords[entry, 1] + x_cords[entry, 0]) / 2)
+            top_right_x_upper_bound = min(1, (x_cords[entry, 1] + (x_cords[entry, 1] - x_cords[entry, 0]) / 2))
+
+            bottom_right_y_lower_bound = ((y_cords[entry, 1] + y_cords[entry, 2]) / 2)
+            bottom_right_y_upper_bound = min(1, (y_cords[entry, 2] + (y_cords[entry, 2] - y_cords[entry, 1]) / 2))
+            bottom_right_x_lower_bound = ((x_cords[entry, 2] + x_cords[entry, 3]) / 2)
+            bottom_right_x_upper_bound = min(1, (x_cords[entry, 2] + (x_cords[entry, 2] - x_cords[entry, 3]) / 2))
+
+            bottom_left_y_lower_bound = ((y_cords[entry, 0] + y_cords[entry, 3]) / 2)
+            bottom_left_y_upper_bound = min(1, (y_cords[entry, 3] + (y_cords[entry, 3] - y_cords[entry, 0]) / 2))
+            bottom_left_x_lower_bound = max(0, (2 * x_cords[entry, 3] - (x_cords[entry, 2] + x_cords[entry, 3]) / 2))
+            bottom_left_x_upper_bound = ((x_cords[entry, 3] + x_cords[entry, 2]) / 2)
+
+            top_left = (target_x[entry,0],target_y[entry,0])
+            top_right = (target_x[entry,1],target_y[entry,1])
+            bottom_right = (target_x[entry,2],target_y[entry,2])
+            bottom_left = (target_x[entry,3],target_y[entry,3])
+
+            tl = self.cordinate_within_intervals(top_left, (top_left_x_lower_bound, top_left_x_upper_bound),
+                                                 (top_left_y_lower_bound,
+                                                  top_left_y_upper_bound))
+            tr = self.cordinate_within_intervals(top_right, (top_right_x_lower_bound, top_right_x_upper_bound),
+                                                 (top_right_y_lower_bound,
+                                                  top_right_y_upper_bound))
+            br = self.cordinate_within_intervals(bottom_right, (bottom_right_x_lower_bound, bottom_right_x_upper_bound),
+                                                 (bottom_right_y_lower_bound,
+                                                  bottom_right_y_upper_bound))
+            bl = self.cordinate_within_intervals(bottom_left, (bottom_left_x_lower_bound, bottom_left_x_upper_bound),
+                                                 (bottom_left_y_lower_bound,
+                                                  bottom_left_y_upper_bound))
+            resut_dict = {"path":paths[entry],
+                "contains_tl": tl,
+                           "contains_tr": tr,
+                           "contains_br": br,
+                           "contains_bl": bl,
+                           "total_corners": tl + tr + br + bl,
+
+                "top_left": (top_left,
+                             top_left_y_lower_bound,
+                             top_left_y_upper_bound,
+                             top_left_x_lower_bound,
+                             top_left_x_upper_bound),
+                "top_right": (top_right,
+                              top_right_y_lower_bound,
+                              top_right_y_upper_bound,
+                              top_right_x_lower_bound,
+                              top_right_x_upper_bound),
+                "bottom_right": (bottom_right,
+                                 bottom_right_y_lower_bound,
+                                 bottom_right_y_upper_bound,
+                                 bottom_right_x_lower_bound,
+                                 bottom_right_x_upper_bound),
+                "bottom_left": (bottom_left,
+                                bottom_left_y_lower_bound,
+                                bottom_left_y_upper_bound,
+                                bottom_left_x_lower_bound,
+                                bottom_left_x_upper_bound),
+            }
+            resut_dicts.append(resut_dict)
+        return resut_dicts
+
+
+
+
 
 class CompleteDocumentTrainer(GenericTrainer):
     def __init__(self, train_iterator, model, cuda, optimizer):
