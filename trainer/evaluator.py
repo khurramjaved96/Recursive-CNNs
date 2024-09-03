@@ -50,7 +50,7 @@ def draw_multiple_bounding_boxes(image, bounding_boxes):
     return image
 
 
-def highlight_coordinates(image, coordinates,  radius=1):
+def highlight_coordinates(image, coordinates,color,  radius=1):
     """
     Highlights coordinates on an image by drawing small green circles around them.
 
@@ -67,7 +67,7 @@ def highlight_coordinates(image, coordinates,  radius=1):
     for (x, y) in coordinates:
         left_up_point = ((x*200 - radius), (y*200 - radius))
         right_down_point = ((x*200 + radius), (y*200 + radius))
-        draw.ellipse([left_up_point, right_down_point], outline="green", width=2, fill="green")
+        draw.ellipse([left_up_point, right_down_point], outline=color, width=2, fill=color)
     return image
 
 
@@ -116,19 +116,24 @@ class DocumentMseEvaluator():
             # img=np.array(img)
             result=results[idx]
 
-            bb_s=[result["top_left"][1:],
-                  result["top_right"][1:],
-                  result["bottom_right"][1:],
-                  result["bottom_left"][1:]]
+            bb_s=[result["top_left"][2:],
+                  result["top_right"][2:],
+                  result["bottom_right"][2:],
+                  result["bottom_left"][2:]]
 
             cordinates=[result["top_left"][0],
                         result["top_right"][0],
                         result["bottom_right"][0],
                         result["bottom_left"][0]]
+            labels=[result["top_left"][1],
+                        result["top_right"][1],
+                        result["bottom_right"][1],
+                        result["bottom_left"][1]]
 
             # for bb_ in bb_s:
             img=draw_multiple_bounding_boxes(img,bb_s)
-            img=highlight_coordinates(img,cordinates)
+            img=highlight_coordinates(img,cordinates,"green")
+            img=highlight_coordinates(img,labels,"blue")
 
 
             path=result["path"]
@@ -145,6 +150,11 @@ class DocumentMseEvaluator():
         target_x = target[:, [0, 2, 4, 6]]
         target_y = target[:, [1, 3, 5, 7]]
         resut_dicts=[]
+
+
+
+
+
 
         for entry in range(len(target)):
             top_left_y_lower_bound = max(0, (2 * y_cords[entry, 0] - (y_cords[entry, 3] + y_cords[entry, 0]) / 2))
@@ -172,6 +182,11 @@ class DocumentMseEvaluator():
             bottom_right = (target_x[entry,2],target_y[entry,2])
             bottom_left = (target_x[entry,3],target_y[entry,3])
 
+            top_left_pred=(x_cords[entry,0],y_cords[entry,0])
+            top_right_pred=(x_cords[entry,1],y_cords[entry,1])
+            bottom_right_pred=(x_cords[entry,2],y_cords[entry,2])
+            bottom_left_pred=(x_cords[entry,3],y_cords[entry,3])
+
             tl = self.cordinate_within_intervals(top_left, (top_left_x_lower_bound, top_left_x_upper_bound),
                                                  (top_left_y_lower_bound,
                                                   top_left_y_upper_bound))
@@ -191,22 +206,22 @@ class DocumentMseEvaluator():
                            "contains_bl": bl,
                            "total_corners": tl + tr + br + bl,
 
-                "top_left": (top_left,
+                "top_left": (top_left_pred,top_left,
                              top_left_y_lower_bound,
                              top_left_y_upper_bound,
                              top_left_x_lower_bound,
                              top_left_x_upper_bound),
-                "top_right": (top_right,
+                "top_right": (top_right_pred,top_right,
                               top_right_y_lower_bound,
                               top_right_y_upper_bound,
                               top_right_x_lower_bound,
                               top_right_x_upper_bound),
-                "bottom_right": (bottom_right,
+                "bottom_right": (bottom_right_pred,bottom_right,
                                  bottom_right_y_lower_bound,
                                  bottom_right_y_upper_bound,
                                  bottom_right_x_lower_bound,
                                  bottom_right_x_upper_bound),
-                "bottom_left": (bottom_left,
+                "bottom_left": (bottom_left_pred,bottom_left,
                                 bottom_left_y_lower_bound,
                                 bottom_left_y_upper_bound,
                                 bottom_left_x_lower_bound,
@@ -247,6 +262,9 @@ class DocumentMseEvaluator():
                     lossAvg += loss
                 # logger.debug("Cur loss %s", str(loss))
         df=pd.DataFrame(classification_results)
+
+        df.to_csv(r"/home/ubuntu/document_localization/Recursive-CNNs/predictions.csv")
+
         lossAvg /= len(iterator)
         total_corners=df["total_corners"]
         wandb.log({"epoch": epoch,

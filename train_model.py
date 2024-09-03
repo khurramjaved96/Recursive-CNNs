@@ -57,38 +57,40 @@ import utils
 # parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
 #                     help="input Directory of val data")
 
-experiment_names = "Experiment-2-doc"
+experiment_names = "Experiment-4-doc"
 
 output_dir = r"/home/ubuntu/document_localization/Recursive-CNNs/experiments"
 no_cuda = False
 data_dirs = [
-    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/augmentations",
+    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/augmentations",
     "/home/ubuntu/document_localization/Recursive-CNNs/datasets/smart-doc-train",
-    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected"
+    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected",
+    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/kosmos"
 ]
 dataset_type = "document"
 validation_dirs = [
-    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/augmentations",
+    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/augmentations",
     "/home/ubuntu/document_localization/Recursive-CNNs/datasets/smart-doc-train",
-    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected"
+    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected",
+    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/kosmos"
 ]
-loader = "hdd"
+loader = "ram"
 
 model_type = "resnet"
 
 pretrain = False
 
 lr = 0.005
-batch_size = 100
+batch_size = 500
 seed = 42
 
 momentum = 0.9
 decay = 0.00001
 
-gammas = [0.2, 0.2, 0.2]
+gammas = [0.2, 0.2, 0.2,.2,.2]
 
-epochs = 1
-schedule = [10, 20, 30]
+epochs = 0
+schedule = [10, 20, 30,40,45]
 cuda = not no_cuda and torch.cuda.is_available()
 
 arguments = {
@@ -132,14 +134,14 @@ dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_
 # if cuda:
 #     torch.cuda.manual_seed(seed)
 
-train_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset.myData,
-                                                              transform=dataset.train_transform,
+train_dataset_loader = dataprocessor.LoaderFactory.get_loader("hdd", dataset.myData,
+                                                              transform=dataset.test_transform,
                                                               cuda=cuda)
 # Loader used for training data
 val_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset_val.myData,
                                                             transform=dataset.test_transform,
                                                             cuda=cuda)
-kwargs = {'num_workers': 4, 'pin_memory': True} if cuda else {}
+kwargs = {'num_workers': 30, 'pin_memory': True} if cuda else {}
 
 # Iterator to iterate over training data.
 train_iterator = torch.utils.data.DataLoader(train_dataset_loader,
@@ -151,7 +153,7 @@ val_iterator = torch.utils.data.DataLoader(val_dataset_loader,
 # Get the required model
 myModel = model.ModelFactory.get_model(model_type, dataset_type)
 
-# myModel.load_state_dict(torch.load(r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments2982024\______31\_____document_resnet.pb", map_location='cpu'))
+myModel.load_state_dict(torch.load(r"/home/ubuntu/document_localization/Recursive-CNNs/experiments3082024/Experiment-3-doc_0/Experiment-3-docdocument_resnet.pb", map_location='cpu'))
 
 if cuda:
     myModel.cuda()
@@ -200,8 +202,9 @@ for epoch in range(0, epochs):
     logger.info("Epoch : %d", epoch)
     my_trainer.update_lr(epoch, schedule, gammas)
     my_trainer.train(epoch)
-my_eval.evaluate(my_trainer.model, val_iterator, 0,"test_",True)
-my_eval.evaluate(my_trainer.model, val_iterator, 0,"test_",True)
+    my_eval.evaluate(my_trainer.model, val_iterator, epoch,"val_",False)
+epoch=0
+my_eval.evaluate(my_trainer.model, val_iterator, epoch,"test_",True)
 
 torch.save(myModel.state_dict(), my_experiment.path + dataset_type + "_" + model_type + ".pb")
 my_experiment.store_json()
