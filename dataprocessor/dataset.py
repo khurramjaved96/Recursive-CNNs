@@ -80,7 +80,7 @@ class SmartDoc(Dataset):
         for d in directory:
             self.directory = d
             self.train_transform = transforms.Compose([transforms.Resize([32, 32]),
-                                                       transforms.ColorJitter(1.5, 1.5, 0.9, 0.5),
+                                                       transforms.ColorJitter(.5, .5, .5, 0.2),
                                                        transforms.ToTensor()])
 
             self.test_transform = transforms.Compose([transforms.Resize([32, 32]),

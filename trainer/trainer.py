@@ -5,6 +5,7 @@
  Email : 14besekjaved@seecs.edu.pk '''
 
 from __future__ import print_function
+from typing import Tuple, List
 
 import logging
 
@@ -108,7 +109,7 @@ class Trainer_with_class(GenericTrainer):
             model_prediction = self.model(Variable(img))
             x_cords = model_prediction[:, [0, 2, 4, 6]]
             y_cords = model_prediction[:, [1, 3, 5, 7]]
-            classification_result = self.evaluate_corners(x_cords, y_cords, target, path)
+            classification_result = self.evaluate_corners(x_cords, y_cords, target, _)
             classification_results.extend(classification_result)
             loss = F.mse_loss(model_prediction, Variable(target.float()))
             loss = torch.sqrt(loss)
@@ -136,6 +137,13 @@ class Trainer_with_class(GenericTrainer):
                    "train_3_corners_accuracy": np.sum(total_corners >= 3) / len(total_corners),
 
                    })
+    def cordinate_within_intervals(self, cordinate, x_interval, y_interval) -> int:
+
+        is_within_x = (x_interval[0] <= cordinate[0] <= x_interval[1])
+        is_within_y = (y_interval[0] <= cordinate[1] <= y_interval[1])
+
+        return int(is_within_x and is_within_y)
+
 
     def evaluate_corners(self, x_cords: np.ndarray, y_cords: np.ndarray, target: np.ndarray,paths:str) -> Tuple[List,List]:
 
