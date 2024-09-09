@@ -9,6 +9,7 @@ import argparse
 import torch
 import torch.utils.data as td
 import wandb
+from torchvision import transforms
 
 import dataprocessor
 import experiment as ex
@@ -81,11 +82,12 @@ dataset = dataprocessor.DatasetFactory.get_dataset(data_dirs, dataset_type, "tra
 #%%
 dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type, "test.csv")
 #%%
-    # Fix the seed.
-    # seed = seed
-# torch.manual_seed(seed)
-# if cuda:
-#     torch.cuda.manual_seed(seed)
+
+
+transforms.Compose([transforms.Resize([32, 32]),
+                    transforms.ColorJitter(.5, .5, .5, 0.2),
+                    transforms.ToTensor()])
+
 
 train_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset.myData,
                                                               transform=dataset.train_transform,
@@ -147,12 +149,22 @@ my_trainer = trainer.Trainer_with_class(train_iterator, myModel, cuda, optimizer
 # Evaluator
 my_eval = trainer.EvaluatorFactory.get_evaluator("rmse", cuda)
 
-# Running epochs_class epochs
+max_accuracy=0
+
 for epoch in range(0, epochs):
     logger.info("Epoch : %d", epoch)
     my_trainer.train(epoch)
-    my_eval.evaluate(my_trainer.model, val_iterator, epoch, "val_", False)
+    accuracy,accuracy_4,accuracy_3=my_eval.evaluate(my_trainer.model, val_iterator, epoch, "val_", False)
 
+    if accuracy>max_accuracy:
+        max_accuracy=accuracy
+        torch.save(myModel.state_dict(), my_experiment.path + dataset_type + "_" + model_type+f"best_{epoch}" + ".pb")
+        wandb.log({
+            "Max_accuracy":max_accuracy,
+            "Max_accuracy_4_corners":accuracy_4,
+            "Max_accuracy_3_corners":accuracy_3,
+            "epoch":epoch
+                   })
 # Final evaluation on test set
 my_eval.evaluate(my_trainer.model, val_iterator, epoch, "test_", True)
 

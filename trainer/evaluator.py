@@ -267,17 +267,22 @@ class DocumentMseEvaluator():
 
         lossAvg /= len(iterator)
         total_corners=df["total_corners"]
+        accuracy=(np.sum(total_corners)/4)/len(total_corners)
+
+        accuracy_4=np.sum(total_corners == 4) / len(total_corners)
+        accuracy_3=np.sum(total_corners >= 3) / len(total_corners)
+
         wandb.log({"epoch": epoch,
                    prefix+"eval_loss": lossAvg,
-                   prefix+"accuracy": (np.sum(total_corners)/4)/len(total_corners),
-                   prefix+"4_corners_accuracy": np.sum(total_corners==4)/len(total_corners),
-                   prefix+"3_corners_accuracy": np.sum(total_corners>=3)/len(total_corners),
+                   prefix+"accuracy": accuracy,
+                   prefix+"4_corners_accuracy": accuracy_4,
+                   prefix+"3_corners_accuracy": accuracy_3,
 
                    })
         # logger.info("Avg Val Loss %s", str((lossAvg).cpu().data.numpy()))
         if table:
             wandb.log({prefix+"table":self.table})
-
+        return accuracy,accuracy_4,accuracy_3
 
 
 
