@@ -79,12 +79,16 @@ class Trainer(GenericTrainer):
 
 
 class Trainer_with_class(GenericTrainer):
-    def __init__(self, train_iterator, model, cuda, optimizer):
+    def __init__(self, train_iterator, model, cuda, optimizer,loss="mse"):
         super().__init__()
         self.cuda = cuda
         self.train_iterator = train_iterator
         self.model = model
         self.optimizer = optimizer
+        if loss=="mse":
+            self.loss_funct=F.mse_loss
+        elif loss=="l1":
+            self.loss_funct=F.l1_loss
 
     def update_lr(self, epoch, schedule, gammas):
         for temp in range(0, len(schedule)):
@@ -111,7 +115,7 @@ class Trainer_with_class(GenericTrainer):
             y_cords = model_prediction[:, [1, 3, 5, 7]]
             classification_result = self.evaluate_corners(x_cords, y_cords, target, _)
             classification_results.extend(classification_result)
-            loss = F.mse_loss(model_prediction, Variable(target.float()))
+            loss = self.loss_funct(model_prediction, Variable(target.float()))
             loss = torch.sqrt(loss)
             wandb.log({"batch": logging_batch, "batch_training_loss":loss.cpu().data.numpy()})
             logging_batch+=1
