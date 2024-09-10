@@ -19,20 +19,20 @@ import utils
 
 experiment_names = "Experiment-7-doc"
 
-output_dir = r"/home/ubuntu/document_localization/Recursive-CNNs/experiments"
+output_dir = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments"
 no_cuda = False
 data_dirs = [
     "/home/ubuntu/document_localization/Recursive-CNNs/datasets/augmentations",
-    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/smart-doc-train",
-    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected",
-    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/kosmos"
+    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/smart-doc-train",
+    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected",
+    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/kosmos"
 ]
 dataset_type = "document"
 validation_dirs = [
     "/home/ubuntu/document_localization/Recursive-CNNs/datasets/augmentations",
-    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/smart-doc-train",
-    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected",
-    "/home/ubuntu/document_localization/Recursive-CNNs/datasets/kosmos"
+    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/smart-doc-train",
+    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/self_collected",
+    # "/home/ubuntu/document_localization/Recursive-CNNs/datasets/kosmos"
 ]
 loader = "ram"
 

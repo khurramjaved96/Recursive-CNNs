@@ -79,7 +79,7 @@ validation_dirs = [
     r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\smart-doc-test",
 
 ]
-loader = "hdd"
+loader = "ram"
 
 model_type = "resnet"
 
@@ -118,7 +118,7 @@ arguments = {
     "schedule": schedule,
 }
 
-wandb.init(project="document-detection",
+wandb.init(project="corner-detection",
            entity="kosmos-randd",
            config=arguments)
 
@@ -142,10 +142,7 @@ dataset = dataprocessor.DatasetFactory.get_dataset(data_dirs, dataset_type)
 dataset_val = dataprocessor.DatasetFactory.get_dataset(validation_dirs, dataset_type)
 
 # Fix the seed.
-seed = seed
-torch.manual_seed(seed)
-if cuda:
-    torch.cuda.manual_seed(seed)
+
 
 train_dataset_loader = dataprocessor.LoaderFactory.get_loader(loader, dataset.myData,
                                                               transform=dataset.train_transform,
