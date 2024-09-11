@@ -2,3 +2,6 @@
 *.pyc
 *.xml
 .*
+/data
+/corner-datasets
+/wandb

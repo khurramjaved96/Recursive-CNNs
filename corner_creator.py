@@ -20,7 +20,8 @@ class CornerCropper:
 
     def get_starting_points(self, img, fixed_x, fixed_y):
         h, w = img.shape[:2]
-
+        print(h,w)
+        print(fixed_x,fixed_y)
         # Ensure the fixed point remains within the cropped area
         min_x = max(0, fixed_x - self.crop_width)
         max_x = min(fixed_x, w - self.crop_width)
@@ -45,7 +46,7 @@ class CornerCropper:
 
 def rotate_image(image,cords ,angle):
     height,width=image.shape[:2]
-    cords = cords * np.array([width, height])
+    #cords = cords * np.array([width, height])
     new_cords = cords.copy()
     if angle==90:
         image=Image.fromarray(image).rotate(90,expand=True)
@@ -77,10 +78,10 @@ def args_processor():
 
 if __name__ == '__main__':
     # args = args_processor()
-    input_directory = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\datasets\augmentations"
-    output_dir=r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\augmentations-train"
+    input_directory = r"C:\Users\danie\OneDrive\Desktop\Trabajo Kosmos\Recursive-CNNs\data\self collected"
+    output_dir=r"C:\Users\danie\OneDrive\Desktop\Trabajo Kosmos\Recursive-CNNs\corner-datasets\self-collected-train"
 
-    dataset="smartdoc-dataset"
+    dataset="selfcollected"
     csv_type="train.csv"
 
     if not os.path.isdir(output_dir):
@@ -98,6 +99,7 @@ if __name__ == '__main__':
     else:
         print ("Incorrect dataset type; please choose between smartdoc or selfcollected")
         assert(False)
+        
     with open(os.path.join(output_dir, 'gt.csv'), 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -106,17 +108,17 @@ if __name__ == '__main__':
 
         corner_croper=CornerCropper(300,300)
 
-        for path_img,label in zip(dataset_test.myData[0],dataset_test.myData[1]):
-
+        # corregir error: se está accediendo mal al dataset
+        for path_img, label in dataset_test.myData:
             img_path = path_img
             target = label.reshape((4, 2))
             img = np.array(Image.open(img_path))
 
-            if dataset=="selfcollected" or dataset=="smartdoc-dataset":
+            #if dataset=="selfcollected" or dataset=="smartdoc-dataset":
                 # target = target / (img.shape[1], img.shape[0])
                 # target = target * (1920, 1920)
                 # img = cv2.resize(img, (1920, 1920))
-                img = cv2.resize(img, (1920, 1920))
+                #img = cv2.resize(img, (1920, 1920)) # creo que tambien debemos cambiar las coordenada de los bounding boxes
                 # fig,ax=plt.subplots()
                 # ax.imshow(img)
                 # ax.scatter(target[:,1], target[:,0])

@@ -205,8 +205,6 @@ class SelfCollectedDataset(Dataset):
             self.myData.append([self.data[a], self.labels[a]])
 
 
-
-
 class SmartDocCorner(Dataset):
     '''
     Class to include MNIST specific details
@@ -237,7 +235,8 @@ class SmartDocCorner(Dataset):
                     if len(row)>0:
                         file_names.append(row[0])
                         self.data.append(os.path.join(self.directory, row[0]))
-                        test = row[1].replace("array", "")
+                        #test = row[1].replace("array", "")
+                        test = row[1].replace("np.float64", "")
                         self.labels.append((ast.literal_eval(test)))
         self.labels = np.array(self.labels)
 

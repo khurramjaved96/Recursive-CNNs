@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 #                                                               cuda=False)
 
 
-dataset_corner_collected  = dataprocessor.DatasetFactory.get_dataset([r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\smart-doc-train"], "corner")
+dataset_corner_collected  = dataprocessor.DatasetFactory.get_dataset([r"C:\Users\danie\OneDrive\Desktop\Trabajo Kosmos\Recursive-CNNs\corner-datasets\augmentations-train"], "corner")
 loader_corner_collected=dataprocessor.LoaderFactory.get_loader("hdd", dataset_corner_collected.myData,
                                                               transform=None,
                                                               cuda=False)

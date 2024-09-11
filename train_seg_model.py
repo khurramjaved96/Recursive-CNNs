@@ -59,24 +59,23 @@ import utils
 # parser.add_argument("-v", "--validation-dirs", nargs='+', default="/Users/khurramjaved96/documentTest64",
 #                     help="input Directory of val data")
 
-experiment_names = "Corners-experiment-1"
+experiment_names = "corner-refinement-experiment-1"
 
-output_dir = r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\experiments"
+output_dir = r"C:\Users\danie\OneDrive\Desktop\Trabajo Kosmos\Recursive-CNNs\experiments"
 no_cuda = True
 data_dirs = [
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\self-collected-train",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\kosmos-train",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\self-collected-train",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\smart-doc-train",
-
-
+    r"C:\Users\danie\OneDrive\Desktop\Trabajo Kosmos\Recursive-CNNs\corner-datasets\self-collected-train",
+    #r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\kosmos-train",
+    #r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\self-collected-train",
+    #r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\smart-doc-train",
 ]
+
 dataset_type = "corner"
 validation_dirs = [
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\self-collected-test",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\kosmos-test",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\self-collected-test",
-    r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\smart-doc-test",
+    r"C:\Users\danie\OneDrive\Desktop\Trabajo Kosmos\Recursive-CNNs\corner-datasets\self-collected-train",
+    #r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\kosmos-test",
+    #r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\self-collected-test",
+    #r"C:\Users\isaac\PycharmProjects\document_localization\Recursive-CNNs\corner-datasets\smart-doc-test",
 
 ]
 loader = "ram"
@@ -94,7 +93,7 @@ decay = 0.00001
 
 gammas = [0.2, 0.2, 0.2]
 
-epochs = 10
+epochs = 1
 schedule = [10, 20, 30]
 cuda = not no_cuda and torch.cuda.is_available()
 
@@ -119,7 +118,7 @@ arguments = {
 }
 
 wandb.init(project="corner-detection",
-           entity="kosmos-randd",
+           entity="daniel-reyes-kosmos-kosmos",
            config=arguments)
 
 wandb.run.name = wandb.run.name + "-" + experiment_names
@@ -195,21 +194,20 @@ if pretrain:
         counter += 1
 
 # Define the optimizer used in the experiment
-optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, myModel.parameters()), lr,
-                            momentum=momentum,
-                            weight_decay=decay, nesterov=True)
+optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, myModel.parameters()), lr,
+                            weight_decay=decay)
 
 # Trainer object used for training
 my_trainer = trainer.Trainer(train_iterator, myModel, cuda, optimizer)
 
 # Evaluator
-my_eval = trainer.EvaluatorFactory.get_evaluator("rmse", cuda)
+my_eval = trainer.EvaluatorFactory.get_evaluator("rmse-corners", cuda)
 # Running epochs_class epochs
 for epoch in range(0, epochs):
     logger.info("Epoch : %d", epoch)
     my_trainer.update_lr(epoch, schedule, gammas)
     my_trainer.train(epoch)
-    my_eval.evaluate(my_trainer.model, val_iterator,epoch)
+    my_eval.evaluate(my_trainer.model, val_iterator,epoch, "", True)
 
 torch.save(myModel.state_dict(), my_experiment.path + dataset_type + "_" + model_type+ ".pb")
 my_experiment.store_json()
