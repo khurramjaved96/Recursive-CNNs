@@ -37,7 +37,7 @@ class CornerCropper:
     def crop(self, img, fixed_x, fixed_y):
         start_x, start_y = self.get_starting_points(img, fixed_x, fixed_y)
 
-        cropped_img = img[ start_y:start_y+self.crop_height,start_x:start_x+self.crop_width]
+        cropped_img = img[start_y:start_y+self.crop_height,start_x:start_x+self.crop_width]
 
         new_cordinates=(fixed_x-start_x,fixed_y-start_y)
 
