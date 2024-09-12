@@ -95,7 +95,7 @@ class CornerMseEvaluator():
     '''
     def __init__(self, cuda):
         self.cuda = cuda
-        self.table=wandb.Table(columns=["img","coord","path","label"])
+        self.table=wandb.Table(columns=["img","path","label","coord", "loss"])
     
     def cordinate_within_intervals(self, cordinate, x_interval, y_interval) -> int:
 
@@ -116,45 +116,12 @@ class CornerMseEvaluator():
             coordinates=[result["coordinates"]]
             labels=[result["labels"]]
             path=result["path"]
+            loss=result['loss'] 
 
             # for bb_ in bb_s:
             img=highlight_coordinates(img,coordinates,"green")
             img=highlight_coordinates(img,labels,"blue")
-            self.table.add_data(wandb.Image(np.array(img)),np.array(coordinates[0]),path, np.array(labels[0]))
-
-    def evaluate_corners(self, x_cords: np.ndarray, y_cords: np.ndarray, target: np.ndarray,paths:str) -> Dict:
-
-        target = target.cpu().data.numpy()
-        target_x = target[:,0]
-        target_y = target[:,1]
-        resut_dicts=[]
-
-        for entry in range(len(target)):
-            top_left_y_lower_bound = max(0, (2 * y_cords[entry, 0] - (y_cords[entry, 3] + y_cords[entry, 0]) / 2))
-            top_left_y_upper_bound = ((y_cords[entry, 3] + y_cords[entry, 0]) / 2)
-            top_left_x_lower_bound = max(0, (2 * x_cords[entry, 0] - (x_cords[entry, 1] + x_cords[entry, 0]) / 2))
-            top_left_x_upper_bound = ((x_cords[entry, 1] + x_cords[entry, 0]) / 2)
-
-
-            top_left = (target_x[entry,0],target_y[entry,0])
-
-            top_left_pred=(x_cords[entry,0],y_cords[entry,0])
-  
-
-            tl = self.cordinate_within_intervals(top_left, (top_left_x_lower_bound, top_left_x_upper_bound),
-                                                 (top_left_y_lower_bound,
-                                                  top_left_y_upper_bound))
-
-            resut_dict = {"path":paths[entry],
-                "contains_tl": tl,
-                "top_left": (top_left_pred,top_left,
-                             top_left_y_lower_bound,
-                             top_left_y_upper_bound,
-                             top_left_x_lower_bound,
-                             top_left_x_upper_bound),
-            }
-            resut_dicts.append(resut_dict)
-        return resut_dicts
+            self.table.add_data(wandb.Image(np.array(img)),path, np.array(labels[0]),np.array(coordinates[0]),loss)
 
     def evaluate(self, model, iterator, epoch,prefix,table):
         model.eval()
@@ -178,7 +145,8 @@ class CornerMseEvaluator():
                 for i in range(len(model_prediction)):
                     results = {"coordinates": model_prediction[i,:],
                                  "path": paths[i], 
-                                 "labels": target[i,:]}
+                                 "labels": target[i,:],
+                                 "loss": np.mean((np.array(target[i,:]) - np.array(model_prediction[i,:])) ** 2)}
                     classification_result.append(results)
                 
                 #classification_result = self.evaluate_corners(x_cords, y_cords, target,paths)
